@@ -11,6 +11,6 @@ import { getMongoConfig } from './configs/mongo.config';
     MongooseModule.forRootAsync(getMongoConfig()),
     UserModule,
     AuthModule
-  ],
+  ]
 })
 export class AppModule {}

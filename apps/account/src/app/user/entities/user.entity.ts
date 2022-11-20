@@ -15,13 +15,13 @@ export class UserEntity implements IUser {
     this.role = user.role;
   }
 
-  public async setPassword(password: string) {
+  public async setPassword(password: string): Promise<this> {
     const salt = await genSalt(10);
     this.passwordHash = await hash(password, salt);
     return this;
   }
 
-  public validatePassword(password: string) {
-    return compare(password, this.passwordHash);
+  public async validatePassword(password: string): Promise<boolean> {
+    return await compare(password, this.passwordHash);
   }
 }

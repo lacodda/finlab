@@ -7,19 +7,19 @@ import { User } from '../models/user.model';
 @Injectable()
 export class UserRepository {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>
+    @InjectModel(User.name) private readonly UserModel: Model<User>
   ) {}
 
-  async createUser(user: UserEntity) {
-    const newUser = new this.userModel(user);
-    return newUser.save(); 
+  async createUser(user: UserEntity): Promise<User> {
+    const newUser = new this.UserModel(user);
+    return await newUser.save();
   }
 
-  async findUser(email: string) {
-    return this.userModel.findOne({ email }).exec();
+  async findUser(email: string): Promise<User> {
+    return await this.UserModel.findOne({ email }).exec();
   }
 
-  async deleteUser(email: string) {
-    this.userModel.deleteOne({ email }).exec();
+  async deleteUser(email: string): Promise<void> {
+    await this.UserModel.deleteOne({ email }).exec();
   }
 }
