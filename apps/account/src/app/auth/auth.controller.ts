@@ -1,5 +1,6 @@
 import { AccountLogin, AccountRegister } from '@finlab/contracts';
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller } from '@nestjs/common';
+import { RMQRoute } from 'nestjs-rmq';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -8,12 +9,12 @@ export class AuthController {
     private readonly authService: AuthService
   ) {}
 
-  @Post('register')
+  @RMQRoute(AccountRegister.topic)
   async register(@Body() dto: AccountRegister.Request): Promise<AccountRegister.Response> {
     return await this.authService.register(dto);
   }
 
-  @Post('login')
+  @RMQRoute(AccountLogin.topic)
   async login(@Body() dto: AccountLogin.Request): Promise<AccountLogin.Response> {
     const { _id } = await this.authService.validateUser(dto);
     // eslint-disable-next-line @typescript-eslint/return-await
