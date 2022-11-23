@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@finlab/contracts": ["libs/contracts/src/index.ts"],
       "@finlab/interfaces": ["libs/interfaces/src/index.ts"]
     }
   },

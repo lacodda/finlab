@@ -1,9 +1,9 @@
+import { AccountLogin, AccountRegister } from '@finlab/contracts';
 import { IUser, UserRole } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserRepository } from '../user/repositories/user.repository';
-import { RegisterDto } from './auth.controller';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +12,7 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async register({ email, password, displayName }: RegisterDto): Promise<Pick<IUser, 'email'>> {
+  async register({ email, password, displayName }: AccountRegister.Request): Promise<AccountRegister.Response> {
     const oldUser = await this.userRepository.findUser(email);
     if (oldUser) {
       throw new Error('This user is already registered');
@@ -28,7 +28,7 @@ export class AuthService {
     return { email: newUser.email };
   }
 
-  async validateUser({ email, password }: RegisterDto): Promise<Pick<IUser, '_id'>> {
+  async validateUser({ email, password }: AccountLogin.Request): Promise<Pick<IUser, '_id'>> {
     const user = await this.userRepository.findUser(email);
     if (!user) {
       throw new Error('Wrong login or password');
@@ -42,7 +42,7 @@ export class AuthService {
     return { _id: user._id };
   }
 
-  async login(id: string): Promise<{ access_token: string }> {
+  async login(id: string): Promise<AccountLogin.Response> {
     return {
       access_token: await this.jwtService.signAsync({ id })
     };

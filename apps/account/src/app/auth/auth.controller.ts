@@ -1,12 +1,6 @@
-import { IUser } from '@finlab/interfaces';
+import { AccountLogin, AccountRegister } from '@finlab/contracts';
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-
-export class RegisterDto {
-  email: string;
-  password: string;
-  displayName?: string;
-}
 
 @Controller('auth')
 export class AuthController {
@@ -15,12 +9,12 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  async register(@Body() dto: RegisterDto): Promise<Pick<IUser, 'email'>> {
+  async register(@Body() dto: AccountRegister.Request): Promise<AccountRegister.Response> {
     return await this.authService.register(dto);
   }
 
   @Post('login')
-  async login(@Body() dto: RegisterDto): Promise<{ access_token: string }> {
+  async login(@Body() dto: AccountLogin.Request): Promise<AccountLogin.Response> {
     const { _id } = await this.authService.validateUser(dto);
     // eslint-disable-next-line @typescript-eslint/return-await
     return this.authService.login(_id);
