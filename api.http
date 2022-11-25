@@ -1,0 +1,17 @@
+@host=http://localhost:3333
+
+###
+# Register
+POST {{host}}/api/auth/register
+{
+    "email": "admin1@email.com",
+    "password": "1"
+}
+
+###
+# Login
+POST {{host}}/api/auth/login
+{
+    "email": "admin1@email.com",
+    "password": "1"
+}
