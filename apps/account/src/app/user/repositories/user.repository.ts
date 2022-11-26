@@ -21,6 +21,10 @@ export class UserRepository {
     return await this.userModel.findOne({ email }).exec();
   }
 
+  async findUserById(id: string): Promise<IUser> {
+    return await this.userModel.findById(id).exec();
+  }
+
   async deleteUser(email: string): Promise<void> {
     await this.userModel.deleteOne({ email }).exec();
   }
