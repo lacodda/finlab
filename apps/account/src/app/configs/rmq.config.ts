@@ -13,6 +13,7 @@ export const getRmqConfig = (): IRMQServiceAsyncOptions => ({
         host: configService.get('AMQP_HOST') ?? ''
       }
     ],
+    queueName: configService.get('AMQP_QUEUE'),
     prefetchCount: 32,
     serviceName: 'finlab-account'
   })
