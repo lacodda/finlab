@@ -1,4 +1,4 @@
-import { IUser, IUserApps, UserRole } from '@finlab/interfaces';
+import { AppStatus, IUser, IUserApps, UserRole } from '@finlab/interfaces';
 import { compare, genSalt, hash } from 'bcryptjs';
 
 export class UserEntity implements IUser {
@@ -16,6 +16,32 @@ export class UserEntity implements IUser {
     this.passwordHash = user.passwordHash;
     this.role = user.role;
     this.apps = user.apps;
+  }
+
+  public addApp(appId: string): void {
+    const existedApp = this.apps?.find(({ _id }) => _id === appId);
+    if (existedApp) {
+      throw new Error('Application already added');
+    }
+
+    this.apps.push({
+      appId,
+      appStatus: AppStatus.Inactive
+    });
+  }
+
+  public deleteApp(appId: string): void {
+    this.apps.filter(({ _id }) => _id !== appId);
+  }
+
+  public updateAppStatus(appId: string, appStatus: AppStatus): void {
+    this.apps.map(app => {
+      if (app._id === appId) {
+        app.appStatus = appStatus;
+        return app;
+      }
+      return app;
+    });
   }
 
   public async setPassword(password: string): Promise<this> {
