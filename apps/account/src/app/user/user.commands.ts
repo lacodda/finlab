@@ -1,4 +1,4 @@
-import { AccountUpdateProfile } from '@finlab/contracts';
+import { AccountAddApp, AccountUpdateProfile } from '@finlab/contracts';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { UserEntity } from './entities/user.entity';
@@ -19,5 +19,11 @@ export class UserCommands {
     const userEntity = new UserEntity(existedUser).updateProfile(user.displayName);
     await this.userRepository.updateUser(userEntity);
     return { user: userEntity };
+  }
+
+  @RMQValidate()
+  @RMQRoute(AccountAddApp.topic)
+  async addApp(@Body() { userId, appId }: AccountAddApp.Request): Promise<AccountAddApp.Response> {
+
   }
 }

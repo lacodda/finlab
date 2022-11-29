@@ -2,7 +2,7 @@ import { AppStatus } from '@finlab/interfaces';
 import { RMQService } from 'nestjs-rmq';
 import { UserEntity } from '../entities/user.entity';
 import { AddAppSagaState } from './add-app.state';
-import { AddAppSagaStateActivated } from './add-app.steps';
+import { AddAppSagaStateActive, AddAppSagaStateDeleted, AddAppSagaStateInactive } from './add-app.steps';
 
 export class AddAppSaga {
   private state: AddAppSagaState;
@@ -11,15 +11,17 @@ export class AddAppSaga {
   setStatus(status: AppStatus): void {
     switch (status) {
       case AppStatus.Inactive:
-        this.state = new AddAppSagaStateActivated();
+        this.state = new AddAppSagaStateInactive();
         break;
       case AppStatus.Active:
+        this.state = new AddAppSagaStateActive();
         break;
       case AppStatus.Deleted:
+        this.state = new AddAppSagaStateDeleted();
         break;
     }
     this.state.setContext(this);
-    this.user.updateAppStatus(this.appId, status);
+    this.user.setAppStatus(this.appId, status);
   }
 
   getStatus(): AddAppSagaState {

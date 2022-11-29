@@ -8,7 +8,7 @@ export abstract class AddAppSagaState {
     this.saga = saga;
   }
 
-  public abstract activate(): Promise<{ link: string, user: UserEntity }>;
+  public abstract activate(): Promise<{ user: UserEntity }>;
   public abstract deactivate(): Promise<{ user: UserEntity }>;
   public abstract delete(): Promise<{ user: UserEntity }>;
 }

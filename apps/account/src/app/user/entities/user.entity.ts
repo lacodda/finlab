@@ -34,7 +34,21 @@ export class UserEntity implements IUser {
     this.apps.filter(({ _id }) => _id !== appId);
   }
 
-  public updateAppStatus(appId: string, appStatus: AppStatus): void {
+  public setAppStatus(appId: string, appStatus: AppStatus): this {
+    const existedApp = this.apps?.find(({ _id }) => _id === appId);
+    if (!existedApp) {
+      this.apps.push({
+        appId,
+        appStatus
+      });
+      return this;
+    }
+
+    if (appStatus === AppStatus.Deleted) {
+      this.deleteApp(appId);
+      return this;
+    }
+
     this.apps.map(app => {
       if (app._id === appId) {
         app.appStatus = appStatus;
@@ -42,6 +56,8 @@ export class UserEntity implements IUser {
       }
       return app;
     });
+
+    return this;
   }
 
   public async setPassword(password: string): Promise<this> {
