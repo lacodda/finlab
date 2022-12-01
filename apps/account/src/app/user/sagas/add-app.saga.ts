@@ -8,6 +8,7 @@ export class AddAppSaga {
   private state: AddAppSagaState;
 
   constructor(public readonly user: UserEntity, public readonly appId: string, public readonly rmqService: RMQService) {}
+
   setStatus(status: AppStatus): void {
     switch (status) {
       case AppStatus.Inactive:
