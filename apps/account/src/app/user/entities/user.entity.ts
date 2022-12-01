@@ -1,4 +1,5 @@
-import { AppStatus, IUser, IUserApps, UserRole } from '@finlab/interfaces';
+import { AccountChangedApp } from '@finlab/contracts';
+import { AppStatus, IDomainEvent, IUser, IUserApps, UserRole } from '@finlab/interfaces';
 import { compare, genSalt, hash } from 'bcryptjs';
 
 export class UserEntity implements IUser {
@@ -7,7 +8,8 @@ export class UserEntity implements IUser {
   email: string;
   passwordHash: string;
   role: UserRole;
-  apps?: IUserApps[];
+  apps?: IUserApps[] = [];
+  events: IDomainEvent[] = [];
 
   constructor(user: IUser) {
     this._id = user._id;
@@ -56,7 +58,10 @@ export class UserEntity implements IUser {
       }
       return app;
     });
-
+    this.events.push({
+      topic: AccountChangedApp.topic,
+      data: { appId, userId: this._id, appStatus }
+    });
     return this;
   }
 
