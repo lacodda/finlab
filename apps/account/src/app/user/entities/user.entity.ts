@@ -21,7 +21,7 @@ export class UserEntity implements IUser {
   }
 
   public addApp(appId: string): void {
-    const existedApp = this.apps?.find(({ _id }) => _id === appId);
+    const existedApp = this.apps?.find(app => app.appId === appId);
     if (existedApp) {
       throw new Error('Application already added');
     }
@@ -33,11 +33,11 @@ export class UserEntity implements IUser {
   }
 
   public deleteApp(appId: string): void {
-    this.apps.filter(({ _id }) => _id !== appId);
+    this.apps.filter(app => app.appId !== appId);
   }
 
   public setAppStatus(appId: string, appStatus: AppStatus): this {
-    const existedApp = this.apps?.find(({ _id }) => _id === appId);
+    const existedApp = this.apps?.find(app => app.appId === appId);
     if (!existedApp) {
       this.apps.push({
         appId,
@@ -52,7 +52,7 @@ export class UserEntity implements IUser {
     }
 
     this.apps.map(app => {
-      if (app._id === appId) {
+      if (app.appId === appId) {
         app.appStatus = appStatus;
         return app;
       }

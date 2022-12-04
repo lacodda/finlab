@@ -20,7 +20,6 @@ export interface IUser {
 }
 
 export interface IUserApps {
-  _id?: string;
   appId: string;
   appStatus: AppStatus;
 }
