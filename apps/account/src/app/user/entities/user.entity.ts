@@ -79,4 +79,8 @@ export class UserEntity implements IUser {
     this.displayName = displayName;
     return this;
   }
+
+  public getAppStatus(appId: string): AppStatus {
+    return this.apps.find(app => app.appId === appId)?.appStatus ?? AppStatus.Active;
+  }
 }

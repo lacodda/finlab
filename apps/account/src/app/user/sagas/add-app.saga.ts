@@ -7,7 +7,12 @@ import { AddAppSagaStateActive, AddAppSagaStateDeleted, AddAppSagaStateInactive 
 export class AddAppSaga {
   private state: AddAppSagaState;
 
-  constructor(public readonly user: UserEntity, public readonly appId: string, public readonly rmqService: RMQService) {}
+  constructor(
+    public readonly user: UserEntity,
+    public readonly appId: string,
+    public readonly rmqService: RMQService) {
+    this.setStatus(user.getAppStatus(appId));
+  }
 
   setStatus(status: AppStatus): void {
     switch (status) {
