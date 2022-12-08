@@ -11,7 +11,7 @@ export class UserController {
     console.log(userId);
   }
 
-  @Cron('*/5 * * * * *')
+  @Cron('* */1 * * *')
   cron(): void {
     Logger.log('Done');
   }
