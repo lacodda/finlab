@@ -1,34 +1,39 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-
-import { WorkTime } from './work-time.schema';
-import { CreateWorkTimeDto, UpdateWorkTimeDto, RangeDto } from './dto';
+import { WorkTimeCreate, WorkTimeDelete, WorkTimeGetById, WorkTimeGetByQuery, WorkTimeUpdate } from '@finlab/contracts';
+import { IWorkTimeFindByQueryParams } from '@finlab/interfaces';
+import { Injectable } from '@nestjs/common';
+import { UpdateWriteOpResult } from 'mongoose';
+import { WorkTimeEntity } from './entities/work-time.entity';
+import { WorkTimeRepository } from './repositories/work-time.repository';
 
 @Injectable()
 export class WorkTimeService {
-  constructor(
-    @InjectModel(WorkTime.name) private readonly workTimeModel: Model<WorkTime>
-  ) {}
+  constructor(private readonly workTimeRepository: WorkTimeRepository) {}
 
-  async create(dto: CreateWorkTimeDto) {
-    const data = {
-      date: new Date(dto.date),
-      time: dto.time
-    };
-    const newWorkTime = new this.workTimeModel(data);
-    try {
-      const createdWorkTime = await newWorkTime.save();
-
-      return createdWorkTime;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+  async create(dto: WorkTimeCreate.Request): Promise<WorkTimeCreate.Response> {
+    const date = new Date(dto.date);
+    const existedWorkTime = await this.workTimeRepository.findByDate(date);
+    if (existedWorkTime) {
+      throw new Error('This date is already created');
     }
+    const newWorkTimeEntity = await new WorkTimeEntity({ userId: '123456', date, time: dto.time });
+    const newWorkTime = await this.workTimeRepository.create(newWorkTimeEntity);
+
+    return { data: new WorkTimeEntity(newWorkTime).entity };
   }
 
-  async findAll(dto: RangeDto) {
-    let params = {};
+  async update(dto: WorkTimeUpdate.Request): Promise<WorkTimeUpdate.Response> {
+    const existedWorkTime = await this.workTimeRepository.findById(dto.id);
+    if (!existedWorkTime) {
+      throw new Error('Unable to update non-existing entry');
+    }
+    const workTimeEntity = new WorkTimeEntity(existedWorkTime).updateTime(dto.time);
+    await this.updateWorkTime(workTimeEntity);
 
+    return { data: workTimeEntity.entity };
+  }
+
+  async getByQuery(dto: WorkTimeGetByQuery.Request): Promise<WorkTimeGetByQuery.Response> {
+    let params: IWorkTimeFindByQueryParams = {};
     if (dto.from && dto.to) {
       params = {
         date: {
@@ -37,65 +42,35 @@ export class WorkTimeService {
         }
       };
     }
+    const workTimeArray = await this.workTimeRepository.findByQuery(params);
 
-    let workTimes: WorkTime[];
-
-    try {
-      workTimes = await this.workTimeModel.find(params).exec();
-
-      let response;
-
-      if (workTimes.length > 0) {
-        response = {
-          ok: true,
-          data: workTimes,
-          message: 'Ok'
-        };
-      } else {
-        response = {
-          ok: true,
-          data: [],
-          message: 'Empty'
-        };
-      }
-      return response;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
+    return { data: workTimeArray.map(workTime => new WorkTimeEntity(workTime).entity) };
   }
 
-  async findOne(id: string) {
-    try {
-      const workTime = await this.workTimeModel.findById(id).exec();
-
-      return workTime;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+  async getById(dto: WorkTimeGetById.Request): Promise<WorkTimeGetById.Response> {
+    const existedWorkTime = await this.workTimeRepository.findById(dto.id);
+    if (!existedWorkTime) {
+      throw new Error('Unable to delete non-existing entry');
     }
+
+    return { data: new WorkTimeEntity(existedWorkTime).entity };
   }
 
-  async update(id: string, dto: UpdateWorkTimeDto) {
-    const data = {
-      time: dto.time
-    };
-
-    try {
-      const workTime = await this.workTimeModel
-        .findByIdAndUpdate(id, data, { new: true })
-        .exec();
-      return workTime;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+  async delete(dto: WorkTimeDelete.Request): Promise<WorkTimeDelete.Response> {
+    const existedWorkTime = await this.workTimeRepository.findById(dto.id);
+    if (!existedWorkTime) {
+      throw new Error('Unable to delete non-existing entry');
     }
+    await this.workTimeRepository.delete(dto.id);
+
+    return { data: { _id: existedWorkTime._id } };
   }
 
-  async remove(id: string) {
-    try {
-      const workTime = await this.workTimeModel.findByIdAndRemove(id);
-
-      return workTime;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
+  private async updateWorkTime(workTime: WorkTimeEntity): Promise<[UpdateWriteOpResult]> {
+    return await Promise.all(
+      [
+        this.workTimeRepository.update(workTime)
+      ]
+    );
   }
 }
