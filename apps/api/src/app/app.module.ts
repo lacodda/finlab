@@ -8,6 +8,7 @@ import { getJwtConfig } from './configs/jwt.config';
 import { getRmqConfig } from './configs/rmq.config';
 import { AuthController } from './controllers/auth.controller';
 import { UserController } from './controllers/user.controller';
+import { WorkTimeController } from './controllers/work-time.controller';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { UserController } from './controllers/user.controller';
     PassportModule,
     ScheduleModule.forRoot()
   ],
-  controllers: [AuthController, UserController]
+  controllers: [AuthController, UserController, WorkTimeController]
 })
 export class AppModule {}
