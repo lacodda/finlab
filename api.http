@@ -31,12 +31,18 @@ Content-Type: application/json
 GET {{host}}/api/work-time HTTP/1.1
 
 ###
+# GET Array of work-time with params
+@from=2022-12-01T00:00:00Z
+@to=2022-12-04T23:59:59Z
+GET {{host}}/api/work-time?from={{from}}&to={{to}} HTTP/1.1
+
+###
 # CREATE new work-time
 # @name json
 POST {{host}}/api/work-time HTTP/1.1
 Content-Type: application/json
 {
-    "date": "2022-12-09T14:38:39Z",
+    "date": "2022-12-03T14:38:39Z",
     "time": 20
 }
 
