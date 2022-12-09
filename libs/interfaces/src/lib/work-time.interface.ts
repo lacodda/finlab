@@ -4,3 +4,10 @@ export interface IWorkTime {
   date: Date;
   time: number;
 }
+
+export interface IWorkTimeFindByQueryParams {
+  date?: {
+    $gte: string;
+    $lte: string;
+  };
+}
