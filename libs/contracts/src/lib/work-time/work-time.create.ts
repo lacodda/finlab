@@ -1,11 +1,11 @@
 import { IWorkTime } from '@finlab/interfaces';
-import { IsNumber, IsDate } from 'class-validator';
+import { IsNumber, IsDateString } from 'class-validator';
 
 export namespace WorkTimeCreate {
   export const topic = 'work-time.create.command';
 
   export class Request {
-    @IsDate()
+    @IsDateString()
       date: string;
 
     @IsNumber()
