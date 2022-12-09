@@ -1,13 +1,9 @@
+import { AppStatus } from './app.interface';
+
 export enum UserRole {
   Administrator = 'Administrator',
   Manager = 'Manager',
   User = 'User',
-}
-
-export enum AppStatus {
-  Inactive = 'Inactive',
-  Active = 'Active',
-  Deleted = 'Deleted'
 }
 
 export interface IUser {
