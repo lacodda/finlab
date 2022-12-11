@@ -7,7 +7,7 @@ export class WorkTimeController {
   constructor(private readonly rmqService: RMQService) {}
 
   @Post()
-  async create(@Body() dto: WorkTimeCreate.Request): Promise<WorkTimeCreate.Response> {
+  async create(@Body() dto: WorkTimeCreate.Request): Promise<WorkTimeCreate.Response | void> {
     try {
       return await this.rmqService.send<WorkTimeCreate.Request, WorkTimeCreate.Response>(WorkTimeCreate.topic, dto);
     } catch (error) {
@@ -18,7 +18,7 @@ export class WorkTimeController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: Omit<WorkTimeUpdate.Request, 'id'>): Promise<WorkTimeUpdate.Response> {
+  async update(@Param('id') id: string, @Body() dto: Omit<WorkTimeUpdate.Request, 'id'>): Promise<WorkTimeUpdate.Response | void> {
     try {
       return await this.rmqService.send<WorkTimeUpdate.Request, WorkTimeUpdate.Response>(WorkTimeUpdate.topic, { ...dto, id });
     } catch (error) {
@@ -29,7 +29,7 @@ export class WorkTimeController {
   }
 
   @Get()
-  async getByQuery(@Query() dto: WorkTimeGetByQuery.Request): Promise<WorkTimeGetByQuery.Response> {
+  async getByQuery(@Query() dto: WorkTimeGetByQuery.Request): Promise<WorkTimeGetByQuery.Response | void> {
     try {
       return await this.rmqService.send<WorkTimeGetByQuery.Request, WorkTimeGetByQuery.Response>(WorkTimeGetByQuery.topic, dto);
     } catch (error) {
@@ -40,7 +40,7 @@ export class WorkTimeController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<WorkTimeGetById.Response> {
+  async getById(@Param('id') id: string): Promise<WorkTimeGetById.Response | void> {
     try {
       return await this.rmqService.send<WorkTimeGetById.Request, WorkTimeGetById.Response>(WorkTimeGetById.topic, { id });
     } catch (error) {
@@ -51,7 +51,7 @@ export class WorkTimeController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<WorkTimeDelete.Response> {
+  async delete(@Param('id') id: string): Promise<WorkTimeDelete.Response | void> {
     try {
       return await this.rmqService.send<WorkTimeDelete.Request, WorkTimeDelete.Response>(WorkTimeDelete.topic, { id });
     } catch (error) {
