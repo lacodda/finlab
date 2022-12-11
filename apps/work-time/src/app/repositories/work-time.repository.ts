@@ -39,7 +39,7 @@ export class WorkTimeRepository {
 
   async findById(id: string): Promise<IWorkTime> {
     try {
-      return await this.workTimeModel.findById(id).exec();
+      return await this.workTimeModel.findById(id).exec() as IWorkTime;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -47,7 +47,7 @@ export class WorkTimeRepository {
 
   async findByDate(date: Date): Promise<IWorkTime> {
     try {
-      return await this.workTimeModel.findOne({ date }).exec();
+      return await this.workTimeModel.findOne({ date }).exec() as IWorkTime;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
