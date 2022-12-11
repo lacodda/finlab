@@ -3,6 +3,9 @@
   "compilerOptions": {
     "rootDir": ".",
     "sourceMap": true,
+    "allowJs": false,
+    "strict": true,
+    "strictPropertyInitialization": false,
     "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
