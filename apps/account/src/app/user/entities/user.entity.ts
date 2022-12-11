@@ -17,7 +17,7 @@ export class UserEntity implements IUser {
     this.email = user.email;
     this.passwordHash = user.passwordHash;
     this.role = user.role;
-    this.apps = user.apps;
+    this.apps = user.apps ?? [];
   }
 
   public addApp(appId: string): void {
@@ -26,20 +26,20 @@ export class UserEntity implements IUser {
       throw new Error('Application already added');
     }
 
-    this.apps.push({
+    this.apps?.push({
       appId,
       appStatus: AppStatus.Inactive
     });
   }
 
   public deleteApp(appId: string): void {
-    this.apps.filter(app => app.appId !== appId);
+    this.apps?.filter(app => app.appId !== appId);
   }
 
   public setAppStatus(appId: string, appStatus: AppStatus): this {
     const existedApp = this.apps?.find(app => app.appId === appId);
     if (!existedApp) {
-      this.apps.push({
+      this.apps?.push({
         appId,
         appStatus
       });
@@ -51,7 +51,7 @@ export class UserEntity implements IUser {
       return this;
     }
 
-    this.apps.map(app => {
+    this.apps?.map(app => {
       if (app.appId === appId) {
         app.appStatus = appStatus;
         return app;
@@ -81,6 +81,6 @@ export class UserEntity implements IUser {
   }
 
   public getAppStatus(appId: string): AppStatus {
-    return this.apps.find(app => app.appId === appId)?.appStatus ?? AppStatus.Active;
+    return this.apps?.find(app => app.appId === appId)?.appStatus ?? AppStatus.Active;
   }
 }

@@ -22,7 +22,7 @@ export class UserService {
       throw new Error('This user does not exist!');
     }
 
-    const userEntity = new UserEntity(existedUser).updateProfile(user.displayName);
+    const userEntity = new UserEntity(existedUser).updateProfile(user.displayName ?? '');
     await this.updateUser(userEntity);
     return { user: userEntity };
   }
@@ -37,7 +37,7 @@ export class UserService {
     const saga = new AddAppSaga(userEntity, appId, this.rmqService);
     const { user } = await saga.getStatus().activate();
     await this.updateUser(userEntity);
-    return { apps: user.apps };
+    return { apps: user.apps ?? [] };
   }
 
   private async updateUser(user: UserEntity): Promise<[unknown, UpdateWriteOpResult]> {

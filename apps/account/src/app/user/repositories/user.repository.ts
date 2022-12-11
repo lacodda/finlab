@@ -22,11 +22,11 @@ export class UserRepository {
   }
 
   async findUser(email: string): Promise<IUser> {
-    return await this.userModel.findOne({ email }).exec();
+    return await this.userModel.findOne({ email }).exec() as IUser;
   }
 
   async findUserById(id: string): Promise<IUser> {
-    return await this.userModel.findById(id).exec();
+    return await this.userModel.findById(id).exec() as IUser;
   }
 
   async deleteUser(email: string): Promise<void> {

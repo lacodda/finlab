@@ -17,6 +17,6 @@ export class UserQueries {
   @RMQRoute(AccountUserApps.topic)
   async userApps(@Body() { id }: AccountUserApps.Request): Promise<AccountUserApps.Response> {
     const user = await this.userRepository.findUserById(id);
-    return { apps: user.apps };
+    return { apps: user.apps ?? [] };
   }
 }

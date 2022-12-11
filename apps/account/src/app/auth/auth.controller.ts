@@ -20,6 +20,6 @@ export class AuthController {
   async login(@Body() dto: AccountLogin.Request): Promise<AccountLogin.Response> {
     const { _id } = await this.authService.validateUser(dto);
     // eslint-disable-next-line @typescript-eslint/return-await
-    return this.authService.login(_id);
+    return this.authService.login(_id as string);
   }
 }
