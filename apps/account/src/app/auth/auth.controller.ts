@@ -18,8 +18,8 @@ export class AuthController {
   @RMQValidate()
   @RMQRoute(AccountLogin.topic)
   async login(@Body() dto: AccountLogin.Request): Promise<AccountLogin.Response> {
-    const { _id } = await this.authService.validateUser(dto);
+    const jwtPayload = await this.authService.validateUser(dto);
     // eslint-disable-next-line @typescript-eslint/return-await
-    return this.authService.login(_id as string);
+    return this.authService.login(jwtPayload);
   }
 }

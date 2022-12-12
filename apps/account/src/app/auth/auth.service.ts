@@ -1,5 +1,5 @@
 import { AccountLogin, AccountRegister } from '@finlab/contracts';
-import { IUser, UserRole } from '@finlab/interfaces';
+import { IJwtPayload, UserRole } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../user/entities/user.entity';
@@ -28,7 +28,7 @@ export class AuthService {
     return { email: newUser.email };
   }
 
-  async validateUser({ email, password }: AccountLogin.Request): Promise<Pick<IUser, '_id'>> {
+  async validateUser({ email, password }: AccountLogin.Request): Promise<IJwtPayload> {
     const user = await this.userRepository.findUser(email);
     if (!user) {
       throw new Error('Wrong login or password');
@@ -39,12 +39,12 @@ export class AuthService {
       throw new Error('Wrong login or password');
     }
 
-    return { _id: user._id };
+    return { id: user._id as string, email: user.email, displayName: user.displayName };
   }
 
-  async login(id: string): Promise<AccountLogin.Response> {
+  async login(jwtPayload: IJwtPayload): Promise<AccountLogin.Response> {
     return {
-      access_token: await this.jwtService.signAsync({ id })
+      access_token: await this.jwtService.signAsync(jwtPayload)
     };
   }
 }
