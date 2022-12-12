@@ -1,14 +1,21 @@
-import { Controller, Logger, Post, UseGuards } from '@nestjs/common';
+import { IJwtPayload } from '@finlab/interfaces';
+import { Controller, Logger, Get, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { JwtAuthGuard } from '../guards/jwt.guard';
-import { UserId } from '../guards/user.decorator';
+import { UserPayload } from '../guards/user.decorator';
 
 @Controller('user')
 export class UserController {
   @UseGuards(JwtAuthGuard)
-  @Post('info')
-  async info(@UserId() userId: string): Promise<void> {
-    console.log(userId);
+  @Get('info')
+  async info(@UserPayload() user: IJwtPayload): Promise<IJwtPayload | undefined> {
+    try {
+      return user;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new UnauthorizedException(error.message);
+      }
+    }
   }
 
   @Cron('* */1 * * *')

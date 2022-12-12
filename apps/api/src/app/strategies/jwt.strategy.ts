@@ -6,15 +6,15 @@ import { IJwtPayload } from '@finlab/interfaces';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: true,
       secretOrKey: configService.get('JWT_SECRET')
     });
   }
 
-  async validate({ _id }: IJwtPayload): Promise<string> {
-    return _id;
+  async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
+    return jwtPayload;
   }
 }

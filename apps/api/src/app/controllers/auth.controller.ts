@@ -7,7 +7,7 @@ export class AuthController {
   constructor(private readonly rmqService: RMQService) {}
 
   @Post('register')
-  async register(@Body() dto: AccountRegister.Request): Promise<AccountRegister.Response | void> {
+  async register(@Body() dto: AccountRegister.Request): Promise<AccountRegister.Response | undefined> {
     try {
       return await this.rmqService.send<AccountRegister.Request, AccountRegister.Response>(AccountRegister.topic, dto);
     } catch (error) {
@@ -18,7 +18,7 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() dto: AccountLogin.Request): Promise<AccountLogin.Response | void> {
+  async login(@Body() dto: AccountLogin.Request): Promise<AccountLogin.Response | undefined> {
     try {
       return await this.rmqService.send<AccountLogin.Request, AccountLogin.Response>(AccountLogin.topic, dto);
     } catch (error) {
