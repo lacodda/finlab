@@ -10,7 +10,7 @@ export class WorkTimeService {
   constructor(private readonly workTimeRepository: WorkTimeRepository) {}
 
   async create(dto: WorkTimeCreate.Request): Promise<WorkTimeCreate.Response> {
-    const date = new Date(dto.date);
+    const date = new Date(new Date(dto.date).setUTCHours(0, 0, 0, 0));
     const existedWorkTime = await this.workTimeRepository.findByDate(date);
     if (existedWorkTime) {
       throw new Error('This date is already created');
