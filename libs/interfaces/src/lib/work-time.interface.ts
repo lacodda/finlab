@@ -6,6 +6,7 @@ export interface IWorkTime {
 }
 
 export interface IWorkTimeFindByQueryParams {
+  userId: string;
   date?: {
     $gte: string;
     $lte: string;

@@ -1,10 +1,13 @@
 import { IWorkTime } from '@finlab/interfaces';
-import { IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsDateString } from 'class-validator';
 
 export namespace WorkTimeGetByQuery {
   export const topic = 'work-time.get-by-query.query';
 
   export class Request {
+    @IsString()
+      userId: string;
+
     @IsOptional()
     @IsDateString()
       from?: string;
