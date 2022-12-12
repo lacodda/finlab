@@ -7,15 +7,15 @@ import { WorkTimeRepository } from './repositories/work-time.repository';
 
 @Injectable()
 export class WorkTimeService {
-  constructor(private readonly workTimeRepository: WorkTimeRepository) {}
+  constructor(private readonly workTimeRepository: WorkTimeRepository) { }
 
   async create(dto: WorkTimeCreate.Request): Promise<WorkTimeCreate.Response> {
     const date = new Date(new Date(dto.date).setUTCHours(0, 0, 0, 0));
-    const existedWorkTime = await this.workTimeRepository.findByDate(date);
+    const existedWorkTime = await this.workTimeRepository.findByDate(date, dto.userId);
     if (existedWorkTime) {
       throw new Error('This date is already created');
     }
-    const newWorkTimeEntity = await new WorkTimeEntity({ userId: '123456', date, time: dto.time });
+    const newWorkTimeEntity = await new WorkTimeEntity({ ...dto, date });
     const newWorkTime = await this.workTimeRepository.create(newWorkTimeEntity);
 
     return { data: new WorkTimeEntity(newWorkTime).entity };
@@ -33,13 +33,13 @@ export class WorkTimeService {
   }
 
   async getByQuery(dto: WorkTimeGetByQuery.Request): Promise<WorkTimeGetByQuery.Response> {
-    let params: IWorkTimeFindByQueryParams = {};
+    const params: IWorkTimeFindByQueryParams = {
+      userId: dto.userId
+    };
     if (dto.from && dto.to) {
-      params = {
-        date: {
-          $gte: new Date(dto.from).toISOString(),
-          $lte: new Date(dto.to).toISOString()
-        }
+      params.date = {
+        $gte: new Date(dto.from).toISOString(),
+        $lte: new Date(dto.to).toISOString()
       };
     }
     const workTimeArray = await this.workTimeRepository.findByQuery(params);

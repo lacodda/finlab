@@ -45,9 +45,9 @@ export class WorkTimeRepository {
     }
   }
 
-  async findByDate(date: Date): Promise<IWorkTime> {
+  async findByDate(date: Date, userId: string): Promise<IWorkTime> {
     try {
-      return await this.workTimeModel.findOne({ date }).exec() as IWorkTime;
+      return await this.workTimeModel.findOne({ date, userId }).exec() as IWorkTime;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
