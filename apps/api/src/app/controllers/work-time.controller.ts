@@ -2,16 +2,17 @@ import { Get, Param, Delete, Patch, Query, Body, Controller, Post, UnauthorizedE
 import { WorkTimeCreate, WorkTimeGetByQuery, WorkTimeGetById, WorkTimeUpdate, WorkTimeDelete } from '@finlab/contracts';
 import { RMQService } from 'nestjs-rmq';
 import { JwtAuthGuard } from '../guards/jwt.guard';
+import { UserId } from '../guards/user.decorator';
 
 @Controller('work-time')
 export class WorkTimeController {
-  constructor(private readonly rmqService: RMQService) {}
+  constructor(private readonly rmqService: RMQService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() dto: WorkTimeCreate.Request): Promise<WorkTimeCreate.Response | undefined> {
+  async create(@Body() dto: Omit<WorkTimeCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeCreate.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeCreate.Request, WorkTimeCreate.Response>(WorkTimeCreate.topic, dto);
+      return await this.rmqService.send<WorkTimeCreate.Request, WorkTimeCreate.Response>(WorkTimeCreate.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new UnauthorizedException(error.message);
@@ -33,9 +34,9 @@ export class WorkTimeController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getByQuery(@Query() dto: WorkTimeGetByQuery.Request): Promise<WorkTimeGetByQuery.Response | undefined> {
+  async getByQuery(@Query() dto: Omit<WorkTimeGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeGetByQuery.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeGetByQuery.Request, WorkTimeGetByQuery.Response>(WorkTimeGetByQuery.topic, dto);
+      return await this.rmqService.send<WorkTimeGetByQuery.Request, WorkTimeGetByQuery.Response>(WorkTimeGetByQuery.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new UnauthorizedException(error.message);
