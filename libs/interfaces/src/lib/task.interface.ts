@@ -5,3 +5,12 @@ export interface ITask {
   text: string;
   completeness?: number;
 }
+
+export interface ITaskFindByQueryParams {
+  userId: string;
+  date?: {
+    $gte: string;
+    $lte: string;
+  };
+  text?: string;
+}

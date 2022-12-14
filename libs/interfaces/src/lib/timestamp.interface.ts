@@ -11,3 +11,11 @@ export interface ITimestamp {
   timestamp: Date;
   type: TimestampType;
 }
+
+export interface ITimestampFindByQueryParams {
+  userId: string;
+  timestamp?: {
+    $gte: string;
+    $lte: string;
+  };
+}
