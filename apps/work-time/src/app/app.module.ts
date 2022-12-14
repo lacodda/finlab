@@ -4,22 +4,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RMQModule } from 'nestjs-rmq';
 import { getMongoConfig } from './configs/mongo.config';
 import { getRmqConfig } from './configs/rmq.config';
-import { WorkTime, WorkTimeSchema } from './models/work-time.model';
-import { WorkTimeRepository } from './repositories/work-time.repository';
-import { WorkTimeController } from './work-time.controller';
-import { WorkTimeService } from './work-time.service';
+import { TaskModule } from './task/task.module';
+import { WorkTimeModule } from './work-time/work-time.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: 'envs/.work-time.env', isGlobal: true }),
     RMQModule.forRootAsync(getRmqConfig()),
     MongooseModule.forRootAsync(getMongoConfig()),
-    MongooseModule.forFeature([
-      { name: WorkTime.name, schema: WorkTimeSchema }
-    ])
-  ],
-  controllers: [WorkTimeController],
-  providers: [WorkTimeService, WorkTimeRepository],
-  exports: [WorkTimeService, WorkTimeRepository]
+    WorkTimeModule,
+    TaskModule
+  ]
 })
-export class AppModule {}
+export class AppModule { }
