@@ -71,3 +71,53 @@ Content-Type: application/json
 # @ref json
 DELETE {{host}}/api/work-time/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
+
+
+# Task
+
+
+###
+# GET Array of tasks
+GET {{host}}/api/work-time/task HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Array of tasks with params
+@from=2022-12-01T00:00:00Z
+@to=2022-12-04T23:59:59Z
+GET {{host}}/api/work-time/task?from={{from}}&to={{to}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# CREATE new task
+# @name json
+POST {{host}}/api/work-time/task HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+Content-Type: application/json
+{
+    "date": "2022-12-03T15:38:39Z",
+    "text": "new task766",
+    "completeness": 10
+}
+
+###
+# GET task
+# @ref json
+GET {{host}}/api/work-time/task/{{ json.data._id }} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# UPDATE task
+# @ref json
+PATCH {{host}}/api/work-time/task/{{ json.data._id }} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+Content-Type: application/json
+{
+    "completeness": 90
+}
+
+###
+# DELETE task
+# @ref json
+DELETE {{host}}/api/work-time/task/{{ json.data._id }} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
