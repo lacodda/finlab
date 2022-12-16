@@ -7,7 +7,9 @@
     "build": "nx build",
     "test": "nx test",
     "lint": "nx lint --fix",
-    "start-all": "nx run-many --target=serve --all --parallel=10"
+    "start-all": "nx run-many --target=serve --all --exclude time-tool --parallel=10",
+    "time-tool": "nx serve time-tool",
+    "time-tool:login": "nx serve:login time-tool"
   },
   "private": true,
   "dependencies": {
@@ -52,6 +54,7 @@
     "@nrwl/react": "15.3.0",
     "@nrwl/web": "15.3.0",
     "@nrwl/workspace": "15.2.1",
+    "@nx-go/nx-go": "^2.7.0",
     "@testing-library/react": "13.4.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/jest": "28.1.1",
