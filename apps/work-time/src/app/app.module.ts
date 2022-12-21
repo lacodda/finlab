@@ -5,6 +5,7 @@ import { RMQModule } from 'nestjs-rmq';
 import { getMongoConfig } from './configs/mongo.config';
 import { getRmqConfig } from './configs/rmq.config';
 import { TaskModule } from './task/task.module';
+import { TimestampModule } from './timestamp/timestamp.module';
 import { WorkTimeModule } from './work-time/work-time.module';
 
 @Module({
@@ -13,7 +14,8 @@ import { WorkTimeModule } from './work-time/work-time.module';
     RMQModule.forRootAsync(getRmqConfig()),
     MongooseModule.forRootAsync(getMongoConfig()),
     WorkTimeModule,
-    TaskModule
+    TaskModule,
+    TimestampModule
   ]
 })
 export class AppModule { }
