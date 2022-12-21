@@ -1,5 +1,9 @@
-import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards, Logger } from '@nestjs/common';
-import { WorkTimeCreate, WorkTimeGetByQuery, WorkTimeGetById, WorkTimeUpdate, WorkTimeDelete, WorkTimeTaskCreate, WorkTimeTaskDelete, WorkTimeTaskGetById, WorkTimeTaskGetByQuery, WorkTimeTaskUpdate } from '@finlab/contracts';
+import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards } from '@nestjs/common';
+import {
+  WorkTimeCreate, WorkTimeGetByQuery, WorkTimeGetById, WorkTimeUpdate, WorkTimeDelete,
+  WorkTimeTaskCreate, WorkTimeTaskDelete, WorkTimeTaskGetById, WorkTimeTaskGetByQuery, WorkTimeTaskUpdate,
+  WorkTimeTimestampCreate, WorkTimeTimestampDelete, WorkTimeTimestampGetById, WorkTimeTimestampGetByQuery, WorkTimeTimestampUpdate
+} from '@finlab/contracts';
 import { RMQService } from 'nestjs-rmq';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { UserId } from '../guards/user.decorator';
@@ -37,7 +41,6 @@ export class WorkTimeController {
   @UseGuards(JwtAuthGuard)
   @Get('task')
   async getTaskByQuery(@Query() dto: Omit<WorkTimeTaskGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTaskGetByQuery.Response | undefined> {
-    console.log('dto', dto)
     try {
       return await this.rmqService.send<WorkTimeTaskGetByQuery.Request, WorkTimeTaskGetByQuery.Response>(WorkTimeTaskGetByQuery.topic, { ...dto, userId });
     } catch (error) {
@@ -64,6 +67,68 @@ export class WorkTimeController {
   async deleteTask(@Param('id') id: string): Promise<WorkTimeTaskDelete.Response | undefined> {
     try {
       return await this.rmqService.send<WorkTimeTaskDelete.Request, WorkTimeTaskDelete.Response>(WorkTimeTaskDelete.topic, { id });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+    }
+  }
+
+  // Timestamp
+
+  @UseGuards(JwtAuthGuard)
+  @Post('timestamp')
+  async createTimestamp(@Body() dto: Omit<WorkTimeTimestampCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTimestampCreate.Response | undefined> {
+    try {
+      return await this.rmqService.send<WorkTimeTimestampCreate.Request, WorkTimeTimestampCreate.Response>(WorkTimeTimestampCreate.topic, { ...dto, userId });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('timestamp/:id')
+  async updateTimestamp(@Param('id') id: string, @Body() dto: Omit<WorkTimeTimestampUpdate.Request, 'id'>): Promise<WorkTimeTimestampUpdate.Response | undefined> {
+    try {
+      return await this.rmqService.send<WorkTimeTimestampUpdate.Request, WorkTimeTimestampUpdate.Response>(WorkTimeTimestampUpdate.topic, { ...dto, id });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('timestamp')
+  async getTimestampByQuery(@Query() dto: Omit<WorkTimeTimestampGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTimestampGetByQuery.Response | undefined> {
+    try {
+      return await this.rmqService.send<WorkTimeTimestampGetByQuery.Request, WorkTimeTimestampGetByQuery.Response>(WorkTimeTimestampGetByQuery.topic, { ...dto, userId });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('timestamp/:id')
+  async getTimestampById(@Param('id') id: string): Promise<WorkTimeTimestampGetById.Response | undefined> {
+    try {
+      return await this.rmqService.send<WorkTimeTimestampGetById.Request, WorkTimeTimestampGetById.Response>(WorkTimeTimestampGetById.topic, { id });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('timestamp/:id')
+  async deleteTimestamp(@Param('id') id: string): Promise<WorkTimeTimestampDelete.Response | undefined> {
+    try {
+      return await this.rmqService.send<WorkTimeTimestampDelete.Request, WorkTimeTimestampDelete.Response>(WorkTimeTimestampDelete.topic, { id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
