@@ -145,8 +145,8 @@ POST {{host}}/api/work-time/timestamp HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "timestamp": "2022-12-03T15:38:39Z",
-    "type": "Start",
+    "timestamp": "2022-12-03T16:29:39Z",
+    "type": "Start"
 }
 
 ###
@@ -162,7 +162,7 @@ PATCH {{host}}/api/work-time/timestamp/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "type": "End",
+    "type": "StartBreak"
 }
 
 ###
