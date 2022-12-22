@@ -1,5 +1,5 @@
 import { ITimestamp, TimestampType } from '@finlab/interfaces';
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsOptional, IsString, IsEnum } from 'class-validator';
 
 export namespace WorkTimeTimestampUpdate {
   export const topic = 'work-time.timestamp-update.command';
@@ -14,6 +14,7 @@ export namespace WorkTimeTimestampUpdate {
 
     @IsOptional()
     @IsString()
+    @IsEnum(TimestampType)
       type: TimestampType;
   }
 

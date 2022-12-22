@@ -1,5 +1,5 @@
 import { ITimestamp, TimestampType } from '@finlab/interfaces';
-import { IsString, IsDateString } from 'class-validator';
+import { IsString, IsDateString, IsEnum } from 'class-validator';
 
 export namespace WorkTimeTimestampCreate {
   export const topic = 'work-time.timestamp-create.command';
@@ -12,6 +12,7 @@ export namespace WorkTimeTimestampCreate {
       timestamp: string;
 
     @IsString()
+    @IsEnum(TimestampType)
       type: TimestampType;
   }
 
