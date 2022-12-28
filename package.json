@@ -12,6 +12,7 @@
     "build-all": "nx run-many --target=build --all --parallel=10",
     "time-tool": "nx serve time-tool",
     "time-tool:login": "nx serve:login time-tool",
+    "time-tool:build": "nx build time-tool",
     "time-tool:build-hide": "nx build-hide time-tool"
   },
   "private": true,
