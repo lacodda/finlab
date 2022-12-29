@@ -1,4 +1,5 @@
 import { IsEmail, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export namespace AccountLogin {
   export const topic = 'account.login.command';
@@ -12,6 +13,7 @@ export namespace AccountLogin {
   }
 
   export class Response {
-    access_token: string;
+    @ApiProperty()
+      access_token: string;
   }
 }

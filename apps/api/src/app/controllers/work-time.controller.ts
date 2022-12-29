@@ -7,13 +7,16 @@ import {
 import { RMQService } from 'nestjs-rmq';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { UserId } from '../guards/user.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('work-time')
 export class WorkTimeController {
   constructor(private readonly rmqService: RMQService) { }
 
   // Task
 
+  @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Post('task')
   async createTask(@Body() dto: Omit<WorkTimeTaskCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTaskCreate.Response | undefined> {
@@ -26,6 +29,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Patch('task/:id')
   async updateTask(@Param('id') id: string, @Body() dto: Omit<WorkTimeTaskUpdate.Request, 'id'>): Promise<WorkTimeTaskUpdate.Response | undefined> {
@@ -38,6 +42,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Get('task')
   async getTaskByQuery(@Query() dto: Omit<WorkTimeTaskGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTaskGetByQuery.Response | undefined> {
@@ -50,6 +55,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Get('task/:id')
   async getTaskById(@Param('id') id: string): Promise<WorkTimeTaskGetById.Response | undefined> {
@@ -62,6 +68,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Delete('task/:id')
   async deleteTask(@Param('id') id: string): Promise<WorkTimeTaskDelete.Response | undefined> {
@@ -75,7 +82,7 @@ export class WorkTimeController {
   }
 
   // Timestamp
-
+  @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Post('timestamp')
   async createTimestamp(@Body() dto: Omit<WorkTimeTimestampCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTimestampCreate.Response | undefined> {
@@ -88,6 +95,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Patch('timestamp/:id')
   async updateTimestamp(@Param('id') id: string, @Body() dto: Omit<WorkTimeTimestampUpdate.Request, 'id'>): Promise<WorkTimeTimestampUpdate.Response | undefined> {
@@ -100,6 +108,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Get('timestamp')
   async getTimestampByQuery(@Query() dto: Omit<WorkTimeTimestampGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTimestampGetByQuery.Response | undefined> {
@@ -112,6 +121,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Get('timestamp/:id')
   async getTimestampById(@Param('id') id: string): Promise<WorkTimeTimestampGetById.Response | undefined> {
@@ -124,6 +134,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Delete('timestamp/:id')
   async deleteTimestamp(@Param('id') id: string): Promise<WorkTimeTimestampDelete.Response | undefined> {
@@ -138,6 +149,7 @@ export class WorkTimeController {
 
   // Work-time
 
+  @ApiTags('work-time')
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() dto: Omit<WorkTimeCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeCreate.Response | undefined> {
@@ -150,6 +162,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('work-time')
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() dto: Omit<WorkTimeUpdate.Request, 'id'>): Promise<WorkTimeUpdate.Response | undefined> {
@@ -162,6 +175,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('work-time')
   @UseGuards(JwtAuthGuard)
   @Get()
   async getByQuery(@Query() dto: Omit<WorkTimeGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeGetByQuery.Response | undefined> {
@@ -174,6 +188,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('work-time')
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getById(@Param('id') id: string): Promise<WorkTimeGetById.Response | undefined> {
@@ -186,6 +201,7 @@ export class WorkTimeController {
     }
   }
 
+  @ApiTags('work-time')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<WorkTimeDelete.Response | undefined> {

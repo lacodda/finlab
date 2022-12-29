@@ -1,10 +1,13 @@
 import { IJwtPayload } from '@finlab/interfaces';
 import { Controller, Logger, Get, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { User } from '../guards/user.decorator';
 
+@ApiBearerAuth()
 @Controller('user')
+@ApiTags('user')
 export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('info')
