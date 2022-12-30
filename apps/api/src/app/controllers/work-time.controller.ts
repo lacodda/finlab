@@ -7,7 +7,7 @@ import {
 import { RMQService } from 'nestjs-rmq';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { UserId } from '../guards/user.decorator';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @Controller('work-time')
@@ -85,6 +85,11 @@ export class WorkTimeController {
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Post('timestamp')
+  @ApiResponse({
+    status: 201,
+    description: 'The found record',
+    type: WorkTimeTimestampCreate.Response
+  })
   async createTimestamp(@Body() dto: Omit<WorkTimeTimestampCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTimestampCreate.Response | undefined> {
     try {
       return await this.rmqService.send<WorkTimeTimestampCreate.Request, WorkTimeTimestampCreate.Response>(WorkTimeTimestampCreate.topic, { ...dto, userId });

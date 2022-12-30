@@ -1,15 +1,18 @@
 import { IsString } from 'class-validator';
 import { IUser } from '@finlab/interfaces';
+import { ApiProperty } from '@nestjs/swagger';
 
 export namespace AccountUserInfo {
   export const topic = 'account.user-info.query';
 
   export class Request {
+    @ApiProperty()
     @IsString()
       id: string;
   }
 
   export class Response {
-    user: Omit<IUser, 'passwordHash'>;
+    @ApiProperty()
+      user: Omit<IUser, 'passwordHash'>;
   }
 }

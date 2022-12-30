@@ -5,9 +5,11 @@ export namespace AccountLogin {
   export const topic = 'account.login.command';
 
   export class Request {
+    @ApiProperty()
     @IsEmail()
       email: string;
 
+    @ApiProperty()
     @IsString()
       password: string;
   }
