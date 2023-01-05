@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Button, Input } from '../components';
-import styles from './index.module.scss';
 import { BeakerIcon } from '@heroicons/react/24/outline';
 
 export function Index(): JSX.Element {
