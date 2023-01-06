@@ -2,8 +2,9 @@
 import React from 'react';
 import { Button, Input } from '../components';
 import { BeakerIcon } from '@heroicons/react/24/outline';
+import { withAdminLayout } from '../layouts';
 
-export function Index(): JSX.Element {
+function Index(): JSX.Element {
   return (
     <>
     <h1 className="text-3xl font-bold underline">Заголовок</h1>
@@ -16,4 +17,4 @@ export function Index(): JSX.Element {
   );
 }
 
-export default Index;
+export default withAdminLayout(Index);

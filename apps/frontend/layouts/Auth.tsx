@@ -1,21 +1,19 @@
 
 import React, { FunctionComponent, ReactNode } from 'react';
-import { Navbar, Footer } from '../components';
+import { Footer, Navbar } from '../components';
 
-export interface LayoutProps {
+export interface AuthLayoutProps {
   children: ReactNode;
 }
 
-const AuthLayout = ({ children }: LayoutProps): JSX.Element => {
+const AuthLayout = ({ children }: AuthLayoutProps): JSX.Element => {
   return (
     <>
-      <Navbar />
-      <main>
-        <section className="relative w-full h-full py-40 min-h-screen bg-sky-50">
-          {children}
-          <Footer />
-        </section>
-      </main>
+      <Navbar color='transparent' />
+      <section className="grid grid-rows-auth-layout min-h-screen gap-4">
+        {children}
+        <Footer />
+      </section>
     </>
   );
 };
@@ -23,9 +21,9 @@ const AuthLayout = ({ children }: LayoutProps): JSX.Element => {
 export const withAuthLayout = <T extends Record<string, unknown>>(Component: FunctionComponent<T>) => {
   return function withLayoutComponent(props: T): JSX.Element {
     return (
-        <AuthLayout>
-          <Component {...props} />
-        </AuthLayout>
+      <AuthLayout>
+        <Component {...props} />
+      </AuthLayout>
     );
   };
 };

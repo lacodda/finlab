@@ -5,49 +5,22 @@ import { withAuthLayout } from '../../layouts';
 function Login(): JSX.Element {
   return (
     <>
-      <div className='container mx-auto px-4 h-full'>
-        <div className='flex content-center items-center justify-center h-full'>
-          <div className='w-full lg:w-4/12 px-4'>
-            <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-cyan-200 border-0'>
-              <div className='rounded-t mb-0 px-6 py-6'>
-                <div className='text-center mb-3'>
-                  <h6 className='text-cyan-500 text-sm font-bold'>
-                    Sign in with
-                  </h6>
-                </div>
-                <hr className='mt-6 border-b-1 border-cyan-300' />
-              </div>
-              <div className='flex-auto px-4 lg:px-10 py-10 pt-0'>
-                <div className='text-cyan-400 text-center mb-3 font-bold'>
-                  <small>Or sign in with credentials</small>
-                </div>
-                <form>
-                  <Input type='email' placeholder='Email' label='Email' />
-                  <Input type='password' placeholder='Password' label='Password' />
-                  <Checkbox label='Remember me' />
-
-                  <Button className='mt-6 w-full justify-center font-bold uppercase'>Sign In</Button>
-                </form>
-              </div>
-            </div>
-            <div className='flex flex-wrap mt-6 relative'>
-              <div className='w-1/2'>
-                <a
-                  href='#pablo'
-                  onClick={(e) => e.preventDefault()}
-                  className='text-cyan-200'
-                >
-                  <small>Forgot password?</small>
-                </a>
-              </div>
-              <div className='w-1/2 text-right'>
-                <a href='#' className='text-cyan-200'>
-                  <small>Create new account</small>
-                </a>
-              </div>
-            </div>
+      <div className='container mx-auto flex flex-col px-4 justify-center items-center'>
+        <div className='relative flex flex-col min-w-0 break-words w-full md:w-2/3 lg:w-1/3 mb-5 shadow-lg rounded-lg bg-sky-50 border border-cyan-600 dark:bg-slate-800'>
+          <div className='mb-0 p-6'>
+            <div className='text-center mb-3 text-cyan-600 text-sm font-bold'>Sign in with credentials</div>
+            <hr className='mt-6 border-b-1 border-cyan-600' />
+          </div>
+          <div className='flex-auto px-6 lg:px-8 py-8 pt-0'>
+            <form>
+              <Input type='email' placeholder='Email' label='Email' />
+              <Input type='password' placeholder='Password' label='Password' />
+              <Checkbox label='Remember me' />
+              <Button className='mt-6 w-full justify-center font-bold uppercase'>Sign In</Button>
+            </form>
           </div>
         </div>
+        <a href='#' className='text-sm text-cyan-400 hover:text-cyan-600'>Create new account</a>
       </div>
     </>
   );

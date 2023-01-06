@@ -10,7 +10,7 @@ function CustomApp({ Component, pageProps }: AppProps): JSX.Element {
         <title>finlab</title>
         <meta property="og:locale" content="en_US" />
       </Head>
-      <main className="app">
+      <main className="app bg-gradient-to-bl from-teal-300 to-blue-900 dark:from-teal-700 dark:to-indigo-900">
         <Component {...pageProps} />
       </main>
     </>
