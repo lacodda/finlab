@@ -3,6 +3,7 @@ const { join } = require('path');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     join(
       __dirname,
@@ -14,8 +15,16 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Noto Sans KR', 'sans-serif'],
+      },
+      gridTemplateColumns: {
+        'footer': '1fr auto auto'
+      },
+      gridTemplateRows: {
+        'auth-layout': '1fr auto',
       }
     },
   },
-  plugins: [],
+  plugins: [
+    // require('@tailwindcss/forms'),
+  ],
 };
