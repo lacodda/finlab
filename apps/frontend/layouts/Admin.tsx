@@ -1,6 +1,7 @@
 
 import React, { FunctionComponent, ReactNode } from 'react';
-import { Footer, Navbar } from '../components';
+import Link from 'next/link';
+import { Button, Footer, Navbar } from '../components';
 
 export interface AdminLayoutProps {
   children: ReactNode;
@@ -9,7 +10,11 @@ export interface AdminLayoutProps {
 const AdminLayout = ({ children }: AdminLayoutProps): JSX.Element => {
   return (
     <>
-      <Navbar />
+      <Navbar>
+         <Link className='ml-auto' href="/auth/login">
+          <Button>Log In</Button>
+        </Link>
+      </Navbar>
       <section className="grid grid-rows-Admin-layout min-h-screen gap-4">
         {children}
         <Footer />

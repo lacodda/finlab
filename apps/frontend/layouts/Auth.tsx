@@ -9,8 +9,8 @@ export interface AuthLayoutProps {
 const AuthLayout = ({ children }: AuthLayoutProps): JSX.Element => {
   return (
     <>
-      <Navbar color='transparent' />
-      <section className="grid grid-rows-auth-layout min-h-screen gap-4">
+      <Navbar color='transparent'/>
+      <section className="grid grid-rows-auth-layout min-h-screen gap-4 pt-20">
         {children}
         <Footer />
       </section>

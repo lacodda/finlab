@@ -14,7 +14,7 @@ export const Button = ({ color = 'primary', size = 'm', outline = false, rounded
   return (
     <button
       type='button'
-      className={cn('py-2 mr-1 mb-1 text-center inline-flex items-center ease-linear transition-all duration-150', className, {
+      className={cn('py-2 text-center inline-flex items-center ease-linear transition-all duration-150', className, {
         'bg-white active:bg-teal-50 text-zink-700 hover:text-teal-700 hover:border-teal-700 border border-zinc-700 shadow hover:shadow-md': color === 'primary',
         'text-cyan-900 hover:text-amber-200 dark:hover:text-amber-400 hover:bg-gray-700 dark:hover:bg-gray-100 hover:bg-opacity-50 dark:hover:bg-opacity-50 focus:outline-none focus:ring-4 focus:ring-gray-700 dark:focus:ring-gray-200 focus:ring-opacity-25 dark:focus:ring-opacity-25': color === 'mode',
         'px-2': square,
