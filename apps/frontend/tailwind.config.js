@@ -21,6 +21,7 @@ module.exports = {
       },
       gridTemplateRows: {
         'auth-layout': '1fr auto',
+        'default-layout': '1fr auto 1fr',
       }
     },
   },
