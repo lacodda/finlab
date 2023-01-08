@@ -1,18 +1,19 @@
 
-import React from 'react';
-import { Button, Input } from '../components';
-import { BeakerIcon } from '@heroicons/react/24/outline';
+import React, { useEffect } from 'react';
 import { withAdminLayout } from '../layouts';
+import { FinlabApi } from '../api';
 
 function Index(): JSX.Element {
+  const { data, runFetch, error, loading } = FinlabApi.workTime.timestamp.GetAll();
+  useEffect(() => {
+    runFetch(true);
+  }, [runFetch]);
+
   return (
     <>
-    <h1 className="text-3xl font-bold underline">Заголовок</h1>
-    <Button>Button <BeakerIcon className="h-4 w-4 ml-1"/></Button>
-    <Button rounded={true}>Button <BeakerIcon className="h-4 w-4 ml-1"/></Button>
-    <Button size='s'>Button <BeakerIcon className="h-4 w-4 ml-1"/></Button>
-    <Button size='l'>Button <BeakerIcon className="h-4 w-4 ml-1"/></Button>
-    <Input/>
+    {error && <p>There is an error!</p>}
+    {loading && <p>Loading...</p>}
+    {data?.data.map((i, k) => <p key={k}>{i.timestamp}</p>)}
     </>
   );
 }

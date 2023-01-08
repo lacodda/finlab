@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useState, KeyboardEvent } from 'react';
 import { Button, Checkbox, Input } from '../../components';
 import { withAuthLayout } from '../../layouts';
+import { useAuth } from '../../hooks';
 
-function Login(): JSX.Element {
+function LoginPage(): JSX.Element {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const { error, setAuth } = useAuth();
+  const Login = (): void => {
+    setAuth({ email, password });
+  };
+  const handleKeyDown = (e: KeyboardEvent): void => {
+    if (e.key === 'Enter') {
+      Login();
+    }
+  };
   return (
     <>
       <div className='container mx-auto flex flex-col px-4 justify-center items-center'>
@@ -12,11 +24,12 @@ function Login(): JSX.Element {
             <hr className='mt-6 border-b-1 border-cyan-600' />
           </div>
           <div className='flex-auto px-6 lg:px-8 py-8 pt-0'>
+            <div className='text-red-500 font-bold'>{error?.message}</div>
             <form>
-              <Input type='email' placeholder='Email' label='Email' />
-              <Input type='password' placeholder='Password' label='Password' />
+              <Input type='email' placeholder='Email' label='Email' value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} />
+              <Input type='password' placeholder='Password' label='Password' value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} />
               <Checkbox label='Remember me' />
-              <Button className='mt-6 w-full justify-center font-bold uppercase'>Sign In</Button>
+              <Button className='mt-6 w-full justify-center font-bold uppercase' onClick={Login}>Sign In</Button>
             </form>
           </div>
         </div>
@@ -26,4 +39,4 @@ function Login(): JSX.Element {
   );
 }
 
-export default withAuthLayout(Login);
+export default withAuthLayout(LoginPage);
