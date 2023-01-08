@@ -1,34 +1,39 @@
-import { useEffect, useReducer, useRef } from 'react';
+import { Dispatch, useEffect, useReducer, useRef, useState } from 'react';
 
 interface State<T> {
   data?: T;
   error?: Error;
+  loading?: boolean;
+  runFetch: (isFetch: boolean) => void;
 }
 
 interface Cache<T> { [url: string]: T }
 
 // discriminated union type
 type Action<T> =
-  | { type: 'loading' }
+  | { type: 'loading', payload: boolean }
   | { type: 'fetched', payload: T }
   | { type: 'error', payload: Error };
 
-function useFetch<T = unknown>(url?: string, options?: RequestInit): State<T> {
+export function useFetch<T = unknown>(url?: string, options?: RequestInit, useCache = false): State<T> {
   const cache = useRef<Cache<T>>({});
+  const [isFetch, runFetch]: [boolean, Dispatch<boolean>] = useState(false);
 
   // Used to prevent state update if the component is unmounted
   const cancelRequest = useRef<boolean>(false);
 
   const initialState: State<T> = {
     error: undefined,
-    data: undefined
+    data: undefined,
+    loading: false,
+    runFetch
   };
 
   // Keep state logic separated
   const fetchReducer = (state: State<T>, action: Action<T>): State<T> => {
     switch (action.type) {
       case 'loading':
-        return { ...initialState };
+        return { ...initialState, loading: action.payload };
       case 'fetched':
         return { ...initialState, data: action.payload };
       case 'error':
@@ -42,15 +47,16 @@ function useFetch<T = unknown>(url?: string, options?: RequestInit): State<T> {
 
   useEffect(() => {
     // Do nothing if the url is not given
-    if (!url) return;
+    if (!isFetch || !url) return;
+    runFetch(false);
 
     cancelRequest.current = false;
 
     const fetchData = async (): Promise<void> => {
-      dispatch({ type: 'loading' });
+      dispatch({ type: 'loading', payload: true });
 
       // If a cache exists for this url, return it
-      if (cache.current[url]) {
+      if (useCache && cache.current[url]) {
         dispatch({ type: 'fetched', payload: cache.current[url] });
         return;
       }
@@ -65,10 +71,12 @@ function useFetch<T = unknown>(url?: string, options?: RequestInit): State<T> {
         cache.current[url] = data;
         if (cancelRequest.current) return;
 
+        dispatch({ type: 'loading', payload: false });
         dispatch({ type: 'fetched', payload: data });
       } catch (error) {
         if (cancelRequest.current) return;
 
+        dispatch({ type: 'loading', payload: false });
         dispatch({ type: 'error', payload: error as Error });
       }
     };
@@ -78,12 +86,10 @@ function useFetch<T = unknown>(url?: string, options?: RequestInit): State<T> {
     // Use the cleanup function for avoiding a possibly...
     // ...state update after the component was unmounted
     return () => {
-      cancelRequest.current = true;
+      // cancelRequest.current = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url]);
+  }, [isFetch]);
 
   return state;
 }
-
-export default useFetch;
