@@ -1,7 +1,7 @@
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
 import React, { DetailedHTMLProps, HTMLAttributes, ReactNode, useEffect, useState } from 'react';
 import { Button } from './Button';
-import { useDarkMode } from '../../hooks/useDarkMode';
+import { useDarkMode } from '../../hooks';
 
 export interface EmptyProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   children?: ReactNode;
