@@ -21,3 +21,7 @@ export namespace WorkTimeTimestampGetByQuery {
     data: Array<Omit<ITimestamp, 'userId'>>;
   }
 }
+
+export class WorkTimeTimestampGetByQueryResponse {
+  data: Array<Omit<ITimestamp, 'userId'>>;
+}
