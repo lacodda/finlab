@@ -1,5 +1,4 @@
-import useFetch from '../hooks/useFetch';
-import { SetValue, useLocalStorage } from '../hooks/useLocalStorage';
+import { SetValue, useLocalStorage, useFetch } from '../hooks';
 
 export type HttpMethods = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -65,7 +64,6 @@ export class FinlabApi {
     }
 
     if (optionsParams.auth !== false) {
-      // const Token = (() => useLocalStorage('access_token', ''))()[0];
       fetchOptions.headers = {
         ...fetchOptions.headers,
         Authorization: `Bearer ${this.accessToken().token}`
