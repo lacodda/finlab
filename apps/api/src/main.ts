@@ -6,6 +6,11 @@ import { getSwaggerConfig } from './app/configs/swagger.config';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    allowedHeaders: '*',
+    origin: '*',
+    credentials: true
+  });
   const document = SwaggerModule.createDocument(app, getSwaggerConfig());
   SwaggerModule.setup('swagger', app, document);
   const globalPrefix = 'api';
