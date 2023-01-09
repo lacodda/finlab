@@ -1,6 +1,10 @@
 @host=http://localhost:3333
 @userEmail=admin@email.com
 @userPassword=1
+{{
+exports.start = new Date(new Date().setUTCHours(0,0,0,0)).toISOString();
+exports.end = new Date(new Date().setUTCHours(23,59,59,999)).toISOString();
+}}
 
 ###
 # Register
@@ -129,6 +133,13 @@ Authorization: Bearer {{jwt.access_token}}
 ###
 # GET Array of timestamps
 GET {{host}}/api/work-time/timestamp HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Array of timestamps for today
+@from={{start}}
+@to={{end}}
+GET {{host}}/api/work-time/timestamp?from={{from}}&to={{to}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
