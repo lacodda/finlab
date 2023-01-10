@@ -32,6 +32,7 @@ export function ProvideAuth({ children }: PropsWithChildren<IAuthContext>): JSX.
   const auth = useProvideAuth();
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
+
 // Hook for child components to get the auth object ...
 // ... and re-render when it changes.
 export const useAuth = (): IAuthContext => {
@@ -39,7 +40,7 @@ export const useAuth = (): IAuthContext => {
 };
 
 export function useProvideAuth(): IAuthContext {
-  const [user, setUser]: [IUser | undefined, Dispatch<IUser>] = useState();
+  const [user, setUser]: [IUser | undefined, Dispatch<IUser | undefined>] = useState();
   const [loginRequest, signIn]: [ILoginRequest, Dispatch<ILoginRequest>] = useState({ email: '', password: '' });
   const [token, setToken] = useLocalStorage('access_token', '');
   const { runFetch, data, error } = FinlabApi.auth.Login(loginRequest);
@@ -75,8 +76,9 @@ export function useProvideAuth(): IAuthContext {
 
   function signOut(): void {
     setToken('');
+    setUser(undefined);
     void router.push({
-      pathname: '/'
+      pathname: '/auth/login'
     });
   }
 
