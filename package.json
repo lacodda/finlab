@@ -34,6 +34,7 @@
     "classnames": "^2.3.2",
     "core-js": "^3.6.5",
     "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
     "mongoose": "^6.7.2",
     "nestjs-rmq": "^2.8.0",
     "next": "13.0.0",
