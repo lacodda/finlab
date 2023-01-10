@@ -2,20 +2,26 @@
 import React, { FunctionComponent, ReactNode } from 'react';
 import Link from 'next/link';
 import { Button, Footer, Navbar } from '../components';
+import { useAuth } from '../hooks';
 
 export interface AdminLayoutProps {
   children: ReactNode;
 }
 
 const AdminLayout = ({ children }: AdminLayoutProps): JSX.Element => {
+  const { user, signOut } = useAuth();
   return (
     <>
       <Navbar>
-         <Link className='ml-auto' href="/auth/login">
-          <Button>Log In</Button>
-        </Link>
+        { user?.email
+          ? (<>
+          <div className='ml-auto'>{user?.email}</div>
+          <Button className='ml-4' onClick={signOut}>Log Out</Button>
+          </>)
+          : <Link className='ml-auto' href='/auth/login'><Button>Log In</Button></Link>
+        }
       </Navbar>
-      <section className="grid grid-rows-Admin-layout min-h-screen gap-4">
+      <section className='grid grid-rows-Admin-layout min-h-screen gap-4'>
         {children}
         <Footer />
       </section>

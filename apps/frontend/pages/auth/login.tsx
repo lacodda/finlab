@@ -6,9 +6,9 @@ import { useAuth } from '../../hooks';
 function LoginPage(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const { error, setAuth } = useAuth();
+  const { error, signIn } = useAuth();
   const Login = (): void => {
-    setAuth({ email, password });
+    signIn({ email, password });
   };
   const handleKeyDown = (e: KeyboardEvent): void => {
     if (e.key === 'Enter') {
