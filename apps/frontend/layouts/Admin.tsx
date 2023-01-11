@@ -15,7 +15,7 @@ const AdminLayout = ({ children }: AdminLayoutProps): JSX.Element => {
       <Navbar>
         { user?.email
           ? (<>
-          <div className='ml-auto'>{user?.email}</div>
+          <div className='ml-auto'>{user?.displayName ?? user.email}</div>
           <Button className='ml-4' onClick={signOut}>Log Out</Button>
           </>)
           : <Link className='ml-auto' href='/auth/login'><Button>Log In</Button></Link>

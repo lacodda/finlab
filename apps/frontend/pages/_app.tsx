@@ -1,12 +1,13 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import React from 'react';
-import { ProvideAuth } from '../hooks';
+import { ProvideAuth, useAuth } from '../hooks';
 import '../styles/globals.scss';
 
 function CustomApp({ Component, pageProps }: AppProps): JSX.Element {
+  const auth = useAuth();
   return (
-    <ProvideAuth>
+    <ProvideAuth {...auth}>
       <Head>
         <title>finlab</title>
         <meta property="og:locale" content="en_US" />

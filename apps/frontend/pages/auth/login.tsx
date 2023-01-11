@@ -1,4 +1,5 @@
 import React, { useState, KeyboardEvent } from 'react';
+import Link from 'next/link';
 import { Button, Checkbox, Input } from '../../components';
 import { withAuthLayout } from '../../layouts';
 import { useAuth } from '../../hooks';
@@ -6,7 +7,7 @@ import { useAuth } from '../../hooks';
 function LoginPage(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const { error, signIn } = useAuth();
+  const { signInError, signIn } = useAuth();
   const Login = (): void => {
     signIn({ email, password });
   };
@@ -24,7 +25,7 @@ function LoginPage(): JSX.Element {
             <hr className='mt-6 border-b-1 border-cyan-600' />
           </div>
           <div className='flex-auto px-6 lg:px-8 py-8 pt-0'>
-            <div className='text-red-500 font-bold'>{error?.message}</div>
+            <div className='text-red-500 font-bold'>{signInError?.message}</div>
             <form>
               <Input type='email' placeholder='Email' label='Email' value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} />
               <Input type='password' placeholder='Password' label='Password' value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} />
@@ -33,7 +34,7 @@ function LoginPage(): JSX.Element {
             </form>
           </div>
         </div>
-        <a href='#' className='text-sm text-cyan-400 hover:text-cyan-600'>Create new account</a>
+        <Link href='/auth/signup' className='text-sm text-cyan-400 hover:text-cyan-600'>Create new account</Link>
       </div>
     </>
   );
