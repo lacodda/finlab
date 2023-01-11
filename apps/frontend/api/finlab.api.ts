@@ -19,6 +19,16 @@ export interface ILoginResponse {
   access_token: string;
 }
 
+export interface ISignUpRequest {
+  email: string;
+  password: string;
+  displayName?: string;
+}
+
+export interface ISignUpResponse {
+  email: string;
+}
+
 export enum TimestampType {
   Start = 'Start',
   End = 'End',
@@ -80,6 +90,12 @@ export class FinlabApi {
   public fetch = {
     auth: {
       Login: (body: ILoginRequest) => useFetch<ILoginResponse>(this.getUrl('/api/auth/login'),
+        this.getOptions({
+          method: 'POST',
+          body,
+          auth: false
+        })),
+      SignUp: (body: ISignUpRequest) => useFetch<ISignUpResponse>(this.getUrl('/api/auth/register'),
         this.getOptions({
           method: 'POST',
           body,
