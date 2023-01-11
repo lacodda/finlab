@@ -2,20 +2,21 @@ import { useRouter } from 'next/router';
 import React, { useState, useEffect, Dispatch, createContext, useContext, PropsWithChildren } from 'react';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { FinlabApi } from '../api';
-import { ILoginRequest } from '../api/finlab.api';
+import { ILoginRequest, ISignUpRequest } from '../api/finlab.api';
 import { useLocalStorage } from '.';
 
 interface IUser {
   id: string;
   email: string;
-  name?: string;
+  displayName?: string;
 }
 
 export interface IAuthContext {
-  error?: Error;
   user?: IUser;
   signIn: Dispatch<ILoginRequest>;
-  signUp?: Dispatch<ILoginRequest>;
+  signInError?: Error;
+  signUp: Dispatch<ISignUpRequest>;
+  signUpError?: Error;
   signOut: Dispatch<unknown>;
   sendPasswordResetEmail?: Dispatch<ILoginRequest>;
   confirmPasswordReset?: Dispatch<ILoginRequest>;
@@ -23,6 +24,7 @@ export interface IAuthContext {
 
 export const AuthContext = createContext<IAuthContext>({
   signIn: () => undefined,
+  signUp: () => undefined,
   signOut: () => undefined
 });
 
@@ -41,9 +43,11 @@ export const useAuth = (): IAuthContext => {
 
 export function useProvideAuth(): IAuthContext {
   const [user, setUser]: [IUser | undefined, Dispatch<IUser | undefined>] = useState();
-  const [loginRequest, signIn]: [ILoginRequest, Dispatch<ILoginRequest>] = useState({ email: '', password: '' });
+  const [signInRequest, signIn]: [ILoginRequest, Dispatch<ILoginRequest>] = useState({ email: '', password: '' });
+  const [signUpRequest, signUp]: [ISignUpRequest, Dispatch<ISignUpRequest>] = useState({ email: '', password: '' });
   const [token, setToken] = useLocalStorage('access_token', '');
-  const { runFetch, data, error } = FinlabApi.auth.Login(loginRequest);
+  const { runFetch: runSignIn, data: signInData, error: signInError } = FinlabApi.auth.Login(signInRequest);
+  const { runFetch: runSignUp, data: signUpData, error: signUpError } = FinlabApi.auth.SignUp(signUpRequest);
   const router = useRouter();
 
   useEffect(() => {
@@ -51,28 +55,45 @@ export function useProvideAuth(): IAuthContext {
 
     const decoded = jwtDecode<JwtPayload>(token);
     if (decoded) {
-      const { id, email, name } = { id: '', email: '', name: undefined, ...decoded };
-      setUser({ id, email, name });
+      const { id, email, displayName } = { id: '', email: '', displayName: undefined, ...decoded };
+      setUser({ id, email, displayName });
     }
   }, [token]);
 
   useEffect(() => {
-    if (!loginRequest.email || !loginRequest.password) return;
+    if (!signInRequest.email || !signInRequest.password) return;
 
-    runFetch(true);
+    runSignIn(true);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loginRequest]);
+  }, [signInRequest]);
 
   useEffect(() => {
-    if (!data?.access_token) return;
+    if (!signUpRequest.email || !signUpRequest.password) return;
 
-    setToken(data.access_token);
+    runSignUp(true);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signUpRequest]);
+
+  useEffect(() => {
+    if (!signInData?.access_token) return;
+
+    setToken(signInData.access_token);
     void router.push({
       pathname: '/'
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [signInData]);
+
+  useEffect(() => {
+    if (!signUpData?.email) return;
+
+    void router.push({
+      pathname: '/auth/login'
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signUpData]);
 
   function signOut(): void {
     setToken('');
@@ -82,5 +103,5 @@ export function useProvideAuth(): IAuthContext {
     });
   }
 
-  return { user, error, signIn, signOut };
+  return { user, signIn, signInError, signUp, signUpError, signOut };
 }
