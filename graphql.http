@@ -1,0 +1,11 @@
+POST http://localhost:3334/graphql
+Content-Type: application/json
+query cats {
+    cats { id name age }
+}
+
+POST http://localhost:3334/graphql
+Content-Type: application/json
+query cat {
+    cat(id:1) { id name age }
+}
