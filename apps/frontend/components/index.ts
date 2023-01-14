@@ -8,3 +8,4 @@ export * from './elementary/ModeSwitch';
 export * from './composite/Navbar';
 export * from './composite/Sidebar';
 export * from './composite/Footer';
+export * from './composite/UserProfile';
