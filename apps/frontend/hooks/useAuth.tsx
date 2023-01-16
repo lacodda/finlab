@@ -12,7 +12,7 @@ interface IUser {
 }
 
 export interface IAuthContext {
-  user?: IUser;
+  user?: IUser | null;
   signIn: Dispatch<ILoginRequest>;
   signInError?: Error;
   signUp: Dispatch<ISignUpRequest>;
@@ -42,7 +42,7 @@ export const useAuth = (): IAuthContext => {
 };
 
 export function useProvideAuth(): IAuthContext {
-  const [user, setUser]: [IUser | undefined, Dispatch<IUser | undefined>] = useState();
+  const [user, setUser]: [IUser | undefined | null, Dispatch<IUser | undefined | null>] = useState();
   const [signInRequest, signIn]: [ILoginRequest, Dispatch<ILoginRequest>] = useState({ email: '', password: '' });
   const [signUpRequest, signUp]: [ISignUpRequest, Dispatch<ISignUpRequest>] = useState({ email: '', password: '' });
   const [token, setToken] = useLocalStorage('access_token', '');
@@ -51,12 +51,17 @@ export function useProvideAuth(): IAuthContext {
   const router = useRouter();
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setUser(null);
+      return;
+    }
 
     const decoded = jwtDecode<JwtPayload>(token);
     if (decoded) {
       const { id, email, displayName } = { id: '', email: '', displayName: undefined, ...decoded };
       setUser({ id, email, displayName });
+    } else {
+      setUser(null);
     }
   }, [token]);
 
@@ -97,11 +102,23 @@ export function useProvideAuth(): IAuthContext {
 
   function signOut(): void {
     setToken('');
-    setUser(undefined);
-    void router.push({
-      pathname: '/auth/login'
-    });
+    setUser(null);
+    void router.push('/auth/login');
   }
 
   return { user, signIn, signInError, signUp, signUpError, signOut };
+}
+
+export function useRequireAuth(redirectUrl = '/auth/login'): IAuthContext {
+  const auth = useAuth();
+  const router = useRouter();
+  // If auth.user is false that means we're not
+  // logged in and should redirect.
+  useEffect(() => {
+    if (auth?.user === null) {
+      void router.push(redirectUrl);
+    }
+  }, [auth, redirectUrl, router]);
+
+  return auth;
 }
