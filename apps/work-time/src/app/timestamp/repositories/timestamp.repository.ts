@@ -47,7 +47,7 @@ export class TimestampRepository {
 
   async findByQuery(params: ITimestampFindByQueryParams): Promise<ITimestamp[]> {
     try {
-      return await this.timestampModel.find(params).exec();
+      return await this.timestampModel.find(params).sort({ timestamp: 1 }).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

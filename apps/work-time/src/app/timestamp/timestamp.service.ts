@@ -1,5 +1,5 @@
 import { WorkTimeTimestampCreate, WorkTimeTimestampDelete, WorkTimeTimestampGetById, WorkTimeTimestampGetByQuery, WorkTimeTimestampUpdate } from '@finlab/contracts';
-import { ITimestampFindByQueryParams } from '@finlab/interfaces';
+import { ITimestamp, ITimestampFindByQueryParams } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
 import { UpdateWriteOpResult } from 'mongoose';
 import { TimestampEntity } from './entities/timestamp.entity';
@@ -43,6 +43,21 @@ export class TimestampService {
       };
     }
     const timestampArray = await this.timestampRepository.findByQuery(params);
+    const start = timestampArray.find(({ type }) => type === 'Start');
+    const end = timestampArray.findLast(({ type }) => type === 'End');
+    const timestampArrayGroups: ITimestamp[][] = timestampArray.reduce((acc: ITimestamp[][], timestamp, key) => {
+      if (timestamp.type === 'StartBreak') {
+        acc.push([timestamp]);
+      }
+      const prev = acc[acc.length - 1];
+      if (timestamp.type === 'EndBreak' && prev && prev.length === 1) {
+        prev.push(timestamp);
+      }
+      return acc;
+    }, []).filter(({ length }) => length === 2);
+    console.log('timestampArrayGroups', timestampArrayGroups);
+    console.log('start', start);
+    console.log('end', end);
 
     return { data: timestampArray.map(timestamp => new TimestampEntity(timestamp).entity) };
   }
