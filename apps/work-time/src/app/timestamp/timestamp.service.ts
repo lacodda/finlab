@@ -3,6 +3,7 @@ import { ITimestamp, ITimestampFindByQueryParams } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
 import { UpdateWriteOpResult } from 'mongoose';
 import { TimestampEntity } from './entities/timestamp.entity';
+import { TimestampsEntity } from './entities/timestamps.entity';
 import { TimestampRepository } from './repositories/timestamp.repository';
 
 @Injectable()
@@ -42,24 +43,13 @@ export class TimestampService {
         $lte: new Date(dto.to).toISOString()
       };
     }
-    const timestampArray = await this.timestampRepository.findByQuery(params);
-    const start = timestampArray.find(({ type }) => type === 'Start');
-    const end = timestampArray.findLast(({ type }) => type === 'End');
-    const timestampArrayGroups: ITimestamp[][] = timestampArray.reduce((acc: ITimestamp[][], timestamp, key) => {
-      if (timestamp.type === 'StartBreak') {
-        acc.push([timestamp]);
-      }
-      const prev = acc[acc.length - 1];
-      if (timestamp.type === 'EndBreak' && prev && prev.length === 1) {
-        prev.push(timestamp);
-      }
-      return acc;
-    }, []).filter(({ length }) => length === 2);
-    console.log('timestampArrayGroups', timestampArrayGroups);
-    console.log('start', start);
-    console.log('end', end);
+    const timestamps = await this.timestampRepository.findByQuery(params);
+    const timestampsEntity = new TimestampsEntity(timestamps).getResult(10);
+    const time = new TimestampsEntity(timestamps).getTime(10);
 
-    return { data: timestampArray.map(timestamp => new TimestampEntity(timestamp).entity) };
+    console.log('time', time);
+
+    return { data: timestampsEntity };
   }
 
   async getById(dto: WorkTimeTimestampGetById.Request): Promise<WorkTimeTimestampGetById.Response> {
