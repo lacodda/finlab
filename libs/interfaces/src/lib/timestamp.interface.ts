@@ -19,3 +19,8 @@ export interface ITimestampFindByQueryParams {
     $lte: string;
   };
 }
+
+export interface ITimestampsResult {
+  timestamps: Array<Omit<ITimestamp, 'userId'>>;
+  totalTime: number;
+}
