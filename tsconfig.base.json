@@ -24,6 +24,9 @@
       "@finlab/contracts": [
         "libs/contracts/src/index.ts"
       ],
+      "@finlab/helpers": [
+        "libs/helpers/src/index.ts"
+      ],
       "@finlab/interfaces": [
         "libs/interfaces/src/index.ts"
       ]
