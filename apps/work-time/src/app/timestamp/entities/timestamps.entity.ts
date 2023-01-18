@@ -1,30 +1,30 @@
-import { ITimestamp } from '@finlab/interfaces';
+import { ITimestamp, ITimestampsResult } from '@finlab/interfaces';
 import { TimestampEntity } from './timestamp.entity';
+import { Time } from '@finlab/helpers';
 
 type BreaksType = Array<[TimestampEntity, TimestampEntity]>;
 
 export class TimestampsEntity {
-  timestamps: TimestampEntity[];
-  start?: TimestampEntity;
-  end?: TimestampEntity;
-  breaks: BreaksType;
+  timestamps: TimestampEntity[] = [];
 
-  constructor(timestamps: ITimestamp[]) {
+  processedTimestamps: TimestampEntity[] = [];
+  totalTime = 0;
+  processed = false;
+
+  constructor(timestamps: ITimestamp[], public minBreakTime: number = 0) {
     this.timestamps = timestamps.map(timestamp => new TimestampEntity(timestamp));
   }
 
-  public setStart(): this {
-    this.start = this.timestamps.find(({ type }) => type === 'Start');
-    return this;
+  public getStart(): TimestampEntity | undefined {
+    return this.timestamps.find(({ type }) => type === 'Start');
   }
 
-  public setEnd(): this {
-    this.end = this.timestamps.findLast(({ type }) => type === 'End');
-    return this;
+  public getEnd(): TimestampEntity | undefined {
+    return this.timestamps.findLast(({ type }) => type === 'End');
   }
 
-  public setBreaks(): this {
-    this.breaks = this.timestamps.reduce((acc: BreaksType, timestamp) => {
+  public getBreaks(): BreaksType {
+    return this.timestamps.reduce((acc: BreaksType, timestamp) => {
       if (timestamp.type === 'StartBreak') {
         acc.push([timestamp, timestamp]);
       }
@@ -33,53 +33,36 @@ export class TimestampsEntity {
         prev[1] = timestamp;
       }
       return acc;
-    }, []).filter(([_, { type }]) => type === 'EndBreak');
+    }, []).filter(([{ timestamp: from }, { timestamp: to, type }]) => type === 'EndBreak' && Time.diffInMinutes(from, to) >= this.minBreakTime);
+  }
+
+  public process(): this {
+    const start = this.getStart();
+    const end = this.getEnd();
+    const breaks = this.getBreaks();
+
+    this.processedTimestamps = breaks.flat();
+    if (start) {
+      this.processedTimestamps.unshift(start);
+    }
+    if (end) {
+      this.processedTimestamps.push(end);
+    }
+    if (start && end) {
+      this.totalTime = Time.diffInMinutes(start.timestamp, end.timestamp);
+    }
+    for (const [{ timestamp: from }, { timestamp: to }] of breaks) {
+      this.totalTime = this.totalTime - Time.diffInMinutes(from, to);
+    }
+    this.processed = true;
 
     return this;
   }
 
-  public filterBreaks(diff: number): this {
-    this.breaks = this.breaks.filter(([{ timestamp: t1 }, { timestamp: t2 }]) => this.getDiff(t1, t2) >= diff);
-
-    return this;
-  }
-
-  public getResult(diff: number): Array<Omit<ITimestamp, 'userId'>> {
-    this.setStart().setEnd().setBreaks().filterBreaks(diff);
-    const timestamps = this.breaks.flat();
-    if (this.start) {
-      timestamps.unshift(this.start);
-    }
-    if (this.end) {
-      timestamps.push(this.end);
-    }
-
-    return timestamps.map(timestamp => timestamp.entity);
-  }
-
-  public getTime(diff: number): string {
-    this.setStart().setEnd().setBreaks().filterBreaks(diff);
-    let time = 0;
-    if (this.start && this.end) {
-      time = this.getDiff(this.start.timestamp, this.end.timestamp);
-    }
-    for (const [{ timestamp: t1 }, { timestamp: t2 }] of this.breaks) {
-      time = time - this.getDiff(t1, t2);
-    }
-    return this.getHours(time);
-  }
-
-  private getDiff(t1: Date, t2: Date): number {
-    let diff = (t2.getTime() - t1.getTime()) / 1000;
-    diff /= 60;
-    return Math.abs(Math.round(diff));
-  }
-
-  private getHours(minutes: number): string {
-    const hours = (minutes / 60);
-    const rhours = Math.floor(hours);
-    const mins = (hours - rhours) * 60;
-    const rmins = Math.round(mins);
-    return `${rhours}:${rmins}`;
+  public result(): ITimestampsResult {
+    return {
+      timestamps: (this.processed ? this.processedTimestamps : this.timestamps).map(timestamp => timestamp.entity),
+      totalTime: this.totalTime
+    };
   }
 }

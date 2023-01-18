@@ -1,5 +1,6 @@
 import { WorkTimeTimestampCreate, WorkTimeTimestampDelete, WorkTimeTimestampGetById, WorkTimeTimestampGetByQuery, WorkTimeTimestampUpdate } from '@finlab/contracts';
-import { ITimestamp, ITimestampFindByQueryParams } from '@finlab/interfaces';
+import { ITimestampFindByQueryParams } from '@finlab/interfaces';
+import { Time } from '@finlab/helpers';
 import { Injectable } from '@nestjs/common';
 import { UpdateWriteOpResult } from 'mongoose';
 import { TimestampEntity } from './entities/timestamp.entity';
@@ -34,22 +35,28 @@ export class TimestampService {
   }
 
   async getByQuery(dto: WorkTimeTimestampGetByQuery.Request): Promise<WorkTimeTimestampGetByQuery.Response> {
+    const dayRange = Time.dayRangeISO(dto.date);
+    const raw = (dto.raw as unknown as string) === 'true';
+    console.log('dto.raw', typeof raw, raw);
+
     const params: ITimestampFindByQueryParams = {
-      userId: dto.userId
+      userId: dto.userId,
+      timestamp: {
+        $gte: dayRange.from,
+        $lte: dayRange.to
+      }
     };
-    if (dto.from && dto.to) {
-      params.timestamp = {
-        $gte: new Date(dto.from).toISOString(),
-        $lte: new Date(dto.to).toISOString()
-      };
+
+    const timestampArray = await this.timestampRepository.findByQuery(params);
+    const timestampsEntity = new TimestampsEntity(timestampArray, 10);
+
+    if (raw) {
+      const { timestamps: data, totalTime } = timestampsEntity.result();
+      return { data, totalTime };
     }
-    const timestamps = await this.timestampRepository.findByQuery(params);
-    const timestampsEntity = new TimestampsEntity(timestamps).getResult(10);
-    const time = new TimestampsEntity(timestamps).getTime(10);
 
-    console.log('time', time);
-
-    return { data: timestampsEntity };
+    const { timestamps: data, totalTime } = timestampsEntity.process().result();
+    return { data, totalTime };
   }
 
   async getById(dto: WorkTimeTimestampGetById.Request): Promise<WorkTimeTimestampGetById.Response> {
