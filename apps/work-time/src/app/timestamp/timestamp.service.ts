@@ -7,6 +7,8 @@ import { TimestampEntity } from './entities/timestamp.entity';
 import { TimestampsEntity } from './entities/timestamps.entity';
 import { TimestampRepository } from './repositories/timestamp.repository';
 
+const MIN_BREAK_TIME = 20; // FIXME move to settings
+
 @Injectable()
 export class TimestampService {
   constructor(private readonly timestampRepository: TimestampRepository) { }
@@ -43,7 +45,6 @@ export class TimestampService {
   async getByQuery(dto: WorkTimeTimestampGetByQuery.Request): Promise<WorkTimeTimestampGetByQuery.Response> {
     const dayRange = Time.dayRangeISO(dto.date);
     const raw = (dto.raw as unknown as string) === 'true';
-    console.log('dto.raw', typeof raw, raw);
 
     const params: ITimestampFindByQueryParams = {
       userId: dto.userId,
@@ -54,7 +55,7 @@ export class TimestampService {
     };
 
     const timestampArray = await this.timestampRepository.findByQuery(params);
-    const timestampsEntity = new TimestampsEntity(timestampArray, 10);
+    const timestampsEntity = new TimestampsEntity(timestampArray, MIN_BREAK_TIME);
 
     if (raw) {
       const { timestamps: data, totalTime } = timestampsEntity.result();
