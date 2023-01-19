@@ -1,5 +1,5 @@
 import { WorkTimeTimestampCreate, WorkTimeTimestampDelete, WorkTimeTimestampGetById, WorkTimeTimestampGetByQuery, WorkTimeTimestampUpdate } from '@finlab/contracts';
-import { ITimestampFindByQueryParams } from '@finlab/interfaces';
+import { ITimestamp, ITimestampFindByQueryParams, TimestampType } from '@finlab/interfaces';
 import { Time } from '@finlab/helpers';
 import { Injectable } from '@nestjs/common';
 import { UpdateWriteOpResult } from 'mongoose';
@@ -13,11 +13,12 @@ export class TimestampService {
 
   async create(dto: WorkTimeTimestampCreate.Request): Promise<WorkTimeTimestampCreate.Response> {
     const timestamp = new Date(dto.timestamp);
-    const existedWorkTime = await this.timestampRepository.findByDate(timestamp, dto.userId);
-    if (existedWorkTime) {
-      throw new Error('This timestamp is already created');
+    const existedTimestamp = await this.timestampRepository.findByDate(timestamp, dto.userId);
+    if (existedTimestamp) {
+      const data = await this.updateType(existedTimestamp, dto.type);
+      return { data };
     }
-    const newTimestampEntity = await new TimestampEntity({ ...dto, timestamp });
+    const newTimestampEntity = new TimestampEntity({ ...dto, timestamp });
     const newTimestamp = await this.timestampRepository.create(newTimestampEntity);
 
     return { data: new TimestampEntity(newTimestamp).entity };
@@ -28,10 +29,15 @@ export class TimestampService {
     if (!existedTimestamp) {
       throw new Error('Unable to update non-existing entry');
     }
-    const timestampEntity = new TimestampEntity(existedTimestamp).updateType(dto.type);
-    await this.updateTimestamp(timestampEntity);
+    const data = await this.updateType(existedTimestamp, dto.type);
 
-    return { data: timestampEntity.entity };
+    return { data };
+  }
+
+  async updateType(timestamp: ITimestamp, type: TimestampType): Promise<Omit<ITimestamp, 'userId'>> {
+    const timestampEntity = new TimestampEntity(timestamp).updateType(type);
+    await this.updateTimestamp(timestampEntity);
+    return timestampEntity.entity;
   }
 
   async getByQuery(dto: WorkTimeTimestampGetByQuery.Request): Promise<WorkTimeTimestampGetByQuery.Response> {
