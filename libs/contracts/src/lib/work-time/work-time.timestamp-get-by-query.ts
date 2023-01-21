@@ -1,5 +1,5 @@
 import { ITimestamp } from '@finlab/interfaces';
-import { IsString, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsBooleanString } from 'class-validator';
 
 export namespace WorkTimeTimestampGetByQuery {
   export const topic = 'work-time.timestamp-get-by-query.query';
@@ -10,15 +10,16 @@ export namespace WorkTimeTimestampGetByQuery {
 
     @IsOptional()
     @IsDateString()
-      from?: string;
+      date?: string;
 
     @IsOptional()
-    @IsDateString()
-      to?: string;
+    @IsBooleanString()
+      raw?: boolean;
   }
 
   export class Response {
     data: Array<Omit<ITimestamp, 'userId'>>;
+    totalTime: number;
   }
 }
 

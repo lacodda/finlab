@@ -5,3 +5,4 @@ export * from './lib/events.interface';
 export * from './lib/work-time.interface';
 export * from './lib/task.interface';
 export * from './lib/timestamp.interface';
+export * from './lib/date.interface';

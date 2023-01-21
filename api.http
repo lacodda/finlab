@@ -131,22 +131,20 @@ Authorization: Bearer {{jwt.access_token}}
 
 
 ###
-# GET Array of timestamps
+# GET Timestamps for today
 GET {{host}}/api/work-time/timestamp HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# GET Array of timestamps for today
-@from={{start}}
-@to={{end}}
-GET {{host}}/api/work-time/timestamp?from={{from}}&to={{to}} HTTP/1.1
+# GET Timestamps for some date
+@date=2023-01-11
+GET {{host}}/api/work-time/timestamp?date={{date}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# GET Array of timestamps with params
-@from=2022-12-01T00:00:00Z
-@to=2022-12-04T23:59:59Z
-GET {{host}}/api/work-time/timestamp?from={{from}}&to={{to}} HTTP/1.1
+# GET Raw Timestamps
+@raw=true
+GET {{host}}/api/work-time/timestamp?raw={{raw}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###

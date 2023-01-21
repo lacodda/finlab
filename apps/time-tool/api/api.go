@@ -8,6 +8,7 @@ import (
 	"finlab/apps/time-tool/core"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 func GetReq(method core.Method, url string, jsonStr []byte) *http.Request {
@@ -85,4 +86,27 @@ func PushTimestamp(timestamp core.Timestamp) (core.TimestampRes, error) {
 	json.Unmarshal([]byte(body), &timestampRes)
 
 	return timestampRes, nil
+}
+
+func PullTimestamps(date time.Time) (core.TimestampsRes, error) {
+	timestampsRes := core.TimestampsRes{}
+
+	jsonStr := []byte("")
+	req := GetReq(core.Get, "/api/work-time/timestamp?date="+date.Format("2006-01-02"), jsonStr)
+	body, resp, err := GetBody(req)
+
+	if err != nil {
+		return timestampsRes, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		err := core.Error{}
+		json.Unmarshal([]byte(body), &err)
+
+		return timestampsRes, errors.New(err.Message)
+	}
+
+	json.Unmarshal([]byte(body), &timestampsRes)
+
+	return timestampsRes, nil
 }
