@@ -2,8 +2,10 @@ export interface ITask {
   _id?: string;
   userId: string;
   date: Date;
-  text: string;
+  name: string;
+  comment?: string;
   completeness?: number;
+  excludedFromSearch?: boolean;
 }
 
 export interface ITaskFindByQueryParams {
@@ -12,5 +14,15 @@ export interface ITaskFindByQueryParams {
     $gte: string;
     $lte: string;
   };
-  text?: string;
+  name?: string;
+  comment?: string;
+  completeness?: number;
+  excludedFromSearch?: boolean;
+}
+
+export interface ITaskUpdate {
+  name: string;
+  comment?: string;
+  completeness?: number;
+  excludedFromSearch?: boolean;
 }

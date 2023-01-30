@@ -1,5 +1,5 @@
 import { ITask } from '@finlab/interfaces';
-import { IsNumber, IsString, IsDateString, IsOptional } from 'class-validator';
+import { IsNumber, IsString, IsDateString, IsOptional, IsBoolean } from 'class-validator';
 
 export namespace WorkTimeTaskCreate {
   export const topic = 'work-time.task-create.command';
@@ -12,11 +12,19 @@ export namespace WorkTimeTaskCreate {
       date: string;
 
     @IsString()
-      text: string;
+      name: string;
+
+    @IsOptional()
+    @IsString()
+      comment: string;
 
     @IsOptional()
     @IsNumber()
       completeness: number;
+
+    @IsOptional()
+    @IsBoolean()
+      excludedFromSearch: boolean;
   }
 
   export class Response {

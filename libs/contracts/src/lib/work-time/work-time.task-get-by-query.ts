@@ -1,5 +1,5 @@
 import { ITask } from '@finlab/interfaces';
-import { IsString, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsNumber, IsBoolean } from 'class-validator';
 
 export namespace WorkTimeTaskGetByQuery {
   export const topic = 'work-time.task-get-by-query.query';
@@ -15,6 +15,14 @@ export namespace WorkTimeTaskGetByQuery {
     @IsOptional()
     @IsDateString()
       to?: string;
+
+    @IsOptional()
+    @IsNumber()
+      completeness: number;
+
+    @IsOptional()
+    @IsBoolean()
+      excludedFromSearch: boolean;
   }
 
   export class Response {
