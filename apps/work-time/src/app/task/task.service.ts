@@ -1,7 +1,7 @@
 import { WorkTimeTaskCreate, WorkTimeTaskDelete, WorkTimeTaskGetById, WorkTimeTaskGetByQuery, WorkTimeTaskUpdate } from '@finlab/contracts';
-import { ITaskFindByQueryParams } from '@finlab/interfaces';
+import { Time } from '@finlab/helpers';
+import { ITask, ITaskFindByQueryParams, ITaskUpdate } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
-import { UpdateWriteOpResult } from 'mongoose';
 import { TaskEntity } from './entities/task.entity';
 import { TaskRepository } from './repositories/task.repository';
 
@@ -10,20 +10,21 @@ export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) { }
 
   async create(dto: WorkTimeTaskCreate.Request): Promise<WorkTimeTaskCreate.Response> {
-    const date = new Date(new Date(dto.date).setUTCHours(0, 0, 0, 0));
+    const dayRange = Time.dayRangeISO(dto.date);
     const params: ITaskFindByQueryParams = {
       userId: dto.userId,
       date: {
-        $gte: date.toISOString(),
-        $lte: new Date(new Date(date).setUTCHours(23, 59, 59, 999)).toISOString()
+        $gte: dayRange.from,
+        $lte: dayRange.to
       },
-      text: dto.text
+      name: dto.name
     };
-
     const existedTask = await this.taskRepository.findOneByQuery(params);
     if (existedTask) {
-      throw new Error('This task is already created');
+      const data = await this.updateTask(existedTask, dto);
+      return { data };
     }
+    const date = Time.dayRange(dto.date).from;
     const newTaskEntity = await new TaskEntity({ ...dto, date });
     const newTask = await this.taskRepository.create(newTaskEntity);
 
@@ -35,10 +36,9 @@ export class TaskService {
     if (!existedTask) {
       throw new Error('Unable to update non-existing entry');
     }
-    const taskEntity = new TaskEntity(existedTask).updateText(dto.text).updateCompleteness(dto.completeness);
-    await this.updateTask(taskEntity);
+    const data = await this.updateTask(existedTask, dto);
 
-    return { data: taskEntity.entity };
+    return { data };
   }
 
   async getByQuery(dto: WorkTimeTaskGetByQuery.Request): Promise<WorkTimeTaskGetByQuery.Response> {
@@ -50,6 +50,12 @@ export class TaskService {
         $gte: new Date(dto.from).toISOString(),
         $lte: new Date(dto.to).toISOString()
       };
+    }
+    if (dto.completeness !== undefined) {
+      params.completeness = dto.completeness;
+    }
+    if (dto.excludedFromSearch !== undefined) {
+      params.excludedFromSearch = dto.excludedFromSearch;
     }
     const taskArray = await this.taskRepository.findByQuery(params);
 
@@ -75,11 +81,18 @@ export class TaskService {
     return { data: { _id: existedTask._id } };
   }
 
-  private async updateTask(task: TaskEntity): Promise<[UpdateWriteOpResult]> {
-    return await Promise.all(
+  private async updateTask(task: ITask, { name, comment, completeness, excludedFromSearch }: ITaskUpdate): Promise<Omit<ITask, 'userId'>> {
+    const taskEntity = new TaskEntity(task)
+      .updateName(name)
+      .updateComment(comment)
+      .updateCompleteness(completeness)
+      .updateExcludedFromSearch(excludedFromSearch);
+    await Promise.all(
       [
-        this.taskRepository.update(task)
+        this.taskRepository.update(taskEntity)
       ]
     );
+
+    return taskEntity.entity;
   }
 }

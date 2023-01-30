@@ -11,10 +11,16 @@ export class Task extends Document implements ITask {
     date: Date;
 
   @Prop({ required: true })
-    text: string;
+    name: string;
+
+  @Prop()
+    comment: string;
 
   @Prop()
     completeness: number;
+
+  @Prop()
+    excludedFromSearch: boolean;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);
