@@ -100,8 +100,9 @@ Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
     "date": "2022-12-03T15:38:39Z",
-    "text": "new task766",
-    "completeness": 10
+    "name": "new task",
+    "comment": "comment",
+    "completeness": 11
 }
 
 ###
@@ -117,7 +118,8 @@ PATCH {{host}}/api/work-time/task/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "completeness": 90
+    "completeness": 90,
+    "excludedFromSearch": true
 }
 
 ###
