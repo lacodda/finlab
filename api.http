@@ -87,9 +87,16 @@ Authorization: Bearer {{jwt.access_token}}
 
 ###
 # GET Array of tasks with params
-@from=2022-12-01T00:00:00Z
-@to=2022-12-04T23:59:59Z
+@from=2023-01-01T00:00:00Z
+@to=2023-01-31T23:59:59Z
 GET {{host}}/api/work-time/task?from={{from}}&to={{to}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Array of incomplete tasks
+@from=2023-01-01T00:00:00Z
+@to=2023-01-31T23:59:59Z
+GET {{host}}/api/work-time/task?from={{from}}&to={{to}}&incomplete=true HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
@@ -99,10 +106,10 @@ POST {{host}}/api/work-time/task HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "date": "2022-12-03T15:38:39Z",
+    "date": "2023-01-28T15:38:39Z",
     "name": "new task",
     "comment": "comment",
-    "completeness": 11
+    "completeness": 70
 }
 
 ###
