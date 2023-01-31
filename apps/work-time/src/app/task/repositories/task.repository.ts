@@ -1,4 +1,4 @@
-import { ITask, ITaskFindByQueryParams } from '@finlab/interfaces';
+import { ITask, ITaskFindIncompleteParams, ITaskFindIncompleteResult, ITaskFindByQueryParams } from '@finlab/interfaces';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
@@ -48,6 +48,20 @@ export class TaskRepository {
   async findByQuery(params: ITaskFindByQueryParams): Promise<ITask[]> {
     try {
       return await this.taskModel.find(params).exec();
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async findAndGroupByQuery(params: ITaskFindIncompleteParams): Promise<ITaskFindIncompleteResult[]> {
+    try {
+      return await this.taskModel.aggregate(
+        [
+          { $match: { date: params.date } },
+          { $group: { _id: '$name', tasks: { $push: '$$ROOT' }, completeness: { $max: '$completeness' } } },
+          { $match: { completeness: { $lt: 100 } } }
+        ]
+      );
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
