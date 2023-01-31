@@ -100,6 +100,13 @@ GET {{host}}/api/work-time/task?from={{from}}&to={{to}}&incomplete=true HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
+# GET Array of incomplete tasks (includeAll)
+@from=2023-01-01T00:00:00Z
+@to=2023-01-31T23:59:59Z
+GET {{host}}/api/work-time/task?from={{from}}&to={{to}}&incomplete=true&includeAll=true HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
 # CREATE new task
 # @name json
 POST {{host}}/api/work-time/task HTTP/1.1
@@ -107,9 +114,10 @@ Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
     "date": "2023-01-28T15:38:39Z",
-    "name": "new task",
+    "name": "new task7",
     "comment": "comment",
-    "completeness": 70
+    "completeness": 30,
+    "excludedFromSearch": false
 }
 
 ###
