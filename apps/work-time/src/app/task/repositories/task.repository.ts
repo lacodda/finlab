@@ -55,11 +55,27 @@ export class TaskRepository {
 
   async findAndGroupByQuery(params: ITaskFindIncompleteParams): Promise<ITaskFindIncompleteResult[]> {
     try {
+      const resultMatch: Partial<{ completeness: Record<string, unknown>, excludedFromSearch: Record<string, unknown> }> = {
+        completeness: { $lt: 100 },
+        excludedFromSearch: {
+          $not: { $gt: 0 }
+        }
+      };
+      if (params.includeAll) {
+        delete resultMatch.excludedFromSearch;
+      }
       return await this.taskModel.aggregate(
         [
           { $match: { date: params.date } },
-          { $group: { _id: '$name', tasks: { $push: '$$ROOT' }, completeness: { $max: '$completeness' } } },
-          { $match: { completeness: { $lt: 100 } } }
+          {
+            $group: {
+              _id: '$name',
+              tasks: { $push: '$$ROOT' },
+              completeness: { $max: '$completeness' },
+              excludedFromSearch: { $sum: { $cond: [{ $eq: ['$excludedFromSearch', true] }, 1, 0] } }
+            }
+          },
+          { $match: resultMatch }
         ]
       );
     } catch (error) {
