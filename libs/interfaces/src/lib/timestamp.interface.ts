@@ -22,5 +22,7 @@ export interface ITimestampFindByQueryParams {
 
 export interface ITimestampsResult {
   timestamps: Array<Omit<ITimestamp, 'userId'>>;
+  workTime: number[];
+  breaks: number[];
   totalTime: number;
 }

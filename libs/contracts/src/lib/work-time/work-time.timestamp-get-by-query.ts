@@ -19,6 +19,8 @@ export namespace WorkTimeTimestampGetByQuery {
 
   export class Response {
     data: Array<Omit<ITimestamp, 'userId'>>;
+    workTime: number[];
+    breaks: number[];
     totalTime: number;
   }
 }
