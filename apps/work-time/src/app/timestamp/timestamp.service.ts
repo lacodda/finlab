@@ -58,12 +58,12 @@ export class TimestampService {
     const timestampsEntity = new TimestampsEntity(timestampArray, MIN_BREAK_TIME);
 
     if (raw) {
-      const { timestamps: data, totalTime } = timestampsEntity.result();
-      return { data, totalTime };
+      const { timestamps: data, workTime, breaks, totalTime } = timestampsEntity.result();
+      return { data, workTime, breaks, totalTime };
     }
 
-    const { timestamps: data, totalTime } = timestampsEntity.process().result();
-    return { data, totalTime };
+    const { timestamps: data, workTime, breaks, totalTime } = timestampsEntity.process().result();
+    return { data, workTime, breaks, totalTime };
   }
 
   async getById(dto: WorkTimeTimestampGetById.Request): Promise<WorkTimeTimestampGetById.Response> {
