@@ -73,6 +73,6 @@ export class TimestampsEntity {
     if (timestamps?.length <= 1) {
       return [];
     }
-    return [...List.chunks(timestamps, 2)].map(([from, to]) => Time.diffInMinutes(from.timestamp, to.timestamp));
+    return [...List.chunks(timestamps, 2)].map(([from, to]) => Time.diffInMinutes(from?.timestamp, to?.timestamp));
   }
 }
