@@ -19,6 +19,9 @@ export class Time {
   }
 
   public static diffInMinutes(from: Date, to: Date): number {
+    if (!from || !to) {
+      return 0;
+    }
     let diff = (from.getTime() - to.getTime()) / 1000;
     diff /= 60;
     return Math.abs(Math.round(diff));
