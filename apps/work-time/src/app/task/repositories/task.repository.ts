@@ -69,7 +69,7 @@ export class TaskRepository {
           { $match: { date: params.date } },
           {
             $group: {
-              _id: '$name',
+              _id: '$taskId',
               tasks: { $push: '$$ROOT' },
               completeness: { $max: '$completeness' },
               excludedFromSearch: { $sum: { $cond: [{ $eq: ['$excludedFromSearch', true] }, 1, 0] } }

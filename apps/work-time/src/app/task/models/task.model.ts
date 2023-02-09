@@ -11,6 +11,9 @@ export class Task extends Document implements ITask {
     date: Date;
 
   @Prop({ required: true })
+    taskId: string;
+
+  @Prop({ required: true })
     name: string;
 
   @Prop()

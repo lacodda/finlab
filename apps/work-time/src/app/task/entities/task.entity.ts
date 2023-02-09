@@ -1,8 +1,10 @@
+import { Utils } from '@finlab/helpers';
 import { ITask } from '@finlab/interfaces';
 
 export class TaskEntity implements ITask {
   _id?: string;
   userId: string;
+  taskId: string;
   date: Date;
   name: string;
   comment?: string;
@@ -12,6 +14,7 @@ export class TaskEntity implements ITask {
   constructor(task: ITask) {
     this._id = task._id;
     this.userId = task.userId;
+    this.taskId = task.taskId || Utils.uuid();
     this.date = task.date;
     this.name = task.name;
     this.comment = task.comment;
@@ -50,6 +53,7 @@ export class TaskEntity implements ITask {
   public get entity(): Omit<ITask, 'userId'> {
     return {
       _id: this._id,
+      taskId: this.taskId,
       date: this.date,
       name: this.name,
       comment: this.comment,
