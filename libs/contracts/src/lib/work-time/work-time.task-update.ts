@@ -10,6 +10,10 @@ export namespace WorkTimeTaskUpdate {
 
     @IsOptional()
     @IsString()
+      taskId: string;
+
+    @IsOptional()
+    @IsString()
       name: string;
 
     @IsOptional()

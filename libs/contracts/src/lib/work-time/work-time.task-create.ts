@@ -8,6 +8,10 @@ export namespace WorkTimeTaskCreate {
     @IsString()
       userId: string;
 
+    @IsOptional()
+    @IsString()
+      taskId: string;
+
     @IsDateString()
       date: string;
 

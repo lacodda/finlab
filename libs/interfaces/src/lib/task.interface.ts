@@ -1,6 +1,7 @@
 export interface ITask {
   _id?: string;
   userId: string;
+  taskId: string;
   date: Date;
   name: string;
   comment?: string;
