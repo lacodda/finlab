@@ -1,5 +1,28 @@
 version: '3.1'
 services:
+  api:
+    container_name: api
+    build:
+      context: ./
+      dockerfile: ./apps/api/Dockerfile
+    ports:
+      - '3000:3333'
+    env_file:
+      - ./envs/.api.env
+  account:
+    container_name: account
+    build:
+      context: ./
+      dockerfile: ./apps/account/Dockerfile
+    env_file:
+      - ./envs/.account.env
+  work-time:
+    container_name: work-time
+    build:
+      context: ./
+      dockerfile: ./apps/work-time/Dockerfile
+    env_file:
+      - ./envs/.work-time.env
   mongo:
     image: mongo:4
     container_name: mongo
