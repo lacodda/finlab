@@ -16,7 +16,7 @@ COPY --chown=node:node package*.json ./
 # RUN npm config set strict-ssl false
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
-RUN npm i
+RUN npm ci
 
 # Bundle app source
 COPY --chown=node:node . .
