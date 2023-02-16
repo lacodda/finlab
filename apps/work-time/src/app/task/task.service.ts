@@ -1,6 +1,6 @@
 import { type WorkTimeTaskCreate, type WorkTimeTaskDelete, type WorkTimeTaskGetById, type WorkTimeTaskGetByQuery, type WorkTimeTaskUpdate } from '@finlab/contracts';
 import { Time } from '@finlab/helpers';
-import { type ITask, type ITaskFindIncompleteParams, type ITaskFindByQueryParams, type ITaskUpdate } from '@finlab/interfaces';
+import { type ITask, type ITaskFindIncompleteParams, type ITaskFindByQueryParams, type ITaskUpdate, type ITaskFindForDay } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
 import { TaskEntity } from './entities/task.entity';
 import { TasksEntity } from './entities/tasks.entity';
@@ -11,16 +11,7 @@ export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) { }
 
   async create(dto: WorkTimeTaskCreate.Request): Promise<WorkTimeTaskCreate.Response> {
-    const dayRange = Time.dayRange(dto.date);
-    const params: ITaskFindByQueryParams = {
-      userId: dto.userId,
-      date: {
-        $gte: dayRange.from,
-        $lte: dayRange.to
-      },
-      name: dto.name
-    };
-    const existedTask = await this.taskRepository.findOneByQuery(params);
+    const existedTask = await this.getForDay(dto) as ITask;
     if (existedTask) {
       const data = await this.updateTask(existedTask, dto);
       return { data };
@@ -53,6 +44,10 @@ export class TaskService {
       includeAll: (dto.includeAll as unknown as string) === 'true'
     };
 
+    if (params.incomplete) {
+      params.excludeTaskIds = (await this.getForDay({ userId: dto.userId, date: new Date() }) as ITask[]).map(({ taskId }) => taskId);
+    }
+
     const tasks = params.incomplete
       ? await this.taskRepository.findAndGroupByQuery(params)
       : await this.taskRepository.findByQuery(params);
@@ -67,6 +62,20 @@ export class TaskService {
     }
 
     return { data: new TaskEntity(existedTask).entity };
+  }
+
+  async getForDay(dto: ITaskFindForDay): Promise<ITask | ITask[]> {
+    const dayRange = Time.dayRange(dto.date);
+    const params: ITaskFindByQueryParams = {
+      userId: dto.userId,
+      date: {
+        $gte: dayRange.from,
+        $lte: dayRange.to
+      }
+    };
+    return dto.name
+      ? await this.taskRepository.findOneByQuery({ ...params, name: dto.name })
+      : await this.taskRepository.findByQuery(params);
   }
 
   async delete(dto: WorkTimeTaskDelete.Request): Promise<WorkTimeTaskDelete.Response> {

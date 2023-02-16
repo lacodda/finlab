@@ -66,7 +66,12 @@ export class TaskRepository {
       }
       return await this.taskModel.aggregate(
         [
-          { $match: { date: params.date } },
+          {
+            $match: {
+              date: params.date,
+              taskId: { $not: { $in: params.excludeTaskIds } }
+            }
+          },
           {
             $group: {
               _id: '$taskId',
