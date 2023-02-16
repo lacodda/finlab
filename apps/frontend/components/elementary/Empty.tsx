@@ -1,4 +1,4 @@
-import React, { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, type ReactNode } from 'react';
 import cn from 'classnames';
 
 export interface EmptyProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {

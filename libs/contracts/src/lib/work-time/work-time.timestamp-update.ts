@@ -1,4 +1,4 @@
-import { ITimestamp, TimestampType } from '@finlab/interfaces';
+import { type ITimestamp, TimestampType } from '@finlab/interfaces';
 import { IsDateString, IsOptional, IsString, IsEnum } from 'class-validator';
 
 export namespace WorkTimeTimestampUpdate {

@@ -1,4 +1,4 @@
-import { ITimestamp } from '@finlab/interfaces';
+import { type ITimestamp } from '@finlab/interfaces';
 import { IsString, IsOptional, IsDateString, IsBooleanString } from 'class-validator';
 
 export namespace WorkTimeTimestampGetByQuery {

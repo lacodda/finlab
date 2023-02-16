@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RMQModule, RMQService, RMQTestService } from 'nestjs-rmq';
+import { RMQModule, RMQService, type RMQTestService } from 'nestjs-rmq';
 import { UserModule } from './user.module';
 import { AuthModule } from '../auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { getMongoConfig } from '../configs/mongo.config';
-import { INestApplication } from '@nestjs/common';
+import { type INestApplication } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
 import { AccountAddApp, AccountLogin, AccountRegister, AccountUserInfo, AppGetApp } from '@finlab/contracts';
 import { verify } from 'jsonwebtoken';

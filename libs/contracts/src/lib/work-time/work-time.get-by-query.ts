@@ -1,4 +1,4 @@
-import { IWorkTime } from '@finlab/interfaces';
+import { type IWorkTime } from '@finlab/interfaces';
 import { IsString, IsOptional, IsDateString } from 'class-validator';
 
 export namespace WorkTimeGetByQuery {

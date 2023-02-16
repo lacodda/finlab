@@ -1,7 +1,6 @@
-import { ITimestamp, ITimestampsResult } from '@finlab/interfaces';
+import { type ITimestamp, type ITimestampsResult } from '@finlab/interfaces';
 import { TimestampEntity } from './timestamp.entity';
 import { Time, List } from '@finlab/helpers';
-import { time } from 'console';
 
 type BreaksType = Array<[TimestampEntity, TimestampEntity]>;
 

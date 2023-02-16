@@ -1,4 +1,4 @@
-import React, { DetailedHTMLProps, HTMLAttributes } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes } from 'react';
 import cn from 'classnames';
 import { BeakerIcon } from '@heroicons/react/24/solid';
 

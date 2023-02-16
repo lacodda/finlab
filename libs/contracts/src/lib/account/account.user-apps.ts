@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator';
-import { IUserApps } from '@finlab/interfaces';
+import { type IUserApps } from '@finlab/interfaces';
 
 export namespace AccountUserApps {
   export const topic = 'account.user-apps.query';

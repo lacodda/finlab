@@ -1,4 +1,4 @@
-import React, { DetailedHTMLProps, InputHTMLAttributes, ReactNode } from 'react';
+import React, { type DetailedHTMLProps, type InputHTMLAttributes, type ReactNode } from 'react';
 import cn from 'classnames';
 
 export interface CheckboxProps extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {

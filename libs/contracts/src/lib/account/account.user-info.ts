@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator';
-import { IUser } from '@finlab/interfaces';
+import { type IUser } from '@finlab/interfaces';
 import { ApiProperty } from '@nestjs/swagger';
 
 export namespace AccountUserInfo {

@@ -1,8 +1,8 @@
-import { IWorkTime, IWorkTimeFindByQueryParams } from '@finlab/interfaces';
+import { type IWorkTime, type IWorkTimeFindByQueryParams } from '@finlab/interfaces';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateWriteOpResult } from 'mongoose';
-import { WorkTimeEntity } from '../entities/work-time.entity';
+import { Model, type UpdateWriteOpResult } from 'mongoose';
+import { type WorkTimeEntity } from '../entities/work-time.entity';
 import { WorkTime } from '../models/work-time.model';
 
 @Injectable()

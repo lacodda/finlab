@@ -1,4 +1,4 @@
-import { IWorkTime } from '@finlab/interfaces';
+import { type IWorkTime } from '@finlab/interfaces';
 import { IsString } from 'class-validator';
 
 export namespace WorkTimeGetById {

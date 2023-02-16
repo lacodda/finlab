@@ -1,6 +1,6 @@
 import { AppGetApp } from '@finlab/contracts';
 import { AppStatus } from '@finlab/interfaces';
-import { UserEntity } from '../entities/user.entity';
+import { type UserEntity } from '../entities/user.entity';
 import { AddAppSagaState } from './add-app.state';
 
 export class AddAppSagaStateInactive extends AddAppSagaState {

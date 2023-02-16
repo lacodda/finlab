@@ -1,4 +1,4 @@
-import { ITask } from '@finlab/interfaces';
+import { type ITask } from '@finlab/interfaces';
 import { IsNumber, IsString, IsDateString, IsOptional, IsBoolean } from 'class-validator';
 
 export namespace WorkTimeTaskCreate {

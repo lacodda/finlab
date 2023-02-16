@@ -1,4 +1,4 @@
-import { DocumentBuilder, OpenAPIObject } from '@nestjs/swagger';
+import { DocumentBuilder, type OpenAPIObject } from '@nestjs/swagger';
 
 export const getSwaggerConfig = (): Omit<OpenAPIObject, 'paths'> => new DocumentBuilder()
   .setTitle('finlab')

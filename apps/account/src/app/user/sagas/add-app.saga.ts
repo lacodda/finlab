@@ -1,7 +1,7 @@
 import { AppStatus } from '@finlab/interfaces';
-import { RMQService } from 'nestjs-rmq';
-import { UserEntity } from '../entities/user.entity';
-import { AddAppSagaState } from './add-app.state';
+import { type RMQService } from 'nestjs-rmq';
+import { type UserEntity } from '../entities/user.entity';
+import { type AddAppSagaState } from './add-app.state';
 import { AddAppSagaStateActive, AddAppSagaStateDeleted, AddAppSagaStateInactive } from './add-app.steps';
 
 export class AddAppSaga {

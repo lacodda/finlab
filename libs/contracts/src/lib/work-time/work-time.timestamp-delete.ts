@@ -1,4 +1,4 @@
-import { ITimestamp } from '@finlab/interfaces';
+import { type ITimestamp } from '@finlab/interfaces';
 import { IsString } from 'class-validator';
 
 export namespace WorkTimeTimestampDelete {

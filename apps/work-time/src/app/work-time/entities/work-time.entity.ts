@@ -1,4 +1,4 @@
-import { IWorkTime } from '@finlab/interfaces';
+import { type IWorkTime } from '@finlab/interfaces';
 
 export class WorkTimeEntity implements IWorkTime {
   _id?: string;

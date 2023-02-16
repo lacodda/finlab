@@ -1,5 +1,5 @@
 
-import React, { FunctionComponent, ReactNode } from 'react';
+import React, { type FunctionComponent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { Button, Footer, Navbar } from '../components';
 import { useAuth } from '../hooks';

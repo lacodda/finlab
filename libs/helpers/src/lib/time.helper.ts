@@ -1,4 +1,4 @@
-import { IDateRange, IDateRangeISO } from '@finlab/interfaces';
+import { type IDateRange, type IDateRangeISO } from '@finlab/interfaces';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Time {

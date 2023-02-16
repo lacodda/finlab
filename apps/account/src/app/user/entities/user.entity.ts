@@ -1,5 +1,5 @@
 import { AccountChangedApp } from '@finlab/contracts';
-import { AppStatus, IDomainEvent, IUser, IUserApps, UserRole } from '@finlab/interfaces';
+import { AppStatus, type IDomainEvent, type IUser, type IUserApps, type UserRole } from '@finlab/interfaces';
 import { compare, genSalt, hash } from 'bcryptjs';
 
 export class UserEntity implements IUser {

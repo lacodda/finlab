@@ -1,6 +1,6 @@
-import { WorkTimeTaskCreate, WorkTimeTaskDelete, WorkTimeTaskGetById, WorkTimeTaskGetByQuery, WorkTimeTaskUpdate } from '@finlab/contracts';
+import { type WorkTimeTaskCreate, type WorkTimeTaskDelete, type WorkTimeTaskGetById, type WorkTimeTaskGetByQuery, type WorkTimeTaskUpdate } from '@finlab/contracts';
 import { Time } from '@finlab/helpers';
-import { ITask, ITaskFindIncompleteParams, ITaskFindByQueryParams, ITaskUpdate } from '@finlab/interfaces';
+import { type ITask, type ITaskFindIncompleteParams, type ITaskFindByQueryParams, type ITaskUpdate } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
 import { TaskEntity } from './entities/task.entity';
 import { TasksEntity } from './entities/tasks.entity';
@@ -26,7 +26,7 @@ export class TaskService {
       return { data };
     }
     const date = Time.dayRange(dto.date).from;
-    const newTaskEntity = await new TaskEntity({ ...dto, date });
+    const newTaskEntity = new TaskEntity({ ...dto, date });
     const newTask = await this.taskRepository.create(newTaskEntity);
 
     return { data: new TaskEntity(newTask).entity };

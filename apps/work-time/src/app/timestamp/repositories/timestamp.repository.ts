@@ -1,8 +1,8 @@
-import { ITimestamp, ITimestampFindByQueryParams } from '@finlab/interfaces';
+import { type ITimestamp, type ITimestampFindByQueryParams } from '@finlab/interfaces';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateWriteOpResult } from 'mongoose';
-import { TimestampEntity } from '../entities/timestamp.entity';
+import { Model, type UpdateWriteOpResult } from 'mongoose';
+import { type TimestampEntity } from '../entities/timestamp.entity';
 import { Timestamp } from '../models/timestamp.model';
 
 @Injectable()

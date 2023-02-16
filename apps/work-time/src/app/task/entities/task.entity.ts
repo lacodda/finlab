@@ -1,5 +1,5 @@
 import { Utils } from '@finlab/helpers';
-import { ITask } from '@finlab/interfaces';
+import { type ITask } from '@finlab/interfaces';
 
 export class TaskEntity implements ITask {
   _id?: string;

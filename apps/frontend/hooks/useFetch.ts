@@ -1,4 +1,4 @@
-import { Dispatch, useEffect, useReducer, useRef, useState } from 'react';
+import { type Dispatch, useEffect, useReducer, useRef, useState } from 'react';
 
 interface State<T> {
   data?: T;
@@ -7,7 +7,7 @@ interface State<T> {
   runFetch: (isFetch: boolean) => void;
 }
 
-interface Cache<T> { [url: string]: T }
+type Cache<T> = Record<string, T>;
 
 // discriminated union type
 type Action<T> =

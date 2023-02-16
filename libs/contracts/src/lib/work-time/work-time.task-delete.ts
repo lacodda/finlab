@@ -1,4 +1,4 @@
-import { ITask } from '@finlab/interfaces';
+import { type ITask } from '@finlab/interfaces';
 import { IsString } from 'class-validator';
 
 export namespace WorkTimeTaskDelete {

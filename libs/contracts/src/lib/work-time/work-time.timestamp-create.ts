@@ -1,4 +1,4 @@
-import { ITimestamp, TimestampType } from '@finlab/interfaces';
+import { type ITimestamp, TimestampType } from '@finlab/interfaces';
 import { IsString, IsDateString, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 

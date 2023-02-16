@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useState, type KeyboardEvent } from 'react';
 import Link from 'next/link';
 import { Button, Checkbox, Input } from '../../components';
 import { withAuthLayout } from '../../layouts';
@@ -27,8 +27,8 @@ function LoginPage(): JSX.Element {
           <div className='flex-auto px-6 lg:px-8 py-8 pt-0'>
             <div className='text-red-500 font-bold'>{signInError?.message}</div>
             <form>
-              <Input type='email' placeholder='Email' label='Email' value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} />
-              <Input type='password' placeholder='Password' label='Password' value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} />
+              <Input type='email' placeholder='Email' label='Email' value={email} onChange={(e) => { setEmail(e.target.value); }} onKeyDown={handleKeyDown} />
+              <Input type='password' placeholder='Password' label='Password' value={password} onChange={(e) => { setPassword(e.target.value); }} onKeyDown={handleKeyDown} />
               <Checkbox label='Remember me' />
               <Button className='mt-6 w-full justify-center font-bold uppercase' onClick={Login}>Sign In</Button>
             </form>

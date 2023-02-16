@@ -1,5 +1,5 @@
-import { UserEntity } from '../entities/user.entity';
-import { AddAppSaga } from './add-app.saga';
+import { type UserEntity } from '../entities/user.entity';
+import { type AddAppSaga } from './add-app.saga';
 
 export abstract class AddAppSagaState {
   public saga: AddAppSaga;

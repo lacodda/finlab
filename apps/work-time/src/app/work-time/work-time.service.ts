@@ -1,7 +1,7 @@
-import { WorkTimeCreate, WorkTimeDelete, WorkTimeGetById, WorkTimeGetByQuery, WorkTimeUpdate } from '@finlab/contracts';
-import { IWorkTimeFindByQueryParams } from '@finlab/interfaces';
+import { type WorkTimeCreate, type WorkTimeDelete, type WorkTimeGetById, type WorkTimeGetByQuery, type WorkTimeUpdate } from '@finlab/contracts';
+import { type IWorkTimeFindByQueryParams } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
-import { UpdateWriteOpResult } from 'mongoose';
+import { type UpdateWriteOpResult } from 'mongoose';
 import { WorkTimeEntity } from './entities/work-time.entity';
 import { WorkTimeRepository } from './repositories/work-time.repository';
 
@@ -15,7 +15,7 @@ export class WorkTimeService {
     if (existedWorkTime) {
       throw new Error('This date is already created');
     }
-    const newWorkTimeEntity = await new WorkTimeEntity({ ...dto, date });
+    const newWorkTimeEntity = new WorkTimeEntity({ ...dto, date });
     const newWorkTime = await this.workTimeRepository.create(newWorkTimeEntity);
 
     return { data: new WorkTimeEntity(newWorkTime).entity };

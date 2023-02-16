@@ -1,8 +1,8 @@
-import { WorkTimeTimestampCreate, WorkTimeTimestampDelete, WorkTimeTimestampGetById, WorkTimeTimestampGetByQuery, WorkTimeTimestampUpdate } from '@finlab/contracts';
-import { ITimestamp, ITimestampFindByQueryParams, TimestampType } from '@finlab/interfaces';
+import { type WorkTimeTimestampCreate, type WorkTimeTimestampDelete, type WorkTimeTimestampGetById, type WorkTimeTimestampGetByQuery, type WorkTimeTimestampUpdate } from '@finlab/contracts';
+import { type ITimestamp, type ITimestampFindByQueryParams, type TimestampType } from '@finlab/interfaces';
 import { Time } from '@finlab/helpers';
 import { Injectable } from '@nestjs/common';
-import { UpdateWriteOpResult } from 'mongoose';
+import { type UpdateWriteOpResult } from 'mongoose';
 import { TimestampEntity } from './entities/timestamp.entity';
 import { TimestampsEntity } from './entities/timestamps.entity';
 import { TimestampRepository } from './repositories/timestamp.repository';

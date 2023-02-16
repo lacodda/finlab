@@ -1,4 +1,4 @@
-import { ITask, ITaskFindIncompleteResult } from '@finlab/interfaces';
+import { type ITask, type ITaskFindIncompleteResult } from '@finlab/interfaces';
 import { TaskEntity } from './task.entity';
 
 export class TasksEntity {
