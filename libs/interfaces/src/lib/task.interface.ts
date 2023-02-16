@@ -18,14 +18,16 @@ export interface ITaskFindByQueryParams {
   name?: string;
 }
 
-export interface ITaskFindIncompleteParams {
-  userId: string;
-  date: {
-    $gte: Date;
-    $lte: Date;
-  };
+export interface ITaskFindIncompleteParams extends ITaskFindByQueryParams {
   incomplete?: boolean;
   includeAll?: boolean;
+  excludeTaskIds?: string[];
+}
+
+export interface ITaskFindForDay {
+  userId: string;
+  date: Date | string;
+  name?: string;
 }
 
 export interface ITaskFindIncompleteResult {
