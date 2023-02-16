@@ -2,15 +2,25 @@ import { type IDateRange, type IDateRangeISO } from '@finlab/interfaces';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Time {
-  public static dayRange(dayISO?: string): IDateRange {
-    const date = dayISO ? new Date(dayISO) : new Date();
+  public static dayRange(dayISO?: Date | string): IDateRange {
+    let date = new Date();
+    switch (true) {
+      case dayISO instanceof Date:
+        date = dayISO as Date;
+        break;
+      case typeof dayISO === 'string':
+        date = new Date(dayISO as string);
+        break;
+      default:
+        break;
+    }
     return {
       from: new Date(date.setUTCHours(0, 0, 0, 0)),
       to: new Date(date.setUTCHours(23, 59, 59, 999))
     };
   }
 
-  public static dayRangeISO(dayISO?: string): IDateRangeISO {
+  public static dayRangeISO(dayISO?: Date | string): IDateRangeISO {
     const dayRange = Time.dayRange(dayISO);
     return {
       from: dayRange.from.toISOString(),
