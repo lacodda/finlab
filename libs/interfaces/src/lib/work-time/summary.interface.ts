@@ -1,11 +1,11 @@
-export interface IWorkTime {
+export interface ISummary {
   _id?: string;
   userId: string;
   date: Date;
   time: number;
 }
 
-export interface IWorkTimeFindByQueryParams {
+export interface ISummaryFindByQueryParams {
   userId: string;
   date?: {
     $gte: string;

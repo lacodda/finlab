@@ -1,8 +1,8 @@
-import { type ITimestamp } from '@finlab/interfaces';
+import { type ITimestamp } from '@finlab/interfaces/work-time';
 import { IsString, IsOptional, IsDateString, IsBooleanString } from 'class-validator';
 
-export namespace WorkTimeTimestampGetByQuery {
-  export const topic = 'work-time.timestamp-get-by-query.query';
+export namespace TimestampGetByQuery {
+  export const topic = 'work-time.timestamp.get-by-query.query';
 
   export class Request {
     @IsString()
@@ -25,6 +25,6 @@ export namespace WorkTimeTimestampGetByQuery {
   }
 }
 
-export class WorkTimeTimestampGetByQueryResponse {
+export class TimestampGetByQueryResponse {
   data: Array<Omit<ITimestamp, 'userId'>>;
 }

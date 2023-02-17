@@ -1,8 +1,8 @@
-import { type ITask } from '@finlab/interfaces';
+import { type ITask } from '@finlab/interfaces/work-time';
 import { IsNumber, IsString, IsDateString, IsOptional, IsBoolean } from 'class-validator';
 
-export namespace WorkTimeTaskCreate {
-  export const topic = 'work-time.task-create.command';
+export namespace TaskCreate {
+  export const topic = 'work-time.task.create.command';
 
   export class Request {
     @IsString()

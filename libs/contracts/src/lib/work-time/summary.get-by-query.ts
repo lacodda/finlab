@@ -1,8 +1,8 @@
-import { type IWorkTime } from '@finlab/interfaces';
+import { type ISummary } from '@finlab/interfaces/work-time';
 import { IsString, IsOptional, IsDateString } from 'class-validator';
 
-export namespace WorkTimeGetByQuery {
-  export const topic = 'work-time.get-by-query.query';
+export namespace SummaryGetByQuery {
+  export const topic = 'work-time.summary.get-by-query.query';
 
   export class Request {
     @IsString()
@@ -18,6 +18,6 @@ export namespace WorkTimeGetByQuery {
   }
 
   export class Response {
-    data: Array<Omit<IWorkTime, 'userId'>>;
+    data: Array<Omit<ISummary, 'userId'>>;
   }
 }

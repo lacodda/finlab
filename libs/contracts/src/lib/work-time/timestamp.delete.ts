@@ -1,8 +1,8 @@
-import { type ITimestamp } from '@finlab/interfaces';
+import { type ITimestamp } from '@finlab/interfaces/work-time';
 import { IsString } from 'class-validator';
 
-export namespace WorkTimeTimestampDelete {
-  export const topic = 'work-time.timestamp-delete.command';
+export namespace TimestampDelete {
+  export const topic = 'work-time.timestamp.delete.command';
 
   export class Request {
     @IsString()

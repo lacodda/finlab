@@ -1,8 +1,8 @@
-import { type IWorkTime } from '@finlab/interfaces';
+import { type ISummary } from '@finlab/interfaces/work-time';
 import { IsNumber, IsString, IsDateString } from 'class-validator';
 
-export namespace WorkTimeCreate {
-  export const topic = 'work-time.create.command';
+export namespace SummaryCreate {
+  export const topic = 'work-time.summary.create.command';
 
   export class Request {
     @IsString()
@@ -16,6 +16,6 @@ export namespace WorkTimeCreate {
   }
 
   export class Response {
-    data: Omit<IWorkTime, 'userId'>;
+    data: Omit<ISummary, 'userId'>;
   }
 }

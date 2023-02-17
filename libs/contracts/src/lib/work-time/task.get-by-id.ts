@@ -1,7 +1,7 @@
-import { type ITask } from '@finlab/interfaces';
+import { type ITask } from '@finlab/interfaces/work-time';
 import { IsString } from 'class-validator';
 
-export namespace WorkTimeTaskGetById {
+export namespace TaskGetById {
   export const topic = 'work-time.task-get-by-id.query';
 
   export class Request {

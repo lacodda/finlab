@@ -1,8 +1,8 @@
-import { type ITask } from '@finlab/interfaces';
+import { type ITask } from '@finlab/interfaces/work-time';
 import { IsString, IsOptional, IsDateString, IsBooleanString } from 'class-validator';
 
-export namespace WorkTimeTaskGetByQuery {
-  export const topic = 'work-time.task-get-by-query.query';
+export namespace TaskGetByQuery {
+  export const topic = 'work-time.task.get-by-query.query';
 
   export class Request {
     @IsString()
