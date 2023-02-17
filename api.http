@@ -34,22 +34,24 @@ Content-Type: application/json
 GET {{host}}/api/user/info HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
+# Work time Summary
+
 ###
-# GET Array of work-time
-GET {{host}}/api/work-time HTTP/1.1
+# GET Array of work-time summary
+GET {{host}}/api/work-time/summary HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# GET Array of work-time with params
+# GET Array of work-time summary with params
 @from=2022-12-01T00:00:00Z
 @to=2022-12-04T23:59:59Z
-GET {{host}}/api/work-time?from={{from}}&to={{to}} HTTP/1.1
+GET {{host}}/api/work-time/summary?from={{from}}&to={{to}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# CREATE new work-time
+# CREATE new work-time summary
 # @name json
-POST {{host}}/api/work-time HTTP/1.1
+POST {{host}}/api/work-time/summary HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
@@ -58,15 +60,15 @@ Content-Type: application/json
 }
 
 ###
-# GET work-time
+# GET work-time summary
 # @ref json
-GET {{host}}/api/work-time/{{ json.data._id }} HTTP/1.1
+GET {{host}}/api/work-time/summary/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# UPDATE work-time
+# UPDATE work-time summary
 # @ref json
-PATCH {{host}}/api/work-time/{{ json.data._id }} HTTP/1.1
+PATCH {{host}}/api/work-time/summary/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
@@ -76,7 +78,7 @@ Content-Type: application/json
 ###
 # DELETE work-time
 # @ref json
-DELETE {{host}}/api/work-time/{{ json.data._id }} HTTP/1.1
+DELETE {{host}}/api/work-time/summary/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 
