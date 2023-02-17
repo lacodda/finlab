@@ -1,9 +1,9 @@
 import { Document } from 'mongoose';
-import { type IWorkTime } from '@finlab/interfaces';
+import { type ISummary } from '@finlab/interfaces/work-time';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ timestamps: true })
-export class WorkTime extends Document implements IWorkTime {
+export class Summary extends Document implements ISummary {
   @Prop({ required: true })
     userId: string;
 
@@ -14,4 +14,4 @@ export class WorkTime extends Document implements IWorkTime {
     time: number;
 }
 
-export const WorkTimeSchema = SchemaFactory.createForClass(WorkTime);
+export const SummarySchema = SchemaFactory.createForClass(Summary);

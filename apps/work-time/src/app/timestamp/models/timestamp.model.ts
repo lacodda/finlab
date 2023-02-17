@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { type ITimestamp, TimestampType } from '@finlab/interfaces';
+import { type ITimestamp, TimestampType } from '@finlab/interfaces/work-time';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ timestamps: true })

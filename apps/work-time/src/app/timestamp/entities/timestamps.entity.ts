@@ -1,4 +1,4 @@
-import { type ITimestamp, type ITimestampsResult } from '@finlab/interfaces';
+import { type ITimestamp, type ITimestampsResult } from '@finlab/interfaces/work-time';
 import { TimestampEntity } from './timestamp.entity';
 import { Time, List } from '@finlab/helpers';
 

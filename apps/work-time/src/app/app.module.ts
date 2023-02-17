@@ -6,14 +6,14 @@ import { getMongoConfig } from './configs/mongo.config';
 import { getRmqConfig } from './configs/rmq.config';
 import { TaskModule } from './task/task.module';
 import { TimestampModule } from './timestamp/timestamp.module';
-import { WorkTimeModule } from './work-time/work-time.module';
+import { SummaryModule } from './summary/summary.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: 'envs/.work-time.env', isGlobal: true }),
     RMQModule.forRootAsync(getRmqConfig()),
     MongooseModule.forRootAsync(getMongoConfig()),
-    WorkTimeModule,
+    SummaryModule,
     TaskModule,
     TimestampModule
   ]

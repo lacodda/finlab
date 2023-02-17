@@ -1,6 +1,6 @@
-import { type WorkTimeTaskCreate, type WorkTimeTaskDelete, type WorkTimeTaskGetById, type WorkTimeTaskGetByQuery, type WorkTimeTaskUpdate } from '@finlab/contracts';
+import { type TaskCreate, type TaskDelete, type TaskGetById, type TaskGetByQuery, type TaskUpdate } from '@finlab/contracts/work-time';
 import { Time } from '@finlab/helpers';
-import { type ITask, type ITaskFindIncompleteParams, type ITaskFindByQueryParams, type ITaskUpdate, type ITaskFindForDay } from '@finlab/interfaces';
+import { type ITask, type ITaskFindIncompleteParams, type ITaskFindByQueryParams, type ITaskUpdate, type ITaskFindForDay } from '@finlab/interfaces/work-time';
 import { Injectable } from '@nestjs/common';
 import { TaskEntity } from './entities/task.entity';
 import { TasksEntity } from './entities/tasks.entity';
@@ -10,7 +10,7 @@ import { TaskRepository } from './repositories/task.repository';
 export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) { }
 
-  async create(dto: WorkTimeTaskCreate.Request): Promise<WorkTimeTaskCreate.Response> {
+  async create(dto: TaskCreate.Request): Promise<TaskCreate.Response> {
     const existedTask = await this.getForDay(dto) as ITask;
     if (existedTask) {
       const data = await this.updateTask(existedTask, dto);
@@ -23,7 +23,7 @@ export class TaskService {
     return { data: new TaskEntity(newTask).entity };
   }
 
-  async update(dto: WorkTimeTaskUpdate.Request): Promise<WorkTimeTaskUpdate.Response> {
+  async update(dto: TaskUpdate.Request): Promise<TaskUpdate.Response> {
     const existedTask = await this.taskRepository.findById(dto.id);
     if (!existedTask) {
       throw new Error('Unable to update non-existing entry');
@@ -33,7 +33,7 @@ export class TaskService {
     return { data };
   }
 
-  async getByQuery(dto: WorkTimeTaskGetByQuery.Request): Promise<WorkTimeTaskGetByQuery.Response> {
+  async getByQuery(dto: TaskGetByQuery.Request): Promise<TaskGetByQuery.Response> {
     const params: ITaskFindIncompleteParams = {
       userId: dto.userId,
       date: {
@@ -55,7 +55,7 @@ export class TaskService {
     return { data: new TasksEntity(tasks).entities };
   }
 
-  async getById(dto: WorkTimeTaskGetById.Request): Promise<WorkTimeTaskGetById.Response> {
+  async getById(dto: TaskGetById.Request): Promise<TaskGetById.Response> {
     const existedTask = await this.taskRepository.findById(dto.id);
     if (!existedTask) {
       throw new Error('Unable to delete non-existing entry');
@@ -78,7 +78,7 @@ export class TaskService {
       : await this.taskRepository.findByQuery(params);
   }
 
-  async delete(dto: WorkTimeTaskDelete.Request): Promise<WorkTimeTaskDelete.Response> {
+  async delete(dto: TaskDelete.Request): Promise<TaskDelete.Response> {
     const existedTask = await this.taskRepository.findById(dto.id);
     if (!existedTask) {
       throw new Error('Unable to delete non-existing entry');

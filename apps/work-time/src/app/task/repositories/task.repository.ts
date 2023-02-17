@@ -1,4 +1,4 @@
-import { type ITask, type ITaskFindIncompleteParams, type ITaskFindIncompleteResult, type ITaskFindByQueryParams } from '@finlab/interfaces';
+import { type ITask, type ITaskFindIncompleteParams, type ITaskFindIncompleteResult, type ITaskFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, type UpdateWriteOpResult } from 'mongoose';

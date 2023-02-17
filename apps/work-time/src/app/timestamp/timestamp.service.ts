@@ -1,5 +1,5 @@
-import { type WorkTimeTimestampCreate, type WorkTimeTimestampDelete, type WorkTimeTimestampGetById, type WorkTimeTimestampGetByQuery, type WorkTimeTimestampUpdate } from '@finlab/contracts';
-import { type ITimestamp, type ITimestampFindByQueryParams, type TimestampType } from '@finlab/interfaces';
+import { type TimestampCreate, type TimestampDelete, type TimestampGetById, type TimestampGetByQuery, type TimestampUpdate } from '@finlab/contracts/work-time';
+import { type ITimestamp, type ITimestampFindByQueryParams, type TimestampType } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
 import { Injectable } from '@nestjs/common';
 import { type UpdateWriteOpResult } from 'mongoose';
@@ -13,7 +13,7 @@ const MIN_BREAK_TIME = 20; // FIXME move to settings
 export class TimestampService {
   constructor(private readonly timestampRepository: TimestampRepository) { }
 
-  async create(dto: WorkTimeTimestampCreate.Request): Promise<WorkTimeTimestampCreate.Response> {
+  async create(dto: TimestampCreate.Request): Promise<TimestampCreate.Response> {
     const timestamp = new Date(dto.timestamp);
     const existedTimestamp = await this.timestampRepository.findByDate(timestamp, dto.userId);
     if (existedTimestamp) {
@@ -26,7 +26,7 @@ export class TimestampService {
     return { data: new TimestampEntity(newTimestamp).entity };
   }
 
-  async update(dto: WorkTimeTimestampUpdate.Request): Promise<WorkTimeTimestampUpdate.Response> {
+  async update(dto: TimestampUpdate.Request): Promise<TimestampUpdate.Response> {
     const existedTimestamp = await this.timestampRepository.findById(dto.id);
     if (!existedTimestamp) {
       throw new Error('Unable to update non-existing entry');
@@ -42,7 +42,7 @@ export class TimestampService {
     return timestampEntity.entity;
   }
 
-  async getByQuery(dto: WorkTimeTimestampGetByQuery.Request): Promise<WorkTimeTimestampGetByQuery.Response> {
+  async getByQuery(dto: TimestampGetByQuery.Request): Promise<TimestampGetByQuery.Response> {
     const dayRange = Time.dayRangeISO(dto.date);
     const raw = (dto.raw as unknown as string) === 'true';
 
@@ -66,7 +66,7 @@ export class TimestampService {
     return { data, workTime, breaks, totalTime };
   }
 
-  async getById(dto: WorkTimeTimestampGetById.Request): Promise<WorkTimeTimestampGetById.Response> {
+  async getById(dto: TimestampGetById.Request): Promise<TimestampGetById.Response> {
     const existedTimestamp = await this.timestampRepository.findById(dto.id);
     if (!existedTimestamp) {
       throw new Error('Unable to delete non-existing entry');
@@ -75,7 +75,7 @@ export class TimestampService {
     return { data: new TimestampEntity(existedTimestamp).entity };
   }
 
-  async delete(dto: WorkTimeTimestampDelete.Request): Promise<WorkTimeTimestampDelete.Response> {
+  async delete(dto: TimestampDelete.Request): Promise<TimestampDelete.Response> {
     const existedTimestamp = await this.timestampRepository.findById(dto.id);
     if (!existedTimestamp) {
       throw new Error('Unable to delete non-existing entry');
