@@ -15,8 +15,8 @@ export interface ITimestamp {
 export interface ITimestampFindByQueryParams {
   userId: string;
   timestamp?: {
-    $gte: string;
-    $lte: string;
+    $gte: Date | string;
+    $lte: Date | string;
   };
 }
 

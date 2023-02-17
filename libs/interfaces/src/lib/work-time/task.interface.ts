@@ -12,8 +12,8 @@ export interface ITask {
 export interface ITaskFindByQueryParams {
   userId: string;
   date: {
-    $gte: Date;
-    $lte: Date;
+    $gte: Date | string;
+    $lte: Date | string;
   };
   name?: string;
 }

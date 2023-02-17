@@ -8,7 +8,7 @@ export interface ISummary {
 export interface ISummaryFindByQueryParams {
   userId: string;
   date?: {
-    $gte: string;
-    $lte: string;
+    $gte: Date | string;
+    $lte: Date | string;
   };
 }
