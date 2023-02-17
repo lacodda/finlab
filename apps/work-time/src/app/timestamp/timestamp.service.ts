@@ -2,16 +2,19 @@ import { type TimestampCreate, type TimestampDelete, type TimestampGetById, type
 import { type ITimestamp, type ITimestampFindByQueryParams, type TimestampType } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
 import { Injectable } from '@nestjs/common';
-import { type UpdateWriteOpResult } from 'mongoose';
 import { TimestampEntity } from './entities/timestamp.entity';
 import { TimestampsEntity } from './entities/timestamps.entity';
 import { TimestampRepository } from './repositories/timestamp.repository';
+import { TimestampEventEmitter } from './timestamp.event-emitter';
 
 const MIN_BREAK_TIME = 20; // FIXME move to settings
 
 @Injectable()
 export class TimestampService {
-  constructor(private readonly timestampRepository: TimestampRepository) { }
+  constructor(
+    private readonly timestampRepository: TimestampRepository,
+    private readonly timestampEventEmitter: TimestampEventEmitter
+  ) { }
 
   async create(dto: TimestampCreate.Request): Promise<TimestampCreate.Response> {
     const timestamp = new Date(dto.timestamp);
@@ -22,6 +25,7 @@ export class TimestampService {
     }
     const newTimestampEntity = new TimestampEntity({ ...dto, timestamp });
     const newTimestamp = await this.timestampRepository.create(newTimestampEntity);
+    await this.timestampEventEmitter.handle(newTimestampEntity);
 
     return { data: new TimestampEntity(newTimestamp).entity };
   }
@@ -38,7 +42,8 @@ export class TimestampService {
 
   async updateType(timestamp: ITimestamp, type: TimestampType): Promise<Omit<ITimestamp, 'userId'>> {
     const timestampEntity = new TimestampEntity(timestamp).updateType(type);
-    await this.updateTimestamp(timestampEntity);
+    await this.timestampRepository.update(timestampEntity);
+    await this.timestampEventEmitter.handle(timestampEntity);
     return timestampEntity.entity;
   }
 
@@ -83,13 +88,5 @@ export class TimestampService {
     await this.timestampRepository.delete(dto.id);
 
     return { data: { _id: existedTimestamp._id } };
-  }
-
-  private async updateTimestamp(timestamp: TimestampEntity): Promise<[UpdateWriteOpResult]> {
-    return await Promise.all(
-      [
-        this.timestampRepository.update(timestamp)
-      ]
-    );
   }
 }
