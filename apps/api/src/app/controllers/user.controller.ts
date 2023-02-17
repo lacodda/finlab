@@ -23,6 +23,6 @@ export class UserController {
 
   @Cron('* */1 * * *')
   cron(): void {
-    Logger.log('Done');
+    // Logger.log('Done');
   }
 }
