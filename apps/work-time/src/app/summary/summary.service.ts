@@ -1,21 +1,30 @@
-import { type SummaryCreate, type SummaryDelete, type SummaryGetById, type SummaryGetByQuery, type SummaryUpdate } from '@finlab/contracts/work-time';
-import { type ISummaryFindByQueryParams } from '@finlab/interfaces/work-time';
+import { type TimestampChanged, type SummaryCreate, type SummaryDelete, type SummaryGetById, type SummaryGetByQuery, type SummaryUpdate } from '@finlab/contracts/work-time';
+import { Time } from '@finlab/helpers';
+import { type ITimestampFindByQueryParams, type ISummaryFindByQueryParams, ISummary } from '@finlab/interfaces/work-time';
 import { Injectable } from '@nestjs/common';
 import { type UpdateWriteOpResult } from 'mongoose';
+import { TimestampsEntity } from '../timestamp/entities/timestamps.entity';
+import { TimestampRepository } from '../timestamp/repositories/timestamp.repository';
 import { SummaryEntity } from './entities/summary.entity';
 import { SummaryRepository } from './repositories/summary.repository';
 
+const MIN_BREAK_TIME = 20; // FIXME move to settings
+
 @Injectable()
 export class SummaryService {
-  constructor(private readonly summaryRepository: SummaryRepository) { }
+  constructor(
+    private readonly summaryRepository: SummaryRepository,
+    private readonly timestampRepository: TimestampRepository
+  ) { }
 
   async create(dto: SummaryCreate.Request): Promise<SummaryCreate.Response> {
-    const date = new Date(new Date(dto.date).setUTCHours(0, 0, 0, 0));
-    const existedSummary = await this.summaryRepository.findByDate(date, dto.userId);
+    const dayRange = Time.dayRange(dto.date);
+    const existedSummary = await this.summaryRepository.findByDate(dayRange.from, dto.userId);
     if (existedSummary) {
-      throw new Error('This date is already created');
+      const data = await this.updateTime(existedSummary, dto.time);
+      return { data };
     }
-    const newSummaryEntity = new SummaryEntity({ ...dto, date });
+    const newSummaryEntity = new SummaryEntity({ ...dto, date: dayRange.from });
     const newSummary = await this.summaryRepository.create(newSummaryEntity);
 
     return { data: new SummaryEntity(newSummary).entity };
@@ -30,6 +39,28 @@ export class SummaryService {
     await this.updateSummary(summaryEntity);
 
     return { data: summaryEntity.entity };
+  }
+
+  async updateTime(summary: ISummary, time: number): Promise<Omit<ISummary, 'userId'>> {
+    const summaryEntity = new SummaryEntity(summary).updateTime(time);
+    await this.summaryRepository.update(summaryEntity);
+    return summaryEntity.entity;
+  }
+
+  async calculate(dto: TimestampChanged.Request): Promise<void> {
+    const dayRange = Time.dayRangeISO(dto.timestamp);
+    const params: ITimestampFindByQueryParams = {
+      userId: dto.userId,
+      timestamp: {
+        $gte: dayRange.from,
+        $lte: dayRange.to
+      }
+    };
+    const timestampArray = await this.timestampRepository.findByQuery(params);
+    const { totalTime } = new TimestampsEntity(timestampArray, MIN_BREAK_TIME).process().result();
+    void this.create({ userId: dto.userId, date: dayRange.from, time: totalTime });
+    // const summaryEntity = new SummaryEntity({ userId: dto.userId, date: dayRange.from, time });
+    // await this.summaryRepository.create(summaryEntity);
   }
 
   async getByQuery(dto: SummaryGetByQuery.Request): Promise<SummaryGetByQuery.Response> {

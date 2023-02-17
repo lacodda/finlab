@@ -1,4 +1,4 @@
-import { SummaryCreate, SummaryDelete, SummaryGetById, SummaryGetByQuery, SummaryUpdate } from '@finlab/contracts/work-time';
+import { SummaryCreate, SummaryDelete, SummaryGetById, SummaryGetByQuery, SummaryUpdate, TimestampChanged } from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { SummaryService } from './summary.service';
@@ -35,5 +35,11 @@ export class SummaryController {
   @RMQRoute(SummaryDelete.topic)
   async delete(@Body() dto: SummaryDelete.Request): Promise<SummaryDelete.Response> {
     return await this.summaryService.delete(dto);
+  }
+
+  @RMQValidate()
+  @RMQRoute(TimestampChanged.topic)
+  async timestampChanged(@Body() dto: TimestampChanged.Request): Promise<void> {
+    await this.summaryService.calculate(dto);
   }
 }
