@@ -1,11 +1,15 @@
-import { type TimestampCreate, type TimestampDelete, type TimestampGetById, type TimestampGetByQuery, type TimestampUpdate } from '@finlab/contracts/work-time';
+import {
+  type TimestampCreate, type TimestampDelete, type TimestampGetById, type TimestampGetByQuery,
+  type TimestampUpdate
+} from '@finlab/contracts/work-time';
 import { type ITimestamp, type ITimestampFindByQueryParams, type TimestampType } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
 import { Injectable } from '@nestjs/common';
 import { TimestampEntity } from './entities/timestamp.entity';
 import { TimestampsEntity } from './entities/timestamps.entity';
 import { TimestampRepository } from './repositories/timestamp.repository';
-import { TimestampEventEmitter } from './timestamp.event-emitter';
+import { TotalTimeEventEmitter } from './total-time.event-emitter';
+import { TotalTimeEntity } from './entities/total-time.entity';
 
 const MIN_BREAK_TIME = 20; // FIXME move to settings
 
@@ -13,7 +17,7 @@ const MIN_BREAK_TIME = 20; // FIXME move to settings
 export class TimestampService {
   constructor(
     private readonly timestampRepository: TimestampRepository,
-    private readonly timestampEventEmitter: TimestampEventEmitter
+    private readonly totalTimeEventEmitter: TotalTimeEventEmitter
   ) { }
 
   async create(dto: TimestampCreate.Request): Promise<TimestampCreate.Response> {
@@ -25,7 +29,7 @@ export class TimestampService {
     }
     const newTimestampEntity = new TimestampEntity({ ...dto, timestamp });
     const newTimestamp = await this.timestampRepository.create(newTimestampEntity);
-    await this.timestampEventEmitter.handle(newTimestampEntity);
+    void this.changeTotalTime(newTimestamp);
 
     return { data: new TimestampEntity(newTimestamp).entity };
   }
@@ -43,7 +47,8 @@ export class TimestampService {
   async updateType(timestamp: ITimestamp, type: TimestampType): Promise<Omit<ITimestamp, 'userId'>> {
     const timestampEntity = new TimestampEntity(timestamp).updateType(type);
     await this.timestampRepository.update(timestampEntity);
-    await this.timestampEventEmitter.handle(timestampEntity);
+    void this.changeTotalTime(timestamp);
+
     return timestampEntity.entity;
   }
 
@@ -68,6 +73,7 @@ export class TimestampService {
     }
 
     const { timestamps: data, workTime, breaks, totalTime } = timestampsEntity.process().result();
+
     return { data, workTime, breaks, totalTime };
   }
 
@@ -86,7 +92,17 @@ export class TimestampService {
       throw new Error('Unable to delete non-existing entry');
     }
     await this.timestampRepository.delete(dto.id);
+    void this.changeTotalTime(existedTimestamp);
 
     return { data: { _id: existedTimestamp._id } };
+  }
+
+  async changeTotalTime({ userId, timestamp: date }: ITimestamp): Promise<void> {
+    const { totalTime: time } = await this.getByQuery({
+      userId,
+      date: date.toISOString()
+    });
+    const totalTimeEntity = new TotalTimeEntity({ userId, date, time });
+    await this.totalTimeEventEmitter.handle(totalTimeEntity);
   }
 }

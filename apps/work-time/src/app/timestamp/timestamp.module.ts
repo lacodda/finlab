@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Timestamp, TimestampSchema } from './models/timestamp.model';
 import { TimestampRepository } from './repositories/timestamp.repository';
 import { TimestampController } from './timestamp.controller';
-import { TimestampEventEmitter } from './timestamp.event-emitter';
+import { TotalTimeEventEmitter } from './total-time.event-emitter';
 import { TimestampService } from './timestamp.service';
 
 @Module({
@@ -13,7 +13,7 @@ import { TimestampService } from './timestamp.service';
     ])
   ],
   controllers: [TimestampController],
-  providers: [TimestampService, TimestampRepository, TimestampEventEmitter],
+  providers: [TimestampService, TimestampRepository, TotalTimeEventEmitter],
   exports: [TimestampService, TimestampRepository]
 })
 export class TimestampModule { }
