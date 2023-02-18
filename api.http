@@ -7,6 +7,7 @@ exports.start = new Date(new Date().setUTCHours(0,0,0,0)).toISOString();
 exports.end = new Date(new Date().setUTCHours(23,59,59,999)).toISOString();
 exports.lastWeekStart = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7).setUTCHours(0,0,0,0)).toISOString();
 exports.lastWeekEnd = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).setUTCHours(23,59,59,999)).toISOString();
+exports.now = now.toISOString();
 }}
 
 ###
@@ -173,7 +174,7 @@ POST {{host}}/api/work-time/timestamp HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "timestamp": "2022-12-03T16:29:39Z",
+    "timestamp": "{{now}}",
     "type": "Start"
 }
 
