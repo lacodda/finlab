@@ -26,3 +26,9 @@ export interface ITimestampsResult {
   breaks: number[];
   totalTime: number;
 }
+
+export interface ITotalTime {
+  userId: string;
+  date: Date;
+  time: number;
+}

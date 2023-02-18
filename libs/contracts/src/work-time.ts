@@ -8,7 +8,7 @@ export * from './lib/work-time/task.update';
 export * from './lib/work-time/task.get-by-query';
 export * from './lib/work-time/task.get-by-id';
 export * from './lib/work-time/task.delete';
-export * from './lib/work-time/timestamp.changed';
+export * from './lib/work-time/timestamp.changed-total-time';
 export * from './lib/work-time/timestamp.create';
 export * from './lib/work-time/timestamp.update';
 export * from './lib/work-time/timestamp.get-by-query';
