@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { RMQService } from 'nestjs-rmq';
-import { type TimestampEntity } from './entities/timestamp.entity';
+import { type TotalTimeEntity } from './entities/total-time.entity';
 
 @Injectable()
-export class TimestampEventEmitter {
+export class TotalTimeEventEmitter {
   constructor(private readonly rmqService: RMQService) {}
 
-  async handle(timestamp: TimestampEntity): Promise<void> {
-    for (const event of timestamp.events) {
+  async handle(totalTime: TotalTimeEntity): Promise<void> {
+    for (const event of totalTime.events) {
       await this.rmqService.notify(event.topic, event.data);
     }
   }
