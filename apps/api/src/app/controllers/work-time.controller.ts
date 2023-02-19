@@ -222,9 +222,9 @@ export class WorkTimeController {
   @ApiTags('summary')
   @UseGuards(JwtAuthGuard)
   @Delete('summary/:id')
-  async deleteSummary(@Param('id') id: string): Promise<SummaryDelete.Response | undefined> {
+  async deleteSummary(@Param('id') id: string, @UserId() userId: string): Promise<SummaryDelete.Response | undefined> {
     try {
-      return await this.rmqService.send<SummaryDelete.Request, SummaryDelete.Response>(SummaryDelete.topic, { id });
+      return await this.rmqService.send<SummaryDelete.Request, SummaryDelete.Response>(SummaryDelete.topic, { id, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
