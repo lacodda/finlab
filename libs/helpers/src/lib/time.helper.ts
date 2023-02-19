@@ -36,4 +36,15 @@ export class Time {
     diff /= 60;
     return Math.abs(Math.round(diff));
   }
+
+  public static datesInRange(from: Date, to: Date): Date[] {
+    const dates: Date[] = [];
+    let date = new Date(from.getTime());
+    while (date <= to) {
+      dates.push(new Date(date));
+      date = new Date(date.setDate(date.getDate() + 1));
+    }
+
+    return dates;
+  }
 }
