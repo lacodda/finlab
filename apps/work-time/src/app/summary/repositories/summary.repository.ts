@@ -31,7 +31,7 @@ export class SummaryRepository {
 
   async findByQuery(params: ISummaryFindByQueryParams): Promise<ISummary[]> {
     try {
-      return await this.summaryModel.find(params).exec();
+      return await this.summaryModel.find(params).sort({ date: 1 }).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
