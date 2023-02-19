@@ -3,10 +3,15 @@
 @userPassword=1
 {{
 const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+const date = now.getDate();
 exports.start = new Date(new Date().setUTCHours(0,0,0,0)).toISOString();
 exports.end = new Date(new Date().setUTCHours(23,59,59,999)).toISOString();
-exports.lastWeekStart = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7).setUTCHours(0,0,0,0)).toISOString();
-exports.lastWeekEnd = new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate()).setUTCHours(23,59,59,999)).toISOString();
+exports.lastWeekStart = new Date(new Date(year, month, date - 7).setUTCHours(0,0,0,0)).toISOString();
+exports.lastWeekEnd = new Date(new Date(year, month, date).setUTCHours(23,59,59,999)).toISOString();
+exports.firstDayOfMonth = new Date(new Date(year, month, 2).setUTCHours(0,0,0,0)).toISOString();
+exports.lastDayOfMonth = new Date(new Date(year, month + 1, 1).setUTCHours(23,59,59,999)).toISOString();
 exports.now = now.toISOString();
 }}
 
@@ -45,6 +50,11 @@ Authorization: Bearer {{jwt.access_token}}
 ###
 # GET Array of work-time summary with params
 GET {{host}}/api/work-time/summary?from={{start}}&to={{end}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET summary recalculate
+GET {{host}}/api/work-time/summary/recalculate?from={{firstDayOfMonth}}&to={{lastDayOfMonth}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
