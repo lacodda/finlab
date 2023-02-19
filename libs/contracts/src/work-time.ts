@@ -3,6 +3,7 @@ export * from './lib/work-time/summary.update';
 export * from './lib/work-time/summary.get-by-query';
 export * from './lib/work-time/summary.get-by-id';
 export * from './lib/work-time/summary.delete';
+export * from './lib/work-time/summary.recalculate';
 export * from './lib/work-time/task.create';
 export * from './lib/work-time/task.update';
 export * from './lib/work-time/task.get-by-query';
