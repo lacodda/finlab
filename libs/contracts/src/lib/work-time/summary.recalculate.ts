@@ -17,5 +17,6 @@ export namespace SummaryRecalculate {
 
   export class Response {
     data: Array<Omit<ISummary, 'userId'>>;
+    totalTime: number;
   }
 }

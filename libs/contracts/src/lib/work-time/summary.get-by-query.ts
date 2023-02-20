@@ -19,5 +19,6 @@ export namespace SummaryGetByQuery {
 
   export class Response {
     data: Array<Omit<ISummary, 'userId'>>;
+    totalTime: number;
   }
 }

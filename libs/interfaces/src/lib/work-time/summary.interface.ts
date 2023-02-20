@@ -5,6 +5,11 @@ export interface ISummary {
   time: number;
 }
 
+export interface ISummaryFindByQuery {
+  data: ISummary[];
+  totalTime: number;
+}
+
 export interface ISummaryFindByQueryParams {
   userId: string;
   date?: {
