@@ -52,13 +52,16 @@ export class SummaryService {
     };
     if (dto.from && dto.to) {
       params.date = {
-        $gte: new Date(dto.from).toISOString(),
-        $lte: new Date(dto.to).toISOString()
+        $gte: new Date(dto.from),
+        $lte: new Date(dto.to)
       };
     }
-    const summaryArray = await this.summaryRepository.findByQuery(params);
+    const { data, totalTime } = await this.summaryRepository.findByQuery(params);
 
-    return { data: summaryArray.map(summary => new SummaryEntity(summary).entity) };
+    return {
+      data: data.map(summary => new SummaryEntity(summary).entity),
+      totalTime
+    };
   }
 
   async getById(dto: SummaryGetById.Request): Promise<SummaryGetById.Response> {
@@ -87,12 +90,15 @@ export class SummaryService {
     return await this.getByQuery({ userId, from, to });
   }
 
-  async delete(dto: SummaryDelete.Request): Promise<SummaryDelete.Response> {
-    const existedSummary = await this.summaryRepository.findById(dto.id as string);
+  async delete({ id }: SummaryDelete.Request): Promise<SummaryDelete.Response> {
+    if (!id) {
+      throw new Error('Unable to delete non-existing entry');
+    }
+    const existedSummary = await this.summaryRepository.findById(id);
     if (!existedSummary) {
       throw new Error('Unable to delete non-existing entry');
     }
-    await this.summaryRepository.delete(dto.id as string);
+    await this.summaryRepository.delete(id);
 
     return { data: { _id: existedSummary._id } };
   }

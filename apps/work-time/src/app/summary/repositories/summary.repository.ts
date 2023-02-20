@@ -1,4 +1,4 @@
-import { type ISummary, type ISummaryFindByQueryParams } from '@finlab/interfaces/work-time';
+import { type ISummaryFindByQuery, type ISummary, type ISummaryFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, type UpdateWriteOpResult } from 'mongoose';
@@ -29,9 +29,22 @@ export class SummaryRepository {
     }
   }
 
-  async findByQuery(params: ISummaryFindByQueryParams): Promise<ISummary[]> {
+  async findByQuery(params: ISummaryFindByQueryParams): Promise<ISummaryFindByQuery> {
     try {
-      return await this.summaryModel.find(params).sort({ date: 1 }).exec();
+      return (await this.summaryModel.aggregate<ISummaryFindByQuery>(
+        [
+          {
+            $match: params
+          },
+          {
+            $group: {
+              _id: null,
+              data: { $push: '$$ROOT' },
+              totalTime: { $sum: '$time' }
+            }
+          }
+        ]
+      ))[0];
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
