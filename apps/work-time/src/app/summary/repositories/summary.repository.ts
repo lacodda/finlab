@@ -37,6 +37,11 @@ export class SummaryRepository {
             $match: params
           },
           {
+            $sort: {
+              date: 1
+            }
+          },
+          {
             $group: {
               _id: null,
               data: { $push: '$$ROOT' },
