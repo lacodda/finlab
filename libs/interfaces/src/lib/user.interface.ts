@@ -1,4 +1,4 @@
-import { AppStatus } from './app.interface';
+import { type AppStatus } from './app.interface';
 
 export enum UserRole {
   Administrator = 'Administrator',

@@ -1,6 +1,6 @@
-import { ITimestamp, ITimestampsResult } from '@finlab/interfaces';
+import { type ITimestamp, type ITimestampsResult } from '@finlab/interfaces/work-time';
 import { TimestampEntity } from './timestamp.entity';
-import { Time } from '@finlab/helpers';
+import { Time, List } from '@finlab/helpers';
 
 type BreaksType = Array<[TimestampEntity, TimestampEntity]>;
 
@@ -8,6 +8,8 @@ export class TimestampsEntity {
   timestamps: TimestampEntity[] = [];
 
   processedTimestamps: TimestampEntity[] = [];
+  workTime: number[] = [];
+  breaks: number[] = [];
   totalTime = 0;
   processed = false;
 
@@ -48,21 +50,28 @@ export class TimestampsEntity {
     if (end) {
       this.processedTimestamps.push(end);
     }
-    if (start && end) {
-      this.totalTime = Time.diffInMinutes(start.timestamp, end.timestamp);
-    }
-    for (const [{ timestamp: from }, { timestamp: to }] of breaks) {
-      this.totalTime = this.totalTime - Time.diffInMinutes(from, to);
-    }
-    this.processed = true;
 
+    this.workTime = this.getArrayOfDiff(this.processedTimestamps);
+    this.breaks = this.getArrayOfDiff(breaks.flat());
+    this.totalTime = List.sum(this.workTime);
+
+    this.processed = true;
     return this;
   }
 
   public result(): ITimestampsResult {
     return {
       timestamps: (this.processed ? this.processedTimestamps : this.timestamps).map(timestamp => timestamp.entity),
+      workTime: this.workTime,
+      breaks: this.breaks,
       totalTime: this.totalTime
     };
+  }
+
+  private getArrayOfDiff (timestamps: TimestampEntity[]): number[] {
+    if (timestamps?.length <= 1) {
+      return [];
+    }
+    return [...List.chunks(timestamps, 2)].map(([from, to]) => Time.diffInMinutes(from?.timestamp, to?.timestamp));
   }
 }

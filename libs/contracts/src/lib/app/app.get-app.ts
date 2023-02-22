@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator';
-import { IApp } from '@finlab/interfaces';
+import { type IApp } from '@finlab/interfaces';
 
 export namespace AppGetApp {
   export const topic = 'app.get-app.query';

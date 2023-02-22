@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
-import React, { useState, useEffect, Dispatch, createContext, useContext, PropsWithChildren } from 'react';
-import jwtDecode, { JwtPayload } from 'jwt-decode';
+import React, { useState, useEffect, type Dispatch, createContext, useContext, type PropsWithChildren } from 'react';
+import jwtDecode, { type JwtPayload } from 'jwt-decode';
 import { FinlabApi } from '../api';
-import { ILoginRequest, ISignUpRequest } from '../api/finlab.api';
+import { type ILoginRequest, type ISignUpRequest } from '../api/finlab.api';
 import { useLocalStorage } from '.';
 
 interface IUser {

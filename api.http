@@ -2,8 +2,17 @@
 @userEmail=admin@email.com
 @userPassword=1
 {{
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+const date = now.getDate();
 exports.start = new Date(new Date().setUTCHours(0,0,0,0)).toISOString();
 exports.end = new Date(new Date().setUTCHours(23,59,59,999)).toISOString();
+exports.lastWeekStart = new Date(new Date(year, month, date - 7).setUTCHours(0,0,0,0)).toISOString();
+exports.lastWeekEnd = new Date(new Date(year, month, date).setUTCHours(23,59,59,999)).toISOString();
+exports.firstDayOfMonth = new Date(new Date(year, month, 2).setUTCHours(0,0,0,0)).toISOString();
+exports.lastDayOfMonth = new Date(new Date(year, month + 1, 1).setUTCHours(23,59,59,999)).toISOString();
+exports.now = now.toISOString();
 }}
 
 ###
@@ -31,39 +40,44 @@ Content-Type: application/json
 GET {{host}}/api/user/info HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
+# Work time Summary
+
 ###
-# GET Array of work-time
-GET {{host}}/api/work-time HTTP/1.1
+# GET Work-time summary for this month
+GET {{host}}/api/work-time/summary?from={{firstDayOfMonth}}&to={{lastDayOfMonth}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# GET Array of work-time with params
-@from=2022-12-01T00:00:00Z
-@to=2022-12-04T23:59:59Z
-GET {{host}}/api/work-time?from={{from}}&to={{to}} HTTP/1.1
+# GET Work-time summary for today
+GET {{host}}/api/work-time/summary?from={{start}}&to={{end}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# CREATE new work-time
+# GET Recalculate work-time summary for this month
+GET {{host}}/api/work-time/summary/recalculate?from={{firstDayOfMonth}}&to={{lastDayOfMonth}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# CREATE new work-time summary
 # @name json
-POST {{host}}/api/work-time HTTP/1.1
+POST {{host}}/api/work-time/summary HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "date": "2022-12-03T15:38:39Z",
+    "date": start,
     "time": 20
 }
 
 ###
-# GET work-time
+# GET work-time summary
 # @ref json
-GET {{host}}/api/work-time/{{ json.data._id }} HTTP/1.1
+GET {{host}}/api/work-time/summary/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# UPDATE work-time
+# UPDATE work-time summary
 # @ref json
-PATCH {{host}}/api/work-time/{{ json.data._id }} HTTP/1.1
+PATCH {{host}}/api/work-time/summary/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
@@ -73,7 +87,7 @@ Content-Type: application/json
 ###
 # DELETE work-time
 # @ref json
-DELETE {{host}}/api/work-time/{{ json.data._id }} HTTP/1.1
+DELETE {{host}}/api/work-time/summary/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 
@@ -86,10 +100,23 @@ GET {{host}}/api/work-time/task HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
-# GET Array of tasks with params
-@from=2022-12-01T00:00:00Z
-@to=2022-12-04T23:59:59Z
-GET {{host}}/api/work-time/task?from={{from}}&to={{to}} HTTP/1.1
+# GET Array of tasks for today
+GET {{host}}/api/work-time/task?from={{start}}&to={{end}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Array of tasks for the last week
+GET {{host}}/api/work-time/task?from={{lastWeekStart}}&to={{lastWeekEnd}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Array of incomplete tasks for the last week
+GET {{host}}/api/work-time/task?from={{lastWeekStart}}&to={{lastWeekEnd}}&incomplete=true HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Array of incomplete tasks for the last week (includeAll)
+GET {{host}}/api/work-time/task?from={{lastWeekStart}}&to={{lastWeekEnd}}&incomplete=true&includeAll=true HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
@@ -99,9 +126,11 @@ POST {{host}}/api/work-time/task HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "date": "2022-12-03T15:38:39Z",
-    "text": "new task766",
-    "completeness": 10
+    "date": "2023-01-28T15:38:39Z",
+    "name": "Task name",
+    "comment": "Comment",
+    "completeness": 30,
+    "excludedFromSearch": false
 }
 
 ###
@@ -117,7 +146,8 @@ PATCH {{host}}/api/work-time/task/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "completeness": 90
+    "completeness": 90,
+    "excludedFromSearch": true
 }
 
 ###
@@ -137,7 +167,7 @@ Authorization: Bearer {{jwt.access_token}}
 
 ###
 # GET Timestamps for some date
-@date=2023-01-11
+@date=2022-01-11
 GET {{host}}/api/work-time/timestamp?date={{date}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
@@ -154,7 +184,7 @@ POST {{host}}/api/work-time/timestamp HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "timestamp": "2022-12-03T16:29:39Z",
+    "timestamp": "{{now}}",
     "type": "Start"
 }
 

@@ -1,5 +1,5 @@
 
-import React, { DetailedHTMLProps, HTMLAttributes, useEffect } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, useEffect } from 'react';
 import cn from 'classnames';
 import { FinlabApi } from '../../api';
 

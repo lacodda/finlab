@@ -24,12 +24,18 @@
       "@finlab/contracts": [
         "libs/contracts/src/index.ts"
       ],
+      "@finlab/contracts/work-time": [
+        "libs/contracts/src/work-time.ts"
+      ],
       "@finlab/helpers": [
         "libs/helpers/src/index.ts"
       ],
       "@finlab/interfaces": [
         "libs/interfaces/src/index.ts"
-      ]
+      ],
+      "@finlab/interfaces/work-time": [
+        "libs/interfaces/src/work-time.ts"
+      ],
     }
   },
   "exclude": [

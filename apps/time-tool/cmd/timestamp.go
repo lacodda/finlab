@@ -4,6 +4,7 @@ import (
 	"errors"
 	"finlab/apps/time-tool/api"
 	"finlab/apps/time-tool/core"
+	"finlab/apps/time-tool/db"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -45,14 +46,11 @@ func (e *TimestampType) Type() string {
 	return "type"
 }
 
-var FlagTimestampType = StartBreak
-var FlagTimestampShow = false
-var FlagTimestampDate = ""
-
-const (
-	dateTpl    = "2006-01-02"
-	dateISOTpl = "2006-01-02T15:04:05Z"
-	timeTpl    = "15:04"
+var (
+	FlagTimestampType = StartBreak
+	FlagTimestampShow = false
+	FlagTimestampRaw  = false
+	FlagTimestampDate = ""
 )
 
 var TimestampCmd = &cobra.Command{
@@ -63,20 +61,19 @@ var TimestampCmd = &cobra.Command{
 			var date = time.Now()
 			if len(FlagTimestampDate) > 0 {
 				var err error
-				date, err = time.Parse(dateTpl, FlagTimestampDate)
+				date, err = time.Parse(core.DateTpl, FlagTimestampDate)
 				if err != nil {
 					core.Danger("Error: %v\n", err.Error())
 					return
 				}
 			}
-			timestampsRes, err := api.PullTimestamps(date)
+			timestampsRes, err := api.PullTimestamps(date, FlagTimestampRaw)
 			if err != nil {
 				core.Danger("Error: %v\n", err.Error())
 				return
 			}
-			core.Info("Date: %s\n", date.Format(dateTpl))
-			printTimestampsRes(timestampsRes.Data)
-			core.Info("Total time: %s\n", core.MinutesToTimeStr(timestampsRes.TotalTime))
+			core.Info("Date: %s\n\n", date.Format(core.DateDotTpl))
+			printTimestampsRes(timestampsRes)
 			return
 		}
 		timestamp := core.Timestamp{
@@ -86,9 +83,12 @@ var TimestampCmd = &cobra.Command{
 		timestampRes, err := api.PushTimestamp(timestamp)
 		if err != nil {
 			core.Danger("Error: %v\n", err.Error())
-			api.SetTimestamp(timestamp)
+			err := db.SetTimestamp(timestamp)
+			if err != nil {
+				core.Danger("Error: %v\n", err.Error())
+			}
 			core.Success("Timestamp saved in local database\n")
-			core.Info("Timestamp (%s): %s\n", timestamp.Type, timestamp.Timestamp.Format(dateISOTpl))
+			core.Info("Timestamp (%s): %s\n", timestamp.Type, timestamp.Timestamp.Format(core.DateISOTpl))
 			return
 		}
 
@@ -96,9 +96,18 @@ var TimestampCmd = &cobra.Command{
 	},
 }
 
-func printTimestampsRes(timestamps []core.TimestampReq) {
-	for key, timestamp := range timestamps {
-		time, _ := time.Parse(dateISOTpl, timestamp.Timestamp)
-		core.Info("[%d] %s (%s)\n", key+1, time.Format(timeTpl), timestamp.Type)
+func printTimestampsRes(timestamps core.TimestampsRes) {
+	if len(timestamps.Data) > 0 {
+		core.Info("Timestamps:\n")
+		core.Info("=========================================================\n")
+	}
+	for key, timestamp := range timestamps.Data {
+		time, _ := time.Parse(core.DateISOTpl, timestamp.Timestamp)
+		core.Info("[%d] %s (%s)\n", key+1, time.Format(core.TimeTpl), timestamp.Type)
+	}
+	if timestamps.TotalTime > 0 {
+		core.Info("=========================================================\n")
+		core.Info("Total time: %s\n", core.MinutesToTimeStr(timestamps.TotalTime))
+		core.Info("\n")
 	}
 }

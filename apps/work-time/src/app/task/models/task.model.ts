@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { ITask } from '@finlab/interfaces';
+import { type ITask } from '@finlab/interfaces/work-time';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ timestamps: true })
@@ -11,10 +11,19 @@ export class Task extends Document implements ITask {
     date: Date;
 
   @Prop({ required: true })
-    text: string;
+    taskId: string;
+
+  @Prop({ required: true })
+    name: string;
+
+  @Prop()
+    comment: string;
 
   @Prop()
     completeness: number;
+
+  @Prop()
+    excludedFromSearch: boolean;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

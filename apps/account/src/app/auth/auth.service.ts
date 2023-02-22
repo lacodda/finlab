@@ -1,5 +1,5 @@
-import { AccountLogin, AccountRegister } from '@finlab/contracts';
-import { IJwtPayload, UserRole } from '@finlab/interfaces';
+import { type AccountLogin, type AccountRegister } from '@finlab/contracts';
+import { type IJwtPayload, UserRole } from '@finlab/interfaces';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../user/entities/user.entity';

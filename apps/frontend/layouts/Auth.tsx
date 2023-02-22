@@ -1,5 +1,5 @@
 
-import React, { FunctionComponent, ReactNode } from 'react';
+import React, { type FunctionComponent, type ReactNode } from 'react';
 import { Footer, Navbar } from '../components';
 
 export interface AuthLayoutProps {

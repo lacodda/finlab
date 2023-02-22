@@ -1,4 +1,4 @@
-import { WorkTimeTimestampCreate, WorkTimeTimestampDelete, WorkTimeTimestampGetById, WorkTimeTimestampGetByQuery, WorkTimeTimestampUpdate } from '@finlab/contracts';
+import { TimestampCreate, TimestampDelete, TimestampGetById, TimestampGetByQuery, TimestampUpdate } from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { TimestampService } from './timestamp.service';
@@ -8,32 +8,32 @@ export class TimestampController {
   constructor(private readonly timestampService: TimestampService) { }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTimestampCreate.topic)
-  async create(@Body() dto: WorkTimeTimestampCreate.Request): Promise<WorkTimeTimestampCreate.Response> {
+  @RMQRoute(TimestampCreate.topic)
+  async create(@Body() dto: TimestampCreate.Request): Promise<TimestampCreate.Response> {
     return await this.timestampService.create(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTimestampUpdate.topic)
-  async update(@Body() dto: WorkTimeTimestampUpdate.Request): Promise<WorkTimeTimestampUpdate.Response> {
+  @RMQRoute(TimestampUpdate.topic)
+  async update(@Body() dto: TimestampUpdate.Request): Promise<TimestampUpdate.Response> {
     return await this.timestampService.update(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTimestampGetByQuery.topic)
-  async getByQuery(@Body() dto: WorkTimeTimestampGetByQuery.Request): Promise<WorkTimeTimestampGetByQuery.Response> {
+  @RMQRoute(TimestampGetByQuery.topic)
+  async getByQuery(@Body() dto: TimestampGetByQuery.Request): Promise<TimestampGetByQuery.Response> {
     return await this.timestampService.getByQuery(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTimestampGetById.topic)
-  async getById(@Body() dto: WorkTimeTimestampGetById.Request): Promise<WorkTimeTimestampGetById.Response> {
+  @RMQRoute(TimestampGetById.topic)
+  async getById(@Body() dto: TimestampGetById.Request): Promise<TimestampGetById.Response> {
     return await this.timestampService.getById(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTimestampDelete.topic)
-  async delete(@Body() dto: WorkTimeTimestampDelete.Request): Promise<WorkTimeTimestampDelete.Response> {
+  @RMQRoute(TimestampDelete.topic)
+  async delete(@Body() dto: TimestampDelete.Request): Promise<TimestampDelete.Response> {
     return await this.timestampService.delete(dto);
   }
 }

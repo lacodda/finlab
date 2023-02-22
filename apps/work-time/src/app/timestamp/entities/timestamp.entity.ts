@@ -1,4 +1,4 @@
-import { ITimestamp, TimestampType } from '@finlab/interfaces';
+import { type ITimestamp, type TimestampType } from '@finlab/interfaces/work-time';
 
 export class TimestampEntity implements ITimestamp {
   _id?: string;

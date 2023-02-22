@@ -1,5 +1,5 @@
 import { IJwtPayload } from '@finlab/interfaces';
-import { Controller, Logger, Get, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt.guard';
@@ -23,6 +23,6 @@ export class UserController {
 
   @Cron('* */1 * * *')
   cron(): void {
-    Logger.log('Done');
+    // Logger.log('Done');
   }
 }

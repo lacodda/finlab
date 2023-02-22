@@ -1,5 +1,5 @@
-import { IJwtPayload } from '@finlab/interfaces';
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { type IJwtPayload } from '@finlab/interfaces';
+import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 
 export const User = createParamDecorator((data: unknown, ctx: ExecutionContext): IJwtPayload => {
   return ctx.switchToHttp().getRequest()?.user;

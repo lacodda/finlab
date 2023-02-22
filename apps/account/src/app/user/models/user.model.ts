@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose';
-import { AppStatus, IUser, IUserApps, UserRole } from '@finlab/interfaces';
+import { AppStatus, type IUser, type IUserApps, UserRole } from '@finlab/interfaces';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()

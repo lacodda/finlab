@@ -1,4 +1,4 @@
-import { WorkTimeTaskCreate, WorkTimeTaskDelete, WorkTimeTaskGetById, WorkTimeTaskGetByQuery, WorkTimeTaskUpdate } from '@finlab/contracts';
+import { TaskCreate, TaskDelete, TaskGetById, TaskGetByQuery, TaskUpdate } from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { TaskService } from './task.service';
@@ -8,32 +8,32 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTaskCreate.topic)
-  async create(@Body() dto: WorkTimeTaskCreate.Request): Promise<WorkTimeTaskCreate.Response> {
+  @RMQRoute(TaskCreate.topic)
+  async create(@Body() dto: TaskCreate.Request): Promise<TaskCreate.Response> {
     return await this.taskService.create(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTaskUpdate.topic)
-  async update(@Body() dto: WorkTimeTaskUpdate.Request): Promise<WorkTimeTaskUpdate.Response> {
+  @RMQRoute(TaskUpdate.topic)
+  async update(@Body() dto: TaskUpdate.Request): Promise<TaskUpdate.Response> {
     return await this.taskService.update(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTaskGetByQuery.topic)
-  async getByQuery(@Body() dto: WorkTimeTaskGetByQuery.Request): Promise<WorkTimeTaskGetByQuery.Response> {
+  @RMQRoute(TaskGetByQuery.topic)
+  async getByQuery(@Body() dto: TaskGetByQuery.Request): Promise<TaskGetByQuery.Response> {
     return await this.taskService.getByQuery(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTaskGetById.topic)
-  async getById(@Body() dto: WorkTimeTaskGetById.Request): Promise<WorkTimeTaskGetById.Response> {
+  @RMQRoute(TaskGetById.topic)
+  async getById(@Body() dto: TaskGetById.Request): Promise<TaskGetById.Response> {
     return await this.taskService.getById(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(WorkTimeTaskDelete.topic)
-  async delete(@Body() dto: WorkTimeTaskDelete.Request): Promise<WorkTimeTaskDelete.Response> {
+  @RMQRoute(TaskDelete.topic)
+  async delete(@Body() dto: TaskDelete.Request): Promise<TaskDelete.Response> {
     return await this.taskService.delete(dto);
   }
 }

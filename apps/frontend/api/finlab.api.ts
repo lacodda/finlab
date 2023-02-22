@@ -1,4 +1,4 @@
-import { SetValue, useLocalStorage, useFetch } from '../hooks';
+import { type SetValue, useLocalStorage, useFetch } from '../hooks';
 
 export type HttpMethods = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 

@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { IRMQServiceAsyncOptions } from 'nestjs-rmq';
+import { type IRMQServiceAsyncOptions } from 'nestjs-rmq';
 
 export const getRmqConfig = (): IRMQServiceAsyncOptions => ({
   imports: [ConfigModule],

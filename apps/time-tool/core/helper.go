@@ -1,8 +1,14 @@
 package core
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"log"
+	"os"
 	"strings"
+	"text/template"
+	"time"
 )
 
 const padLimit = 8192
@@ -63,4 +69,90 @@ func PadLeft(in string, size int, sep string) string {
 		}
 		return padding + in
 	}
+}
+
+func CreateIfNotExists(filename string) error {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) || info.IsDir() {
+		file, err := os.Create(filename)
+		if err != nil {
+			return err
+		}
+		file.Close()
+		return nil
+	}
+	return err
+}
+
+func ArrayToString(ints []int, sep string) string {
+	return strings.Trim(strings.Replace(fmt.Sprint(ints), " ", sep, -1), "[]")
+}
+
+func DayRange(date time.Time) (from time.Time, to time.Time) {
+	currentYear, currentMonth, currentDay := date.Date()
+	currentLocation := date.Location()
+
+	from = time.Date(currentYear, currentMonth, currentDay, 0, 0, 0, 0, currentLocation)
+	to = time.Date(currentYear, currentMonth, currentDay, 23, 59, 59, 999, currentLocation)
+	return
+}
+
+func MonthRange(date time.Time) (from time.Time, to time.Time) {
+	currentYear, currentMonth, _ := date.Date()
+	currentLocation := date.Location()
+
+	from = time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+	to = from.AddDate(0, 1, -1)
+	return
+}
+
+func LastWeekRange() (from time.Time, to time.Time) {
+	date := time.Now()
+	currentYear, currentMonth, currentDay := date.Date()
+	currentLocation := date.Location()
+
+	from = time.Date(currentYear, currentMonth, currentDay-7, 0, 0, 0, 0, currentLocation)
+	to = time.Date(currentYear, currentMonth, currentDay-1, 23, 59, 59, 999, currentLocation)
+	return
+}
+
+func GetUrl[T comparable](urlTemplate string, obj T) string {
+	t, _ := template.New("").Parse(urlTemplate)
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, obj); err != nil {
+		log.Fatalln(err)
+	}
+
+	return tpl.String()
+}
+
+func Unique[T comparable](s []T) []T {
+	result := make([]T, 0)
+	for _, v := range s {
+		if !Contains(result, v) {
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
+func Filter[T comparable](s []T, f func([]T, T) bool) []T {
+	result := make([]T, 0)
+	for _, v := range s {
+		if f(result, v) {
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
+func PrettyPrint(b []byte) []byte {
+	var out bytes.Buffer
+	err := json.Indent(&out, b, "", "  ")
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return out.Bytes()
 }

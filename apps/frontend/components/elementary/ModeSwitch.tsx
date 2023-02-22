@@ -1,5 +1,5 @@
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
-import React, { DetailedHTMLProps, HTMLAttributes, ReactNode, useEffect, useState } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, type ReactNode, useEffect, useState } from 'react';
 import { Button } from './Button';
 import { useDarkMode } from '../../hooks';
 
@@ -10,7 +10,7 @@ export interface EmptyProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElem
 export const ModeSwitch = ({ children, className, ...props }: EmptyProps): JSX.Element => {
   const [isDark, setTheme] = useDarkMode();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => { setMounted(true); }, []);
 
   const ModeSwitchIcon = (): JSX.Element => {
     if (!mounted) return <></>;
@@ -22,7 +22,7 @@ export const ModeSwitch = ({ children, className, ...props }: EmptyProps): JSX.E
   };
 
   return (
-    <Button color='mode' square={true} className={className} onClick={() => setTheme(!isDark)}>
+    <Button color='mode' square={true} className={className} onClick={() => { setTheme(!isDark); }}>
       {ModeSwitchIcon()}
     </Button>
   );

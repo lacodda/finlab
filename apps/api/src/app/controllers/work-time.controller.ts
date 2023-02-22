@@ -1,9 +1,9 @@
 import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards } from '@nestjs/common';
 import {
-  WorkTimeCreate, WorkTimeGetByQuery, WorkTimeGetById, WorkTimeUpdate, WorkTimeDelete,
-  WorkTimeTaskCreate, WorkTimeTaskDelete, WorkTimeTaskGetById, WorkTimeTaskGetByQuery, WorkTimeTaskUpdate,
-  WorkTimeTimestampCreate, WorkTimeTimestampDelete, WorkTimeTimestampGetById, WorkTimeTimestampGetByQuery, WorkTimeTimestampUpdate
-} from '@finlab/contracts';
+  SummaryCreate, SummaryGetByQuery, SummaryGetById, SummaryUpdate, SummaryDelete, SummaryRecalculate,
+  TaskCreate, TaskDelete, TaskGetById, TaskGetByQuery, TaskUpdate,
+  TimestampCreate, TimestampDelete, TimestampGetById, TimestampGetByQuery, TimestampUpdate
+} from '@finlab/contracts/work-time';
 import { RMQService } from 'nestjs-rmq';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { UserId } from '../guards/user.decorator';
@@ -19,9 +19,9 @@ export class WorkTimeController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Post('task')
-  async createTask(@Body() dto: Omit<WorkTimeTaskCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTaskCreate.Response | undefined> {
+  async createTask(@Body() dto: Omit<TaskCreate.Request, 'userId'>, @UserId() userId: string): Promise<TaskCreate.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTaskCreate.Request, WorkTimeTaskCreate.Response>(WorkTimeTaskCreate.topic, { ...dto, userId });
+      return await this.rmqService.send<TaskCreate.Request, TaskCreate.Response>(TaskCreate.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -32,9 +32,9 @@ export class WorkTimeController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Patch('task/:id')
-  async updateTask(@Param('id') id: string, @Body() dto: Omit<WorkTimeTaskUpdate.Request, 'id'>): Promise<WorkTimeTaskUpdate.Response | undefined> {
+  async updateTask(@Param('id') id: string, @Body() dto: Omit<TaskUpdate.Request, 'id'>): Promise<TaskUpdate.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTaskUpdate.Request, WorkTimeTaskUpdate.Response>(WorkTimeTaskUpdate.topic, { ...dto, id });
+      return await this.rmqService.send<TaskUpdate.Request, TaskUpdate.Response>(TaskUpdate.topic, { ...dto, id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -45,9 +45,9 @@ export class WorkTimeController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Get('task')
-  async getTaskByQuery(@Query() dto: Omit<WorkTimeTaskGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTaskGetByQuery.Response | undefined> {
+  async getTaskByQuery(@Query() dto: Omit<TaskGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<TaskGetByQuery.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTaskGetByQuery.Request, WorkTimeTaskGetByQuery.Response>(WorkTimeTaskGetByQuery.topic, { ...dto, userId });
+      return await this.rmqService.send<TaskGetByQuery.Request, TaskGetByQuery.Response>(TaskGetByQuery.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -58,9 +58,9 @@ export class WorkTimeController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Get('task/:id')
-  async getTaskById(@Param('id') id: string): Promise<WorkTimeTaskGetById.Response | undefined> {
+  async getTaskById(@Param('id') id: string): Promise<TaskGetById.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTaskGetById.Request, WorkTimeTaskGetById.Response>(WorkTimeTaskGetById.topic, { id });
+      return await this.rmqService.send<TaskGetById.Request, TaskGetById.Response>(TaskGetById.topic, { id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -71,9 +71,9 @@ export class WorkTimeController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Delete('task/:id')
-  async deleteTask(@Param('id') id: string): Promise<WorkTimeTaskDelete.Response | undefined> {
+  async deleteTask(@Param('id') id: string): Promise<TaskDelete.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTaskDelete.Request, WorkTimeTaskDelete.Response>(WorkTimeTaskDelete.topic, { id });
+      return await this.rmqService.send<TaskDelete.Request, TaskDelete.Response>(TaskDelete.topic, { id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -88,11 +88,11 @@ export class WorkTimeController {
   @ApiResponse({
     status: 201,
     description: 'The found record',
-    type: WorkTimeTimestampCreate.Response
+    type: TimestampCreate.Response
   })
-  async createTimestamp(@Body() dto: Omit<WorkTimeTimestampCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTimestampCreate.Response | undefined> {
+  async createTimestamp(@Body() dto: Omit<TimestampCreate.Request, 'userId'>, @UserId() userId: string): Promise<TimestampCreate.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTimestampCreate.Request, WorkTimeTimestampCreate.Response>(WorkTimeTimestampCreate.topic, { ...dto, userId });
+      return await this.rmqService.send<TimestampCreate.Request, TimestampCreate.Response>(TimestampCreate.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -103,9 +103,9 @@ export class WorkTimeController {
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Patch('timestamp/:id')
-  async updateTimestamp(@Param('id') id: string, @Body() dto: Omit<WorkTimeTimestampUpdate.Request, 'id'>): Promise<WorkTimeTimestampUpdate.Response | undefined> {
+  async updateTimestamp(@Param('id') id: string, @Body() dto: Omit<TimestampUpdate.Request, 'id'>): Promise<TimestampUpdate.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTimestampUpdate.Request, WorkTimeTimestampUpdate.Response>(WorkTimeTimestampUpdate.topic, { ...dto, id });
+      return await this.rmqService.send<TimestampUpdate.Request, TimestampUpdate.Response>(TimestampUpdate.topic, { ...dto, id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -116,9 +116,9 @@ export class WorkTimeController {
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Get('timestamp')
-  async getTimestampByQuery(@Query() dto: Omit<WorkTimeTimestampGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeTimestampGetByQuery.Response | undefined> {
+  async getTimestampByQuery(@Query() dto: Omit<TimestampGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<TimestampGetByQuery.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTimestampGetByQuery.Request, WorkTimeTimestampGetByQuery.Response>(WorkTimeTimestampGetByQuery.topic, { ...dto, userId });
+      return await this.rmqService.send<TimestampGetByQuery.Request, TimestampGetByQuery.Response>(TimestampGetByQuery.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -129,9 +129,9 @@ export class WorkTimeController {
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Get('timestamp/:id')
-  async getTimestampById(@Param('id') id: string): Promise<WorkTimeTimestampGetById.Response | undefined> {
+  async getTimestampById(@Param('id') id: string): Promise<TimestampGetById.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTimestampGetById.Request, WorkTimeTimestampGetById.Response>(WorkTimeTimestampGetById.topic, { id });
+      return await this.rmqService.send<TimestampGetById.Request, TimestampGetById.Response>(TimestampGetById.topic, { id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -142,9 +142,9 @@ export class WorkTimeController {
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Delete('timestamp/:id')
-  async deleteTimestamp(@Param('id') id: string): Promise<WorkTimeTimestampDelete.Response | undefined> {
+  async deleteTimestamp(@Param('id') id: string): Promise<TimestampDelete.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeTimestampDelete.Request, WorkTimeTimestampDelete.Response>(WorkTimeTimestampDelete.topic, { id });
+      return await this.rmqService.send<TimestampDelete.Request, TimestampDelete.Response>(TimestampDelete.topic, { id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -152,14 +152,14 @@ export class WorkTimeController {
     }
   }
 
-  // Work-time
+  // Summary
 
-  @ApiTags('work-time')
+  @ApiTags('summary')
   @UseGuards(JwtAuthGuard)
-  @Post()
-  async create(@Body() dto: Omit<WorkTimeCreate.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeCreate.Response | undefined> {
+  @Post('summary')
+  async createSummary(@Body() dto: Omit<SummaryCreate.Request, 'userId'>, @UserId() userId: string): Promise<SummaryCreate.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeCreate.Request, WorkTimeCreate.Response>(WorkTimeCreate.topic, { ...dto, userId });
+      return await this.rmqService.send<SummaryCreate.Request, SummaryCreate.Response>(SummaryCreate.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -167,12 +167,12 @@ export class WorkTimeController {
     }
   }
 
-  @ApiTags('work-time')
+  @ApiTags('summary')
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: Omit<WorkTimeUpdate.Request, 'id'>): Promise<WorkTimeUpdate.Response | undefined> {
+  @Patch('summary/:id')
+  async updateSummary(@Param('id') id: string, @Body() dto: Omit<SummaryUpdate.Request, 'id'>): Promise<SummaryUpdate.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeUpdate.Request, WorkTimeUpdate.Response>(WorkTimeUpdate.topic, { ...dto, id });
+      return await this.rmqService.send<SummaryUpdate.Request, SummaryUpdate.Response>(SummaryUpdate.topic, { ...dto, id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -180,12 +180,12 @@ export class WorkTimeController {
     }
   }
 
-  @ApiTags('work-time')
+  @ApiTags('summary')
   @UseGuards(JwtAuthGuard)
-  @Get()
-  async getByQuery(@Query() dto: Omit<WorkTimeGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<WorkTimeGetByQuery.Response | undefined> {
+  @Get('summary/recalculate')
+  async recalculateSummary(@Query() dto: Omit<SummaryRecalculate.Request, 'userId'>, @UserId() userId: string): Promise<SummaryRecalculate.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeGetByQuery.Request, WorkTimeGetByQuery.Response>(WorkTimeGetByQuery.topic, { ...dto, userId });
+      return await this.rmqService.send<SummaryRecalculate.Request, SummaryRecalculate.Response>(SummaryRecalculate.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -193,12 +193,12 @@ export class WorkTimeController {
     }
   }
 
-  @ApiTags('work-time')
+  @ApiTags('summary')
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async getById(@Param('id') id: string): Promise<WorkTimeGetById.Response | undefined> {
+  @Get('summary')
+  async getByQuerySummary(@Query() dto: Omit<SummaryGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<SummaryGetByQuery.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeGetById.Request, WorkTimeGetById.Response>(WorkTimeGetById.topic, { id });
+      return await this.rmqService.send<SummaryGetByQuery.Request, SummaryGetByQuery.Response>(SummaryGetByQuery.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -206,12 +206,25 @@ export class WorkTimeController {
     }
   }
 
-  @ApiTags('work-time')
+  @ApiTags('summary')
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async delete(@Param('id') id: string): Promise<WorkTimeDelete.Response | undefined> {
+  @Get('summary/:id')
+  async getByIdSummary(@Param('id') id: string): Promise<SummaryGetById.Response | undefined> {
     try {
-      return await this.rmqService.send<WorkTimeDelete.Request, WorkTimeDelete.Response>(WorkTimeDelete.topic, { id });
+      return await this.rmqService.send<SummaryGetById.Request, SummaryGetById.Response>(SummaryGetById.topic, { id });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+    }
+  }
+
+  @ApiTags('summary')
+  @UseGuards(JwtAuthGuard)
+  @Delete('summary/:id')
+  async deleteSummary(@Param('id') id: string, @UserId() userId: string): Promise<SummaryDelete.Response | undefined> {
+    try {
+      return await this.rmqService.send<SummaryDelete.Request, SummaryDelete.Response>(SummaryDelete.topic, { id, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);

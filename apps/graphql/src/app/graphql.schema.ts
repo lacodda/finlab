@@ -4,7 +4,6 @@
  * -------------------------------------------------------
  */
 
-/* tslint:disable */
 /* eslint-disable */
 export class CreateCatInput {
   name?: Nullable<string>;

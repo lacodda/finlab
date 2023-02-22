@@ -1,8 +1,8 @@
-import { ITask, ITaskFindByQueryParams } from '@finlab/interfaces';
+import { type ITask, type ITaskFindIncompleteParams, type ITaskFindIncompleteResult, type ITaskFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateWriteOpResult } from 'mongoose';
-import { TaskEntity } from '../entities/task.entity';
+import { Model, type UpdateWriteOpResult } from 'mongoose';
+import { type TaskEntity } from '../entities/task.entity';
 import { Task } from '../models/task.model';
 
 @Injectable()
@@ -48,6 +48,41 @@ export class TaskRepository {
   async findByQuery(params: ITaskFindByQueryParams): Promise<ITask[]> {
     try {
       return await this.taskModel.find(params).exec();
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async findAndGroupByQuery(params: ITaskFindIncompleteParams): Promise<ITaskFindIncompleteResult[]> {
+    try {
+      const resultMatch: Partial<{ completeness: Record<string, unknown>, excludedFromSearch: Record<string, unknown> }> = {
+        completeness: { $lt: 100 },
+        excludedFromSearch: {
+          $not: { $gt: 0 }
+        }
+      };
+      if (params.includeAll) {
+        delete resultMatch.excludedFromSearch;
+      }
+      return await this.taskModel.aggregate(
+        [
+          {
+            $match: {
+              date: params.date,
+              taskId: { $not: { $in: params.excludeTaskIds } }
+            }
+          },
+          {
+            $group: {
+              _id: '$taskId',
+              tasks: { $push: '$$ROOT' },
+              completeness: { $max: '$completeness' },
+              excludedFromSearch: { $sum: { $cond: [{ $eq: ['$excludedFromSearch', true] }, 1, 0] } }
+            }
+          },
+          { $match: resultMatch }
+        ]
+      );
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

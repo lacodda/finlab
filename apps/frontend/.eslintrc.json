@@ -8,7 +8,8 @@
   ],
   "ignorePatterns": [
     "!**/*",
-    ".next/**/*"
+    ".next/**/*",
+    "*.d.ts"
   ],
   "overrides": [
     {

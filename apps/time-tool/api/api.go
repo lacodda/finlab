@@ -6,6 +6,7 @@ import (
 	"errors"
 	"finlab/apps/time-tool/config"
 	"finlab/apps/time-tool/core"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -33,12 +34,9 @@ func GetBody(req *http.Request) ([]byte, *http.Response, error) {
 	return body, resp, nil
 }
 
-func SignIn(email string, password string) (core.AccessToken, error) {
+func SignIn(credentials core.Credentials) (core.AccessToken, error) {
 	accessToken := core.AccessToken{}
-	reqBody, _ := json.Marshal(&core.Credentials{
-		Email:    email,
-		Password: password,
-	})
+	reqBody, _ := json.Marshal(credentials)
 
 	jsonStr := []byte(string(reqBody))
 	req := GetReq(core.Post, "/api/auth/login", jsonStr)
@@ -88,11 +86,11 @@ func PushTimestamp(timestamp core.Timestamp) (core.TimestampRes, error) {
 	return timestampRes, nil
 }
 
-func PullTimestamps(date time.Time) (core.TimestampsRes, error) {
+func PullTimestamps(date time.Time, raw bool) (core.TimestampsRes, error) {
 	timestampsRes := core.TimestampsRes{}
 
 	jsonStr := []byte("")
-	req := GetReq(core.Get, "/api/work-time/timestamp?date="+date.Format("2006-01-02"), jsonStr)
+	req := GetReq(core.Get, fmt.Sprintf("/api/work-time/timestamp?date=%s&raw=%v", date.Format("2006-01-02"), raw), jsonStr)
 	body, resp, err := GetBody(req)
 
 	if err != nil {
@@ -109,4 +107,86 @@ func PullTimestamps(date time.Time) (core.TimestampsRes, error) {
 	json.Unmarshal([]byte(body), &timestampsRes)
 
 	return timestampsRes, nil
+}
+
+func PushTask(task core.TaskReq) (core.TaskRes, error) {
+	taskRes := core.TaskRes{}
+	reqBody, _ := json.Marshal(task)
+
+	jsonStr := []byte(string(reqBody))
+	req := GetReq(core.Post, "/api/work-time/task", jsonStr)
+	body, resp, err := GetBody(req)
+
+	if err != nil {
+		return taskRes, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		err := core.Error{}
+		json.Unmarshal([]byte(body), &err)
+
+		return taskRes, errors.New(err.Message)
+	}
+
+	json.Unmarshal([]byte(body), &taskRes)
+
+	return taskRes, nil
+}
+
+func PullTasks(from time.Time, to time.Time, incomplete bool) (core.TasksRes, error) {
+	tasksRes := core.TasksRes{}
+
+	jsonStr := []byte("")
+	req := GetReq(core.Get, fmt.Sprintf("/api/work-time/task?from=%s&to=%s&incomplete=%v", from.Format(core.DateISOTpl), to.Format(core.DateISOTpl), incomplete), jsonStr)
+	body, resp, err := GetBody(req)
+
+	if err != nil {
+		return tasksRes, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		err := core.Error{}
+		json.Unmarshal([]byte(body), &err)
+
+		return tasksRes, errors.New(err.Message)
+	}
+
+	json.Unmarshal([]byte(body), &tasksRes)
+
+	return tasksRes, nil
+}
+
+func DeleteTask(id string) error {
+	jsonStr := []byte("")
+	req := GetReq(core.Delete, fmt.Sprintf("/api/work-time/task/%s", id), jsonStr)
+	_, _, err := GetBody(req)
+
+	return err
+}
+
+func PullSummary(from time.Time, to time.Time, isRecalculate bool) (core.SummaryRes, error) {
+	summaryRes := core.SummaryRes{}
+
+	jsonStr := []byte("")
+	recalculate := ""
+	if isRecalculate {
+		recalculate = "/recalculate"
+	}
+	req := GetReq(core.Get, fmt.Sprintf("/api/work-time/summary%s?from=%s&to=%s", recalculate, from.Format(core.DateISOTpl), to.Format(core.DateISOTpl)), jsonStr)
+	body, resp, err := GetBody(req)
+
+	if err != nil {
+		return summaryRes, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		err := core.Error{}
+		json.Unmarshal([]byte(body), &err)
+
+		return summaryRes, errors.New(err.Message)
+	}
+
+	json.Unmarshal([]byte(body), &summaryRes)
+
+	return summaryRes, nil
 }

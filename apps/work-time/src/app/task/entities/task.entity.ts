@@ -1,23 +1,44 @@
-import { ITask } from '@finlab/interfaces';
+import { Utils } from '@finlab/helpers';
+import { type ITask } from '@finlab/interfaces/work-time';
 
 export class TaskEntity implements ITask {
   _id?: string;
   userId: string;
+  taskId: string;
   date: Date;
-  text: string;
+  name: string;
+  comment?: string;
   completeness?: number;
+  excludedFromSearch?: boolean;
 
   constructor(task: ITask) {
     this._id = task._id;
     this.userId = task.userId;
+    this.taskId = task.taskId || Utils.uuid();
     this.date = task.date;
-    this.text = task.text;
+    this.name = task.name;
+    this.comment = task.comment;
     this.completeness = task.completeness;
+    this.excludedFromSearch = task.excludedFromSearch;
   }
 
-  public updateText(text?: string): this {
-    if (text !== undefined) {
-      this.text = text;
+  public updateName(name?: string): this {
+    if (name !== undefined) {
+      this.name = name;
+    }
+    return this;
+  }
+
+  public updateComment(comment?: string): this {
+    if (comment !== undefined) {
+      this.comment = comment;
+    }
+    return this;
+  }
+
+  public updateExcludedFromSearch(excludedFromSearch?: boolean): this {
+    if (excludedFromSearch !== undefined) {
+      this.excludedFromSearch = excludedFromSearch;
     }
     return this;
   }
@@ -32,9 +53,12 @@ export class TaskEntity implements ITask {
   public get entity(): Omit<ITask, 'userId'> {
     return {
       _id: this._id,
+      taskId: this.taskId,
       date: this.date,
-      text: this.text,
-      completeness: this.completeness
+      name: this.name,
+      comment: this.comment,
+      completeness: this.completeness,
+      excludedFromSearch: this.excludedFromSearch
     };
   }
 }

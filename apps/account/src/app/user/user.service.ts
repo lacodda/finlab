@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { AccountAddApp, AccountUpdateProfile } from '@finlab/contracts';
+import { type AccountAddApp, type AccountUpdateProfile } from '@finlab/contracts';
 import { RMQService } from 'nestjs-rmq';
 import { UserEntity } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
 import { AddAppSaga } from './sagas/add-app.saga';
-import { IUser } from '@finlab/interfaces';
+import { type IUser } from '@finlab/interfaces';
 import { UserEventEmitter } from './user.event-emitter';
-import { UpdateWriteOpResult } from 'mongoose';
+import { type UpdateWriteOpResult } from 'mongoose';
 
 @Injectable()
 export class UserService {

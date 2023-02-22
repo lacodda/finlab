@@ -1,7 +1,7 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
-import { Cat } from '../graphql.schema';
+import { type Cat } from '../graphql.schema';
 import { CatsGuard } from './cats.guard';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
@@ -28,8 +28,8 @@ export class CatsResolver {
 
   @Mutation('createCat')
   async create(@Args('createCatInput') args: CreateCatDto): Promise<Cat> {
-    const createdCat = await this.catsService.create(args);
-    pubSub.publish('catCreated', { catCreated: createdCat });
+    const createdCat = this.catsService.create(args);
+    void pubSub.publish('catCreated', { catCreated: createdCat });
     return createdCat;
   }
 
