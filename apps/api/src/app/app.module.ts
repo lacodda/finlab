@@ -8,7 +8,10 @@ import { getJwtConfig } from './configs/jwt.config';
 import { getRmqConfig } from './configs/rmq.config';
 import { AuthController } from './controllers/auth.controller';
 import { UserController } from './controllers/user.controller';
-import { WorkTimeController } from './controllers/work-time.controller';
+import { WorkTimeTimestampController } from './controllers/work-time/timestamp.controller';
+import { WorkTimeTaskController } from './controllers/work-time/task.controller';
+import { WorkTimeSummaryController } from './controllers/work-time/summary.controller';
+import { WorkTimeCalendarController } from './controllers/work-time/calendar.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -19,7 +22,14 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     PassportModule,
     ScheduleModule.forRoot()
   ],
-  controllers: [AuthController, UserController, WorkTimeController],
+  controllers: [
+    AuthController,
+    UserController,
+    WorkTimeTimestampController,
+    WorkTimeTaskController,
+    WorkTimeSummaryController,
+    WorkTimeCalendarController
+  ],
   providers: [JwtStrategy]
 })
 export class AppModule {}
