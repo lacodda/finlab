@@ -1,4 +1,4 @@
-import { type ICalendar } from '@finlab/interfaces/work-time';
+import { type ICalendarDay } from '@finlab/interfaces/work-time';
 import { IsString } from 'class-validator';
 
 export namespace CalendarDelete {
@@ -10,6 +10,6 @@ export namespace CalendarDelete {
   }
 
   export class Response {
-    data: Pick<ICalendar, '_id'>;
+    data: Pick<ICalendarDay, '_id'>;
   }
 }

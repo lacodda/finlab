@@ -1,4 +1,4 @@
-import { type ICalendar, CalendarType } from '@finlab/interfaces/work-time';
+import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
 import { IsString, IsDateString, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -22,6 +22,6 @@ export namespace CalendarCreate {
 
   export class Response {
     @ApiProperty()
-      data: Omit<ICalendar, 'userId'>;
+      data: Omit<ICalendarDay, 'userId'>;
   }
 }

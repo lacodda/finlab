@@ -1,4 +1,4 @@
-import { type ICalendar, CalendarType } from '@finlab/interfaces/work-time';
+import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
 import { IsDateString, IsOptional, IsString, IsEnum } from 'class-validator';
 
 export namespace CalendarUpdate {
@@ -19,6 +19,6 @@ export namespace CalendarUpdate {
   }
 
   export class Response {
-    data: Omit<ICalendar, 'userId'>;
+    data: Omit<ICalendarDay, 'userId'>;
   }
 }

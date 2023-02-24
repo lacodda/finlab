@@ -7,24 +7,17 @@ export enum CalendarType {
   BusinessTrip = 'BusinessTrip'
 }
 
-export interface ICalendar {
+export interface ICalendarDay {
   _id?: string;
   userId: string;
   date: Date;
   type: CalendarType;
+  time: number;
 }
 
 export interface ICalendarFindByQueryParams {
   userId: string;
-  date?: {
-    $gte: Date | string;
-    $lte: Date | string;
-  };
-}
-
-export interface ICalendarsResult {
-  dates: Array<Omit<ICalendar, 'userId'>>;
-  workTime: number[];
-  breaks: number[];
-  totalTime: number;
+  year?: number;
+  month?: number;
+  fillUp?: boolean;
 }
