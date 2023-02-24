@@ -209,3 +209,19 @@ Content-Type: application/json
 # @ref json
 DELETE {{host}}/api/work-time/timestamp/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
+
+
+
+# Calendar
+
+
+###
+# GET Calendar for this month
+GET {{host}}/api/work-time/calendar HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Calendar for some month
+@month=12
+GET {{host}}/api/work-time/calendar?month={{date}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
