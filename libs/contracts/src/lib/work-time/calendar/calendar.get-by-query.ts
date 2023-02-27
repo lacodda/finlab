@@ -1,6 +1,7 @@
 import { type ICalendarDay } from '@finlab/interfaces/work-time';
-import { IsString, IsOptional, IsNumberString, IsBooleanString, IsInt, Min, Max } from 'class-validator';
+import { IsOptional, IsBoolean, IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
+import { type UserId } from '../../common/user-id';
 
 const currentYear = new Date().getFullYear();
 const MIN_YEAR = currentYear - 1;
@@ -12,30 +13,28 @@ export namespace CalendarGetByQuery {
   export const topic = 'work-time.calendar.get-by-query.query';
 
   export class Request {
-    @IsString()
-      userId: string;
-
     @IsOptional()
-    @IsNumberString()
-    @Type(() => Number)
-    @IsInt()
-    @Min(MIN_YEAR)
     @Max(MAX_YEAR)
+    @Min(MIN_YEAR)
+    @IsInt()
+    @Type(() => Number)
       year?: number;
 
     @IsOptional()
-    @IsNumberString()
-    @Type(() => Number)
-    @IsInt()
-    @Min(MIN_MONTH)
     @Max(MAX_MONTH)
+    @Min(MIN_MONTH)
+    @IsInt()
+    @Type(() => Number)
       month?: number;
 
     @IsOptional()
-    @IsBooleanString()
+    @IsBoolean()
     @Type(() => Boolean)
       fillUp?: boolean;
   }
+
+  export class UserIdRequest {}
+  export interface UserIdRequest extends UserId, Request {}
 
   export class Response {
     data: Array<Omit<ICalendarDay, 'userId'>>;
