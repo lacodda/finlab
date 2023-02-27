@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -11,6 +11,7 @@ async function bootstrap(): Promise<void> {
     origin: '*',
     credentials: true
   });
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   const document = SwaggerModule.createDocument(app, getSwaggerConfig());
   SwaggerModule.setup('swagger', app, document);
   const globalPrefix = 'api';
