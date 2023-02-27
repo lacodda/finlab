@@ -18,9 +18,9 @@ export class WorkTimeCalendarController {
     description: 'The found record',
     type: CalendarCreate.Response
   })
-  async createCalendar(@Body() dto: Omit<CalendarCreate.Request, 'userId'>, @UserId() userId: string): Promise<CalendarCreate.Response | undefined> {
+  async createCalendar(@Body() dto: CalendarCreate.Request, @UserId() userId: string): Promise<CalendarCreate.Response | undefined> {
     try {
-      return await this.rmqService.send<CalendarCreate.Request, CalendarCreate.Response>(CalendarCreate.topic, { ...dto, userId });
+      return await this.rmqService.send<CalendarCreate.UserIdRequest, CalendarCreate.Response>(CalendarCreate.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -31,9 +31,9 @@ export class WorkTimeCalendarController {
   @ApiTags('calendar')
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  async updateCalendar(@Param('id') id: string, @Body() dto: Omit<CalendarUpdate.Request, 'id'>): Promise<CalendarUpdate.Response | undefined> {
+  async updateCalendar(@Param('id') id: string, @Body() dto: CalendarUpdate.Request): Promise<CalendarUpdate.Response | undefined> {
     try {
-      return await this.rmqService.send<CalendarUpdate.Request, CalendarUpdate.Response>(CalendarUpdate.topic, { ...dto, id });
+      return await this.rmqService.send<CalendarUpdate.IdRequest, CalendarUpdate.Response>(CalendarUpdate.topic, { ...dto, id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -44,9 +44,9 @@ export class WorkTimeCalendarController {
   @ApiTags('calendar')
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getCalendarByQuery(@Query() dto: Omit<CalendarGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<CalendarGetByQuery.Response | undefined> {
+  async getCalendarByQuery(@Query() dto: CalendarGetByQuery.Request, @UserId() userId: string): Promise<CalendarGetByQuery.Response | undefined> {
     try {
-      return await this.rmqService.send<CalendarGetByQuery.Request, CalendarGetByQuery.Response>(CalendarGetByQuery.topic, { ...dto, userId });
+      return await this.rmqService.send<CalendarGetByQuery.UserIdRequest, CalendarGetByQuery.Response>(CalendarGetByQuery.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
