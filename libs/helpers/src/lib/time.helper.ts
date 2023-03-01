@@ -1,7 +1,36 @@
 import { type IDateRange, type IDateRangeISO } from '@finlab/interfaces';
 
+export enum FirstDayOfWeek {
+  Sunday,
+  Monday
+}
+
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Time {
+  public static monthRange(year?: number, month?: number, fillUp = false, firstDayOfWeek: FirstDayOfWeek = FirstDayOfWeek.Monday): Date[] {
+    month = month ? month - 1 : new Date().getMonth();
+    year = year ?? new Date().getFullYear();
+    const daysCountOfFilledUp = 42;
+    let daysBefore = 0;
+    let daysAfter = 0;
+    let start = new Date(Date.UTC(year, month, 1, 0, 0, 0));
+    let end = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59));
+    const startWeekDay = start.getUTCDay();
+
+    if (fillUp && startWeekDay !== firstDayOfWeek) {
+      daysBefore = startWeekDay > 0 ? startWeekDay - firstDayOfWeek : 6;
+      daysAfter = daysCountOfFilledUp - (daysBefore + end.getUTCDate());
+      const date = -1 * --daysBefore;
+      start = new Date(Date.UTC(year, month, date, 0, 0, 0));
+    }
+
+    if (fillUp && daysAfter) {
+      end = new Date(Date.UTC(year, month + 1, daysAfter, 23, 59, 59));
+    }
+
+    return Time.datesInRange(start, end);
+  }
+
   public static dayRange(dayISO?: Date | string): IDateRange {
     let date = new Date();
     switch (true) {
