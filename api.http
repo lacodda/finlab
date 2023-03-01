@@ -221,7 +221,25 @@ GET {{host}}/api/work-time/calendar HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
+# GET Calendar for this month with fillUp
+GET {{host}}/api/work-time/calendar?fillUp=true HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Calendar for some month with fillUp
+@month=9
+GET {{host}}/api/work-time/calendar?month={{month}}&fillUp=true HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
 # GET Calendar for some month
 @month=12
-GET {{host}}/api/work-time/calendar?month={{date}} HTTP/1.1
+GET {{host}}/api/work-time/calendar?month={{month}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Calendar for some month and year
+@month=11
+@year=2022
+GET {{host}}/api/work-time/calendar?month={{month}}&year={{year}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
