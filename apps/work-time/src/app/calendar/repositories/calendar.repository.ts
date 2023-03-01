@@ -47,15 +47,15 @@ export class CalendarRepository {
 
   async findByQuery(params: ICalendarFindByQueryParams): Promise<ICalendarDay[]> {
     try {
-      return await this.calendarModel.find(params).sort({ calendar: 1 }).exec();
+      return await this.calendarModel.find(params).sort({ date: 1 }).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
 
-  async findByDate(calendar: Date, userId: string): Promise<ICalendarDay> {
+  async findByDate(date: Date, userId: string): Promise<ICalendarDay> {
     try {
-      return await this.calendarModel.findOne({ calendar, userId }).exec() as ICalendarDay;
+      return await this.calendarModel.findOne({ date, userId }).exec() as ICalendarDay;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

@@ -9,19 +9,19 @@ export class CalendarController {
 
   @RMQValidate()
   @RMQRoute(CalendarCreate.topic)
-  async create(@Body() dto: CalendarCreate.Request): Promise<CalendarCreate.Response> {
+  async create(@Body() dto: CalendarCreate.UserIdRequest): Promise<CalendarCreate.Response> {
     return await this.calendarService.create(dto);
   }
 
   @RMQValidate()
   @RMQRoute(CalendarUpdate.topic)
-  async update(@Body() dto: CalendarUpdate.Request): Promise<CalendarUpdate.Response> {
+  async update(@Body() dto: CalendarUpdate.IdRequest): Promise<CalendarUpdate.Response> {
     return await this.calendarService.update(dto);
   }
 
   @RMQValidate()
   @RMQRoute(CalendarGetByQuery.topic)
-  async getByQuery(@Body() dto: CalendarGetByQuery.Request): Promise<CalendarGetByQuery.Response> {
+  async getByQuery(@Body() dto: CalendarGetByQuery.UserIdRequest): Promise<CalendarGetByQuery.Response> {
     return await this.calendarService.getByQuery(dto);
   }
 

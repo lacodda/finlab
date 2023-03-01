@@ -10,15 +10,15 @@ export class CalendarDayEntity implements ICalendarDay {
   time: number;
   events: IDomainEvent[] = [];
 
-  constructor(calendar: Omit<ICalendarDay, 'time'>) {
-    this._id = calendar._id;
-    this.userId = calendar.userId;
-    this.date = calendar.date;
-    this.type = calendar.type;
+  constructor(calendarDay: Omit<ICalendarDay, 'time'>) {
+    this._id = calendarDay._id;
+    this.userId = calendarDay.userId;
+    this.date = calendarDay.date;
+    this.type = calendarDay.type;
     this.time = 0;
     this.events.push({
       topic: CalendarChanged.topic,
-      data: calendar
+      data: calendarDay
     });
   }
 

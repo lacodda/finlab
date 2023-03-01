@@ -2,7 +2,7 @@ import {
   type CalendarCreate, type CalendarDelete, type CalendarGetById, type CalendarGetByQuery,
   type CalendarUpdate
 } from '@finlab/contracts/work-time';
-import { type ICalendarDay, type ICalendarFindByQueryParams, type CalendarType } from '@finlab/interfaces/work-time';
+import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
 import { Injectable } from '@nestjs/common';
 import { CalendarDayEntity } from './entities/calendar-day.entity';
@@ -16,7 +16,7 @@ export class CalendarService {
     private readonly calendarEventEmitter: CalendarEventEmitter
   ) { }
 
-  async create(dto: CalendarCreate.Request): Promise<CalendarCreate.Response> {
+  async create(dto: CalendarCreate.UserIdRequest): Promise<CalendarCreate.Response> {
     const date = new Date(dto.date);
     const existedCalendarDay = await this.calendarRepository.findByDate(date, dto.userId);
     if (existedCalendarDay) {
@@ -30,7 +30,7 @@ export class CalendarService {
     return { data: new CalendarDayEntity(newCalendarDay).entity };
   }
 
-  async update(dto: CalendarUpdate.Request): Promise<CalendarUpdate.Response> {
+  async update(dto: CalendarUpdate.IdRequest): Promise<CalendarUpdate.Response> {
     const existedCalendarDay = await this.calendarRepository.findById(dto.id);
     if (!existedCalendarDay) {
       throw new Error('Unable to update non-existing entry');
@@ -48,31 +48,9 @@ export class CalendarService {
     return calendarEntity.entity;
   }
 
-  async getByQuery(dto: CalendarGetByQuery.Request): Promise<CalendarGetByQuery.Response> {
-    console.log('dto', dto);
-    // const dayRange = Time.dayRangeISO(dto.date);
-    // const fillUp = (dto.fillUp as unknown as string) === 'true';
-
-    // const params: ICalendarFindByQueryParams = {
-    //   userId: dto.userId,
-    //   date: {
-    //     $gte: dayRange.from,
-    //     $lte: dayRange.to
-    //   }
-    // };
-
-    // const calendarArray = await this.calendarRepository.findByQuery(params);
-    // const calendarsEntity = new CalendarsEntity(calendarArray, MIN_BREAK_TIME);
-
-    // if (raw) {
-    //   const { calendars: data, workTime, breaks, totalTime } = calendarsEntity.result();
-    //   return { data, workTime, breaks, totalTime };
-    // }
-
-    // const { calendars: data, workTime, breaks, totalTime } = calendarsEntity.process().result();
-
-    // return { data, workTime, breaks, totalTime };
-    return { data: [] };
+  async getByQuery(dto: CalendarGetByQuery.UserIdRequest): Promise<CalendarGetByQuery.Response> {
+    const dates = Time.monthRange(dto.year, dto.month, dto.fillUp);
+    return { data: dates.map(date => new CalendarDayEntity({ userId: dto.userId, date, type: CalendarType.WorkingDay }).entity) };
   }
 
   async getById(dto: CalendarGetById.Request): Promise<CalendarGetById.Response> {
