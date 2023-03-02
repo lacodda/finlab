@@ -17,13 +17,13 @@ export class SummaryService {
     private readonly rmqService: RMQService) { }
 
   async create(dto: SummaryCreate.Request): Promise<SummaryCreate.Response> {
-    const dayRange = Time.dayRange(dto.date);
-    const existedSummary = await this.summaryRepository.findByDate(dayRange.from, dto.userId);
+    const date = Time.dayRange(dto.date).from;
+    const existedSummary = await this.summaryRepository.findByDate(date, dto.userId);
     if (existedSummary) {
       const data = await this.updateTime(existedSummary, dto.time);
       return { data };
     }
-    const newSummaryEntity = new SummaryEntity({ ...dto, date: dayRange.from });
+    const newSummaryEntity = new SummaryEntity({ ...dto, date });
     const newSummary = await this.summaryRepository.create(newSummaryEntity);
 
     return { data: new SummaryEntity(newSummary).entity };
