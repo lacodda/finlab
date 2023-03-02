@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CalendarDay, CalendarSchema } from './models/calendar-day.model';
 import { CalendarRepository } from './repositories/calendar.repository';
 import { CalendarController } from './calendar.controller';
-import { CalendarEventEmitter } from './calendar.event-emitter';
 import { CalendarService } from './calendar.service';
 
 @Module({
@@ -13,7 +12,7 @@ import { CalendarService } from './calendar.service';
     ])
   ],
   controllers: [CalendarController],
-  providers: [CalendarService, CalendarRepository, CalendarEventEmitter],
+  providers: [CalendarService, CalendarRepository],
   exports: [CalendarService, CalendarRepository]
 })
 export class CalendarModule { }

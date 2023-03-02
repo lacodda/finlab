@@ -21,9 +21,9 @@ export class CalendarRepository {
     }
   }
 
-  async update({ _id, ...rest }: CalendarDayEntity): Promise<UpdateWriteOpResult> {
+  async update({ date, ...rest }: CalendarDayEntity): Promise<UpdateWriteOpResult> {
     try {
-      return await this.calendarModel.updateOne({ _id }, { $set: { ...rest } }).exec();
+      return await this.calendarModel.updateOne({ date }, { $set: { ...rest } }).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

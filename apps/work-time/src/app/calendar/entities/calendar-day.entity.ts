@@ -1,25 +1,16 @@
-import { CalendarChanged } from '@finlab/contracts/work-time';
-import { type IDomainEvent } from '@finlab/interfaces';
 import { type ICalendarDay, type CalendarType } from '@finlab/interfaces/work-time';
 
 export class CalendarDayEntity implements ICalendarDay {
-  _id?: string;
   userId: string;
   date: Date;
   type: CalendarType;
   time: number;
-  events: IDomainEvent[] = [];
 
-  constructor(calendarDay: Omit<ICalendarDay, 'time'>) {
-    this._id = calendarDay._id;
+  constructor(calendarDay: ICalendarDay) {
     this.userId = calendarDay.userId;
     this.date = calendarDay.date;
     this.type = calendarDay.type;
-    this.time = 0;
-    this.events.push({
-      topic: CalendarChanged.topic,
-      data: calendarDay
-    });
+    this.time = calendarDay.time ?? 0;
   }
 
   public updateType(type: CalendarType): this {
@@ -34,7 +25,6 @@ export class CalendarDayEntity implements ICalendarDay {
 
   public get entity(): Omit<ICalendarDay, 'userId'> {
     return {
-      _id: this._id,
       date: this.date,
       type: this.type,
       time: this.time
