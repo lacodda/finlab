@@ -1,36 +1,7 @@
-import { type IDateRange, type IDateRangeISO } from '@finlab/interfaces';
-
-export enum FirstDayOfWeek {
-  Sunday,
-  Monday
-}
+import { FirstDayOfWeek, type IDateRange, type IDateRangeISO } from '@finlab/interfaces';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Time {
-  public static monthRange(year?: number, month?: number, fillUp = false, firstDayOfWeek: FirstDayOfWeek = FirstDayOfWeek.Monday): Date[] {
-    month = month ? month - 1 : new Date().getMonth();
-    year = year ?? new Date().getFullYear();
-    const daysCountOfFilledUp = 42;
-    let daysBefore = 0;
-    let daysAfter = 0;
-    let start = new Date(Date.UTC(year, month, 1, 0, 0, 0));
-    let end = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59));
-    const startWeekDay = start.getUTCDay();
-
-    if (fillUp && startWeekDay !== firstDayOfWeek) {
-      daysBefore = startWeekDay > 0 ? startWeekDay - firstDayOfWeek : 6;
-      daysAfter = daysCountOfFilledUp - (daysBefore + end.getUTCDate());
-      const date = -1 * --daysBefore;
-      start = new Date(Date.UTC(year, month, date, 0, 0, 0));
-    }
-
-    if (fillUp && daysAfter) {
-      end = new Date(Date.UTC(year, month + 1, daysAfter, 23, 59, 59));
-    }
-
-    return Time.datesInRange(start, end);
-  }
-
   public static dayRange(dayISO?: Date | string): IDateRange {
     let date = new Date();
     switch (true) {
@@ -57,13 +28,62 @@ export class Time {
     };
   }
 
-  public static diffInMinutes(from: Date, to: Date): number {
-    if (!from || !to) {
-      return 0;
+  public static monthRange(year?: number, month?: number): IDateRange {
+    month = month ? month - 1 : new Date().getMonth();
+    year = year ?? new Date().getFullYear();
+    return {
+      from: new Date(Date.UTC(year, month, 1, 0, 0, 0)),
+      to: new Date(Date.UTC(year, month + 1, 0, 23, 59, 59))
+    };
+  }
+
+  public static monthRangeISO(year?: number, month?: number): IDateRangeISO {
+    const monthRange = Time.monthRange(year, month);
+    return {
+      from: monthRange.from.toISOString(),
+      to: monthRange.to.toISOString()
+    };
+  }
+
+  public static yearRange(year?: number): IDateRange {
+    year = year ?? new Date().getFullYear();
+    return {
+      from: new Date(Date.UTC(year, 1, 1, 0, 0, 0)),
+      to: new Date(Date.UTC(year, 12, 0, 23, 59, 59))
+    };
+  }
+
+  public static yearRangeISO(year?: number): IDateRangeISO {
+    const yearRange = Time.yearRange(year);
+    return {
+      from: yearRange.from.toISOString(),
+      to: yearRange.to.toISOString()
+    };
+  }
+
+  public static datesInMonthRange(year?: number, month?: number, fillUp = false, firstDayOfWeek: FirstDayOfWeek = FirstDayOfWeek.Monday): Date[] {
+    const daysCountOfFilledUp = 42;
+    let { from, to } = Time.monthRange(year, month);
+    let daysBefore = 0;
+    let daysAfter = 0;
+    year = from.getFullYear();
+    month = from.getMonth();
+    const startWeekDay = from.getUTCDay();
+    if (fillUp && startWeekDay !== firstDayOfWeek) {
+      daysBefore = startWeekDay > 0 ? startWeekDay - firstDayOfWeek : 6;
+      daysAfter = daysCountOfFilledUp - (daysBefore + to.getUTCDate());
+      const date = -1 * --daysBefore;
+      from = new Date(Date.UTC(year, month, date, 0, 0, 0));
     }
-    let diff = (from.getTime() - to.getTime()) / 1000;
-    diff /= 60;
-    return Math.abs(Math.round(diff));
+    if (fillUp && daysAfter) {
+      to = new Date(Date.UTC(year, month + 1, daysAfter, 23, 59, 59));
+    }
+    return Time.datesInRange(from, to);
+  }
+
+  public static datesInYearRange(year?: number): Date[] {
+    const { from, to } = Time.yearRange(year);
+    return Time.datesInRange(from, to);
   }
 
   public static datesInRange(from: Date, to: Date): Date[] {
@@ -73,7 +93,23 @@ export class Time {
       dates.push(new Date(date));
       date = new Date(date.setDate(date.getDate() + 1));
     }
-
     return dates;
+  }
+
+  public static isSameDay(first: Date | string, second: Date | string): boolean {
+    return Time.dayRange(first).from.getTime() === Time.dayRange(second).from.getTime();
+  }
+
+  public static isWeekend(date: Date): boolean {
+    return [0, 6].includes(date.getUTCDay());
+  }
+
+  public static diffInMinutes(from: Date, to: Date): number {
+    if (!from || !to) {
+      return 0;
+    }
+    let diff = (from.getTime() - to.getTime()) / 1000;
+    diff /= 60;
+    return Math.abs(Math.round(diff));
   }
 }
