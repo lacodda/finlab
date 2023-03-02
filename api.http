@@ -222,18 +222,19 @@ Authorization: Bearer {{jwt.access_token}}
 
 ###
 # GET Calendar for this month with fillUp
-GET {{host}}/api/work-time/calendar?fillUp=true HTTP/1.1
+@firstDayOfWeek=1
+GET {{host}}/api/work-time/calendar?fillUp=true&summary=true&firstDayOfWeek={{firstDayOfWeek}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
 # GET Calendar for some month with fillUp
-@month=9
-GET {{host}}/api/work-time/calendar?month={{month}}&fillUp=true HTTP/1.1
+@month=2
+GET {{host}}/api/work-time/calendar?month={{month}}&fillUp=true&summary=true HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
 ###
 # GET Calendar for some month
-@month=12
+@month=2
 GET {{host}}/api/work-time/calendar?month={{month}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 
@@ -242,4 +243,21 @@ Authorization: Bearer {{jwt.access_token}}
 @month=11
 @year=2022
 GET {{host}}/api/work-time/calendar?month={{month}}&year={{year}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# CREATE new calendar day
+# @name json
+POST {{host}}/api/work-time/calendar HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+Content-Type: application/json
+{
+    "date": "2023-03-08T15:38:39Z",
+    "type": "PaidWeekend"
+}
+
+###
+# DELETE timestamp
+# @ref json
+DELETE {{host}}/api/work-time/calendar/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
