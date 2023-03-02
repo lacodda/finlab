@@ -15,7 +15,6 @@ export * from './lib/work-time/timestamp/timestamp.update';
 export * from './lib/work-time/timestamp/timestamp.get-by-query';
 export * from './lib/work-time/timestamp/timestamp.get-by-id';
 export * from './lib/work-time/timestamp/timestamp.delete';
-export * from './lib/work-time/calendar/calendar.changed';
 export * from './lib/work-time/calendar/calendar.create';
 export * from './lib/work-time/calendar/calendar.update';
 export * from './lib/work-time/calendar/calendar.get-by-query';

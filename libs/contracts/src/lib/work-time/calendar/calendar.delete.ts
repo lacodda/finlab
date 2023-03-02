@@ -10,6 +10,6 @@ export namespace CalendarDelete {
   }
 
   export class Response {
-    data: Pick<ICalendarDay, '_id'>;
+    data: Pick<ICalendarDay, 'date'>;
   }
 }

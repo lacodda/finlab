@@ -1,7 +1,8 @@
 import { type ICalendarDay } from '@finlab/interfaces/work-time';
-import { IsOptional, IsBoolean, IsInt, Min, Max } from 'class-validator';
+import { IsOptional, IsBoolean, IsInt, Min, Max, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { type UserId } from '../../common/user-id';
+import { FirstDayOfWeek } from '@finlab/interfaces';
 
 const currentYear = new Date().getFullYear();
 const MIN_YEAR = currentYear - 1;
@@ -31,6 +32,16 @@ export namespace CalendarGetByQuery {
     @IsBoolean()
     @Type(() => Boolean)
       fillUp?: boolean;
+
+    @IsOptional()
+    @IsEnum(FirstDayOfWeek)
+    @Type(() => Number)
+      firstDayOfWeek?: FirstDayOfWeek;
+
+    @IsOptional()
+    @IsBoolean()
+    @Type(() => Boolean)
+      summary?: boolean;
   }
 
   export class UserIdRequest {}

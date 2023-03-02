@@ -8,16 +8,16 @@ export enum CalendarType {
 }
 
 export interface ICalendarDay {
-  _id?: string;
   userId: string;
   date: Date;
   type: CalendarType;
-  time: number;
+  time?: number;
 }
 
 export interface ICalendarFindByQueryParams {
   userId: string;
-  year?: number;
-  month?: number;
-  fillUp?: boolean;
+  date?: {
+    $gte: Date | string;
+    $lte: Date | string;
+  };
 }
