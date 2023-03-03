@@ -209,3 +209,71 @@ Content-Type: application/json
 # @ref json
 DELETE {{host}}/api/work-time/timestamp/{{ json.data._id }} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
+
+
+
+# Calendar
+
+
+###
+# GET Calendar for this month
+GET {{host}}/api/work-time/calendar HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Calendar for this month with fillUp
+@firstDayOfWeek=1
+GET {{host}}/api/work-time/calendar?fillUp=true&summary=true&firstDayOfWeek={{firstDayOfWeek}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Calendar for some month with fillUp
+@month=2
+GET {{host}}/api/work-time/calendar?month={{month}}&fillUp=true&summary=true HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Calendar for some month
+@month=2
+GET {{host}}/api/work-time/calendar?month={{month}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# GET Calendar for some month and year
+@month=11
+@year=2022
+GET {{host}}/api/work-time/calendar?month={{month}}&year={{year}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+
+###
+# CREATE new calendar day
+# @name json
+POST {{host}}/api/work-time/calendar HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+Content-Type: application/json
+{
+    "date": "2023-03-07",
+    "type": "PaidWeekend"
+}
+
+###
+# UPDATE calendar day
+@day=2023-03-07
+PATCH {{host}}/api/work-time/calendar/{{day}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+Content-Type: application/json
+{
+    "type": "Weekend"
+}
+
+###
+# GET calendar day
+@day=2023-03-07
+GET {{host}}/api/work-time/calendar/{{day}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+###
+
+# DELETE calendar day
+@day=2023-03-07
+DELETE {{host}}/api/work-time/calendar/{{day}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}

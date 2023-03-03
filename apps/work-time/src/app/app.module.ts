@@ -7,6 +7,7 @@ import { getRmqConfig } from './configs/rmq.config';
 import { TaskModule } from './task/task.module';
 import { TimestampModule } from './timestamp/timestamp.module';
 import { SummaryModule } from './summary/summary.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { SummaryModule } from './summary/summary.module';
     MongooseModule.forRootAsync(getMongoConfig()),
     SummaryModule,
     TaskModule,
-    TimestampModule
+    TimestampModule,
+    CalendarModule
   ]
 })
 export class AppModule { }
