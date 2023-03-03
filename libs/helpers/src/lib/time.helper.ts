@@ -6,7 +6,7 @@ export class Time {
     let date = new Date();
     switch (true) {
       case dayISO instanceof Date:
-        date = dayISO as Date;
+        date = new Date(dayISO as Date);
         break;
       case typeof dayISO === 'string':
         date = new Date(dayISO as string);
@@ -29,8 +29,8 @@ export class Time {
   }
 
   public static monthRange(year?: number, month?: number): IDateRange {
-    month = month ? month - 1 : new Date().getMonth();
-    year = year ?? new Date().getFullYear();
+    month = month ? month - 1 : new Date().getUTCMonth();
+    year = year ?? new Date().getUTCFullYear();
     return {
       from: new Date(Date.UTC(year, month, 1, 0, 0, 0)),
       to: new Date(Date.UTC(year, month + 1, 0, 23, 59, 59))
@@ -46,7 +46,7 @@ export class Time {
   }
 
   public static yearRange(year?: number): IDateRange {
-    year = year ?? new Date().getFullYear();
+    year = year ?? new Date().getUTCFullYear();
     return {
       from: new Date(Date.UTC(year, 1, 1, 0, 0, 0)),
       to: new Date(Date.UTC(year, 12, 0, 23, 59, 59))
@@ -66,8 +66,8 @@ export class Time {
     let { from, to } = Time.monthRange(year, month);
     let daysBefore = 0;
     let daysAfter = 0;
-    year = from.getFullYear();
-    month = from.getMonth();
+    year = from.getUTCFullYear();
+    month = from.getUTCMonth();
     const startWeekDay = from.getUTCDay();
     if (fillUp && startWeekDay !== firstDayOfWeek) {
       daysBefore = startWeekDay > 0 ? startWeekDay - firstDayOfWeek : 6;
@@ -88,10 +88,10 @@ export class Time {
 
   public static datesInRange(from: Date, to: Date): Date[] {
     const dates: Date[] = [];
-    let date = new Date(from.getTime());
+    let date = Time.dayRange(from).from;
     while (date <= to) {
       dates.push(new Date(date));
-      date = new Date(date.setDate(date.getDate() + 1));
+      date = new Date(date.setUTCDate(date.getUTCDate() + 1));
     }
     return dates;
   }
