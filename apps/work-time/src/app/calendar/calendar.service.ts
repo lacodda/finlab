@@ -1,9 +1,9 @@
 import {
   SummaryGetByQuery,
-  type CalendarCreate, type CalendarDelete, type CalendarGetById, type CalendarGetByQuery,
+  type CalendarCreate, type CalendarDelete, type CalendarGetByDate, type CalendarGetByQuery,
   type CalendarUpdate
 } from '@finlab/contracts/work-time';
-import { type ICalendarDay, CalendarType, type ICalendarFindByQueryParams, ISummaryFindByQueryParams } from '@finlab/interfaces/work-time';
+import { type ICalendarDay, CalendarType, type ICalendarFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
 import { Injectable } from '@nestjs/common';
 import { CalendarDayEntity } from './entities/calendar-day.entity';
@@ -18,25 +18,24 @@ export class CalendarService {
     private readonly rmqService: RMQService
   ) { }
 
-  async create(dto: CalendarCreate.UserIdRequest): Promise<CalendarCreate.Response> {
-    const date = Time.dayRange(dto.date).from;
-    const existedCalendarDay = await this.calendarRepository.findByDate(date, dto.userId);
+  async create({ userId, date, type }: CalendarCreate.UserIdRequest): Promise<CalendarCreate.Response> {
+    const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
     if (existedCalendarDay) {
-      const data = await this.updateType(existedCalendarDay, dto.type);
+      const data = await this.updateType(existedCalendarDay, type);
       return { data };
     }
-    const newCalendarDayEntity = new CalendarDayEntity({ ...dto, date });
+    const newCalendarDayEntity = new CalendarDayEntity({ userId, date, type });
     const newCalendarDay = await this.calendarRepository.create(newCalendarDayEntity);
 
     return { data: new CalendarDayEntity(newCalendarDay).entity };
   }
 
-  async update(dto: CalendarUpdate.IdRequest): Promise<CalendarUpdate.Response> {
-    const existedCalendarDay = await this.calendarRepository.findById(dto.id);
+  async update({ userId, date, type }: CalendarUpdate.UserIdRequest): Promise<CalendarUpdate.Response> {
+    const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
     if (!existedCalendarDay) {
       throw new Error('Unable to update non-existing entry');
     }
-    const data = await this.updateType(existedCalendarDay, dto.type);
+    const data = await this.updateType(existedCalendarDay, type);
 
     return { data };
   }
@@ -50,6 +49,7 @@ export class CalendarService {
 
   async getByQuery(dto: CalendarGetByQuery.UserIdRequest): Promise<CalendarGetByQuery.Response> {
     let range: IDateRange, dates: Date[], summary: SummaryGetByQuery.Response;
+    const response: CalendarGetByQuery.Response = { data: [] };
     const { year, month, userId, fillUp, firstDayOfWeek, summary: isSummary } = dto;
     if (year && !month) {
       range = Time.yearRange(year);
@@ -72,30 +72,32 @@ export class CalendarService {
         userId, from: from.toISOString(), to: to.toISOString()
       });
     }
-    return {
-      data: dates.map(date => {
-        const type = calendar.find(day => Time.isSameDay(day.date, date))?.type ?? (Time.isWeekend(date) ? CalendarType.Weekend : CalendarType.WorkingDay);
-        const time = summary?.data?.find(day => Time.isSameDay(day.date, date))?.time ?? 0;
-        return new CalendarDayEntity({ userId, date, type, time }).entity;
-      })
-    };
+    response.data = dates.map(date => {
+      const type = calendar.find(day => Time.isSameDay(day.date, date))?.type ?? (Time.isWeekend(date) ? CalendarType.Weekend : CalendarType.WorkingDay);
+      const time = summary?.data?.find(day => Time.isSameDay(day.date, date))?.time ?? 0;
+      return new CalendarDayEntity({ userId, date, type, time }).entity;
+    });
+    if (isSummary) {
+      response.totalTime = response.data.reduce((sum, { time = 0 }) => sum + time, 0);
+    }
+    return response;
   }
 
-  async getById(dto: CalendarGetById.Request): Promise<CalendarGetById.Response> {
-    const existedCalendarDay = await this.calendarRepository.findById(dto.id);
-    if (!existedCalendarDay) {
-      throw new Error('Unable to delete non-existing entry');
+  async getByDate({ date, userId }: CalendarGetByDate.UserIdRequest): Promise<CalendarGetByDate.Response> {
+    const calendarDay = await this.calendarRepository.findByDate(date, userId);
+    if (!calendarDay) {
+      throw new Error('Unable to show non-existing entry');
     }
 
-    return { data: new CalendarDayEntity(existedCalendarDay).entity };
+    return { data: new CalendarDayEntity(calendarDay).entity };
   }
 
-  async delete(dto: CalendarDelete.Request): Promise<CalendarDelete.Response> {
-    const { date } = await this.calendarRepository.findById(dto.id);
-    if (!date) {
+  async delete({ date, userId }: CalendarDelete.UserIdRequest): Promise<CalendarDelete.Response> {
+    const calendarDay = await this.calendarRepository.findByDate(date, userId);
+    if (!calendarDay) {
       throw new Error('Unable to delete non-existing entry');
     }
-    await this.calendarRepository.delete(dto.id);
+    await this.calendarRepository.delete(date, userId);
 
     return { data: { date } };
   }

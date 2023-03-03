@@ -1,3 +1,4 @@
+import { Time } from '@finlab/helpers';
 import { type ICalendarDay, type ICalendarFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -29,14 +30,6 @@ export class CalendarRepository {
     }
   }
 
-  async findById(id: string): Promise<ICalendarDay> {
-    try {
-      return await this.calendarModel.findById(id).exec() as ICalendarDay;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
   async findOneByQuery(params: ICalendarFindByQueryParams): Promise<ICalendarDay> {
     try {
       return await this.calendarModel.findOne(params).exec() as ICalendarDay;
@@ -55,15 +48,16 @@ export class CalendarRepository {
 
   async findByDate(date: Date, userId: string): Promise<ICalendarDay> {
     try {
+      date = Time.dayRange(date).from;
       return await this.calendarModel.findOne({ date, userId }).exec() as ICalendarDay;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
 
-  async delete(_id: string): Promise<void> {
+  async delete(date: Date, userId: string): Promise<void> {
     try {
-      await this.calendarModel.deleteOne({ _id }).exec();
+      await this.calendarModel.deleteOne({ date, userId }).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

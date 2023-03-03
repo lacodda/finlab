@@ -1,4 +1,9 @@
-import { type ICalendarDay, type CalendarType } from '@finlab/interfaces/work-time';
+import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
+
+const PRESET_TIME = new Map(); // FIXME move to settings
+PRESET_TIME.set(CalendarType.PaidWeekend, 480);
+PRESET_TIME.set(CalendarType.SickLeave, 480);
+PRESET_TIME.set(CalendarType.PaidSickLeave, 480);
 
 export class CalendarDayEntity implements ICalendarDay {
   userId: string;
@@ -10,7 +15,7 @@ export class CalendarDayEntity implements ICalendarDay {
     this.userId = calendarDay.userId;
     this.date = calendarDay.date;
     this.type = calendarDay.type;
-    this.time = calendarDay.time ?? 0;
+    this.time = this.calc(calendarDay);
   }
 
   public updateType(type: CalendarType): this {
@@ -29,5 +34,9 @@ export class CalendarDayEntity implements ICalendarDay {
       type: this.type,
       time: this.time
     };
+  }
+
+  private calc({ time = 0, type }: ICalendarDay): number {
+    return (PRESET_TIME.get(type) as number ?? 0) + time;
   }
 }
