@@ -252,12 +252,28 @@ POST {{host}}/api/work-time/calendar HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
 Content-Type: application/json
 {
-    "date": "2023-03-08T15:38:39Z",
+    "date": "2023-03-07",
     "type": "PaidWeekend"
 }
 
 ###
-# DELETE timestamp
-# @ref json
-DELETE {{host}}/api/work-time/calendar/{{ json.data._id }} HTTP/1.1
+# UPDATE calendar day
+@day=2023-03-07
+PATCH {{host}}/api/work-time/calendar/{{day}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+Content-Type: application/json
+{
+    "type": "Weekend"
+}
+
+###
+# GET calendar day
+@day=2023-03-07
+GET {{host}}/api/work-time/calendar/{{day}} HTTP/1.1
+Authorization: Bearer {{jwt.access_token}}
+###
+
+# DELETE calendar day
+@day=2023-03-07
+DELETE {{host}}/api/work-time/calendar/{{day}} HTTP/1.1
 Authorization: Bearer {{jwt.access_token}}
