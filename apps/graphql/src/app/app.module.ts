@@ -1,6 +1,7 @@
 import { ApolloDriver, type ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import { DirectiveLocation, GraphQLDirective } from 'graphql';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -13,23 +14,32 @@ import { getRmqConfig } from './configs/rmq.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { upperDirectiveTransformer } from './common/directives/upper-case.directive';
-import { CatsModule } from './cats/cats.module';
 // import { AppController } from './app.controller';
 // import { AppService } from './app.service';
+import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
   imports: [
-    CatsModule,
     ConfigModule.forRoot({ envFilePath: 'envs/.api.env', isGlobal: true }),
     RMQModule.forRootAsync(getRmqConfig()),
     JwtModule.registerAsync(getJwtConfig()),
     PassportModule,
+
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      typePaths: ['./**/*.graphql'],
+      autoSchemaFile: 'schema.gql',
       transformSchema: schema => upperDirectiveTransformer(schema, 'upper'),
-      installSubscriptionHandlers: true
-    })
+      installSubscriptionHandlers: true,
+      buildSchemaOptions: {
+        directives: [
+          new GraphQLDirective({
+            name: 'upper',
+            locations: [DirectiveLocation.FIELD_DEFINITION]
+          })
+        ]
+      }
+    }),
+    RecipesModule
   ],
   providers: [JwtStrategy]
   // controllers: [AppController],
