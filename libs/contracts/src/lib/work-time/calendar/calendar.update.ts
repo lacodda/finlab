@@ -1,23 +1,24 @@
 import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
-import { IsDateString, IsOptional, IsString, IsEnum } from 'class-validator';
-import { type Id } from '../../common/id';
+import { Type } from 'class-transformer';
+import { IsEnum, IsDate } from 'class-validator';
+import { type UserId } from '../../common/user-id';
 
 export namespace CalendarUpdate {
   export const topic = 'work-time.calendar.update.command';
 
-  export class Request {
-    @IsOptional()
-    @IsDateString()
-      date: string;
+  export class RequestParam {
+    @IsDate()
+    @Type(() => Date)
+      date: Date;
+  }
 
-    @IsOptional()
-    @IsString()
+  export class RequestBody {
     @IsEnum(CalendarType)
       type: CalendarType;
   }
 
-  export class IdRequest {}
-  export interface IdRequest extends Id, Request {}
+  export class UserIdRequest { }
+  export interface UserIdRequest extends UserId, RequestParam, RequestBody { }
 
   export class Response {
     data: Omit<ICalendarDay, 'userId'>;

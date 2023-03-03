@@ -1,18 +1,19 @@
 import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
-import { IsString, IsDateString, IsEnum } from 'class-validator';
+import { IsEnum, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { type UserId } from '../../common/user-id';
+import { Type } from 'class-transformer';
 
 export namespace CalendarCreate {
   export const topic = 'work-time.calendar.create.command';
 
   export class Request {
     @ApiProperty()
-    @IsDateString()
-      date: string;
+    @IsDate()
+    @Type(() => Date)
+      date: Date;
 
     @ApiProperty()
-    @IsString()
     @IsEnum(CalendarType)
       type: CalendarType;
   }

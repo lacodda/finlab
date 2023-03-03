@@ -3,8 +3,8 @@ import { Type } from 'class-transformer';
 import { IsDate } from 'class-validator';
 import { type UserId } from '../../common/user-id';
 
-export namespace CalendarDelete {
-  export const topic = 'work-time.calendar.delete.command';
+export namespace CalendarGetByDate {
+  export const topic = 'work-time.calendar.get-by-date.query';
 
   export class Request {
     @IsDate()
@@ -16,6 +16,6 @@ export namespace CalendarDelete {
   export interface UserIdRequest extends UserId, Request {}
 
   export class Response {
-    data: Pick<ICalendarDay, 'date'>;
+    data: Omit<ICalendarDay, 'userId'>;
   }
 }

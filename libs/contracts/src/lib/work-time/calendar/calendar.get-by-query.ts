@@ -49,5 +49,6 @@ export namespace CalendarGetByQuery {
 
   export class Response {
     data: Array<Omit<ICalendarDay, 'userId'>>;
+    totalTime?: number;
   }
 }
