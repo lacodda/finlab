@@ -1,5 +1,5 @@
 import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards } from '@nestjs/common';
-import { CalendarCreate, CalendarDelete, CalendarGetById, CalendarGetByQuery, CalendarUpdate } from '@finlab/contracts/work-time';
+import { CalendarCreate, CalendarDelete, CalendarGetByDate, CalendarGetByQuery, CalendarUpdate } from '@finlab/contracts/work-time';
 import { RMQService } from 'nestjs-rmq';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { UserId } from '../../guards/user.decorator';
@@ -30,10 +30,10 @@ export class WorkTimeCalendarController {
 
   @ApiTags('calendar')
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  async updateCalendar(@Param('id') id: string, @Body() dto: CalendarUpdate.Request): Promise<CalendarUpdate.Response | undefined> {
+  @Patch(':date')
+  async updateCalendar(@Param() param: CalendarUpdate.RequestParam, @Body() body: CalendarUpdate.RequestBody, @UserId() userId: string): Promise<CalendarUpdate.Response | undefined> {
     try {
-      return await this.rmqService.send<CalendarUpdate.IdRequest, CalendarUpdate.Response>(CalendarUpdate.topic, { ...dto, id });
+      return await this.rmqService.send<CalendarUpdate.UserIdRequest, CalendarUpdate.Response>(CalendarUpdate.topic, { ...param, ...body, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -56,10 +56,10 @@ export class WorkTimeCalendarController {
 
   @ApiTags('calendar')
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async getCalendarById(@Param('id') id: string): Promise<CalendarGetById.Response | undefined> {
+  @Get(':date')
+  async getCalendarByDate(@Param() dto: CalendarGetByDate.Request, @UserId() userId: string): Promise<CalendarGetByDate.Response | undefined> {
     try {
-      return await this.rmqService.send<CalendarGetById.Request, CalendarGetById.Response>(CalendarGetById.topic, { id });
+      return await this.rmqService.send<CalendarGetByDate.UserIdRequest, CalendarGetByDate.Response>(CalendarGetByDate.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -69,10 +69,10 @@ export class WorkTimeCalendarController {
 
   @ApiTags('calendar')
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async deleteCalendar(@Param('id') id: string): Promise<CalendarDelete.Response | undefined> {
+  @Delete(':date')
+  async deleteCalendar(@Param() dto: CalendarDelete.Request, @UserId() userId: string): Promise<CalendarDelete.Response | undefined> {
     try {
-      return await this.rmqService.send<CalendarDelete.Request, CalendarDelete.Response>(CalendarDelete.topic, { id });
+      return await this.rmqService.send<CalendarDelete.UserIdRequest, CalendarDelete.Response>(CalendarDelete.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
