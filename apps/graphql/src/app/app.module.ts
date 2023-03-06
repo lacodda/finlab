@@ -8,14 +8,9 @@ import { PassportModule } from '@nestjs/passport';
 import { RMQModule } from 'nestjs-rmq';
 import { getJwtConfig } from './configs/jwt.config';
 import { getRmqConfig } from './configs/rmq.config';
-// import { AuthController } from './controllers/auth.controller';
-// import { UserController } from './controllers/user.controller';
-// import { WorkTimeController } from './controllers/work-time.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
-
 import { upperDirectiveTransformer } from './common/directives/upper-case.directive';
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
+import { WorkTimeModule } from './work-time/work-time.module';
 import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
@@ -24,7 +19,6 @@ import { RecipesModule } from './recipes/recipes.module';
     RMQModule.forRootAsync(getRmqConfig()),
     JwtModule.registerAsync(getJwtConfig()),
     PassportModule,
-
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
@@ -39,10 +33,9 @@ import { RecipesModule } from './recipes/recipes.module';
         ]
       }
     }),
+    WorkTimeModule,
     RecipesModule
   ],
   providers: [JwtStrategy]
-  // controllers: [AppController],
-  // providers: [AppService]
 })
 export class AppModule { }
