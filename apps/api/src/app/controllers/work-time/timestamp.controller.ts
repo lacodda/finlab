@@ -44,9 +44,9 @@ export class WorkTimeTimestampController {
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getTimestampByQuery(@Query() dto: Omit<TimestampGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<TimestampGetByQuery.Response | undefined> {
+  async getTimestampByQuery(@Query() dto: TimestampGetByQuery.Request, @UserId() userId: string): Promise<TimestampGetByQuery.Response | undefined> {
     try {
-      return await this.rmqService.send<TimestampGetByQuery.Request, TimestampGetByQuery.Response>(TimestampGetByQuery.topic, { ...dto, userId });
+      return await this.rmqService.send<TimestampGetByQuery.UserIdRequest, TimestampGetByQuery.Response>(TimestampGetByQuery.topic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
