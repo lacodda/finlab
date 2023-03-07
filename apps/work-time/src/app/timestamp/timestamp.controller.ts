@@ -21,7 +21,7 @@ export class TimestampController {
 
   @RMQValidate()
   @RMQRoute(TimestampGetByQuery.topic)
-  async getByQuery(@Body() dto: TimestampGetByQuery.Request): Promise<TimestampGetByQuery.Response> {
+  async getByQuery(@Body() dto: TimestampGetByQuery.UserIdRequest): Promise<TimestampGetByQuery.Response> {
     return await this.timestampService.getByQuery(dto);
   }
 

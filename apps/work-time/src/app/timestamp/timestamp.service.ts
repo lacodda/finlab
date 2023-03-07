@@ -52,10 +52,8 @@ export class TimestampService {
     return timestampEntity.entity;
   }
 
-  async getByQuery(dto: TimestampGetByQuery.Request): Promise<TimestampGetByQuery.Response> {
+  async getByQuery(dto: TimestampGetByQuery.UserIdRequest): Promise<TimestampGetByQuery.Response> {
     const dayRange = Time.dayRangeISO(dto.date);
-    const raw = (dto.raw as unknown as string) === 'true';
-
     const params: ITimestampFindByQueryParams = {
       userId: dto.userId,
       timestamp: {
@@ -67,7 +65,7 @@ export class TimestampService {
     const timestampArray = await this.timestampRepository.findByQuery(params);
     const timestampsEntity = new TimestampsEntity(timestampArray, MIN_BREAK_TIME);
 
-    if (raw) {
+    if (dto.raw) {
       const { timestamps: data, workTime, breaks, totalTime } = timestampsEntity.result();
       return { data, workTime, breaks, totalTime };
     }
