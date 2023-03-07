@@ -1,10 +1,13 @@
 import { type IJwtPayload } from '@finlab/interfaces';
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
-export const User = createParamDecorator((data: unknown, ctx: ExecutionContext): IJwtPayload => {
-  return ctx.switchToHttp().getRequest()?.user;
+export const User = createParamDecorator((data: unknown, context: ExecutionContext): IJwtPayload => {
+  const ctx = GqlExecutionContext.create(context);
+  return ctx.getContext().req.user;
 });
 
-export const UserId = createParamDecorator((data: unknown, ctx: ExecutionContext): string => {
-  return ctx.switchToHttp().getRequest()?.user?.id;
+export const UserId = createParamDecorator((data: unknown, context: ExecutionContext): string => {
+  const ctx = GqlExecutionContext.create(context);
+  return ctx.getContext().req?.user?.id;
 });

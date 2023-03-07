@@ -36,7 +36,7 @@ type Recipe {
 scalar Date
 
 type Query {
-  getTimestampByQuery(userId: String!, date: String, raw: Boolean): Response!
+  getTimestampByQuery(date: Date, raw: Boolean): Response!
   recipe(id: String!): Recipe!
   recipes(skip: Int! = 0, take: Int! = 25): [Recipe!]!
 }
