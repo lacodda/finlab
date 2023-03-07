@@ -1,27 +1,31 @@
 import { type ITimestamp } from '@finlab/interfaces/work-time';
-import { IsString, IsOptional, IsDateString, IsBooleanString } from 'class-validator';
+import { IsOptional, IsDate, IsBoolean } from 'class-validator';
 import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
 import { Timestamp } from './timestamp.model';
+import { type UserId } from '../../common/user-id';
+import { Type } from 'class-transformer';
+import ToBoolean from '../../decorators/to-boolean.decorator';
 
 export namespace TimestampGetByQuery {
   export const topic = 'work-time.timestamp.get-by-query.query';
 
   @ArgsType()
   export class Request {
-    @IsString()
-    @Field()
-      userId: string;
-
     @IsOptional()
-    @IsDateString()
+    @IsDate()
     @Field({ nullable: true })
-      date?: string;
+    @Type(() => Date)
+      date?: Date;
 
     @IsOptional()
-    @IsBooleanString()
+    @IsBoolean()
     @Field(() => Boolean, { nullable: true })
+    @ToBoolean()
       raw?: boolean;
   }
+
+  export class UserIdRequest {}
+  export interface UserIdRequest extends UserId, Request {}
 
   @ObjectType()
   export class Response {
