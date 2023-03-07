@@ -76,8 +76,8 @@ export class SummaryService {
   async recalculate({ userId, from, to }: SummaryRecalculate.Request): Promise<SummaryRecalculate.Response> {
     const dates = Time.datesInRange(new Date(from), new Date(to));
     for (const dateObj of dates) {
-      const date = dateObj.toISOString();
-      const { totalTime: time } = await this.rmqService.send<TimestampGetByQuery.Request, TimestampGetByQuery.Response>(
+      const date = dateObj;
+      const { totalTime: time } = await this.rmqService.send<TimestampGetByQuery.UserIdRequest, TimestampGetByQuery.Response>(
         TimestampGetByQuery.topic, { userId, date }
       );
       if (time) {
