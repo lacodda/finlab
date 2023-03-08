@@ -1,6 +1,8 @@
 import {
-  type SummaryRecalculate, type SummaryCreate, type SummaryDelete,
-  type SummaryGetById, type SummaryGetByQuery, type SummaryUpdate, TimestampGetByQuery
+  type SummaryCreateResponse, type SummaryCreateUserIdRequest, type SummaryDeleteResponse, type SummaryDeleteUserIdRequest,
+  type SummaryGetByQueryResponse, SummaryGetByQueryTopic, type SummaryGetByQueryUserIdRequest, type SummaryGetOneResponse,
+  type SummaryGetOneUserIdRequest, type SummaryRecalculateResponse, type SummaryRecalculateUserIdRequest, type SummaryUpdateResponse,
+  type SummaryUpdateUserIdRequest, type TimestampGetByQueryResponse, type TimestampGetByQueryUserIdRequest
 } from '@finlab/contracts/work-time';
 import { Time } from '@finlab/helpers';
 import { type ISummaryFindByQueryParams, type ISummary } from '@finlab/interfaces/work-time';
@@ -16,7 +18,7 @@ export class SummaryService {
     private readonly summaryRepository: SummaryRepository,
     private readonly rmqService: RMQService) { }
 
-  async create(dto: SummaryCreate.Request): Promise<SummaryCreate.Response> {
+  async create(dto: SummaryCreateUserIdRequest): Promise<SummaryCreateResponse> {
     const date = Time.dayRange(dto.date).from;
     const existedSummary = await this.summaryRepository.findByDate(date, dto.userId);
     if (existedSummary) {
@@ -29,8 +31,8 @@ export class SummaryService {
     return { data: new SummaryEntity(newSummary).entity };
   }
 
-  async update(dto: SummaryUpdate.Request): Promise<SummaryUpdate.Response> {
-    const existedSummary = await this.summaryRepository.findById(dto.id);
+  async update(dto: SummaryUpdateUserIdRequest): Promise<SummaryUpdateResponse> {
+    const existedSummary = await this.summaryRepository.findByDate(dto.date, dto.userId);
     if (!existedSummary) {
       throw new Error('Unable to update non-existing entry');
     }
@@ -46,7 +48,7 @@ export class SummaryService {
     return summaryEntity.entity;
   }
 
-  async getByQuery(dto: SummaryGetByQuery.Request): Promise<SummaryGetByQuery.Response> {
+  async getByQuery(dto: SummaryGetByQueryUserIdRequest): Promise<SummaryGetByQueryResponse> {
     const params: ISummaryFindByQueryParams = {
       userId: dto.userId
     };
@@ -64,8 +66,8 @@ export class SummaryService {
     };
   }
 
-  async getById(dto: SummaryGetById.Request): Promise<SummaryGetById.Response> {
-    const existedSummary = await this.summaryRepository.findById(dto.id);
+  async getOne(dto: SummaryGetOneUserIdRequest): Promise<SummaryGetOneResponse> {
+    const existedSummary = await this.summaryRepository.findByDate(dto.date, dto.userId);
     if (!existedSummary) {
       throw new Error('Unable to delete non-existing entry');
     }
@@ -73,44 +75,31 @@ export class SummaryService {
     return { data: new SummaryEntity(existedSummary).entity };
   }
 
-  async recalculate({ userId, from, to }: SummaryRecalculate.Request): Promise<SummaryRecalculate.Response> {
-    const dates = Time.datesInRange(new Date(from), new Date(to));
+  async recalculate({ userId, from, to }: SummaryRecalculateUserIdRequest): Promise<SummaryRecalculateResponse> {
+    const dates = Time.datesInRange(from, to);
     for (const dateObj of dates) {
       const date = dateObj;
-      const { totalTime: time } = await this.rmqService.send<TimestampGetByQuery.UserIdRequest, TimestampGetByQuery.Response>(
-        TimestampGetByQuery.topic, { userId, date }
+      const { totalTime: time } = await this.rmqService.send<TimestampGetByQueryUserIdRequest, TimestampGetByQueryResponse>(
+        SummaryGetByQueryTopic, { userId, date }
       );
       if (time) {
         await this.create({ userId, date, time });
       } else {
-        await this.deleteByDate({ userId, date });
+        await this.delete({ userId, date });
       }
     }
 
     return await this.getByQuery({ userId, from, to });
   }
 
-  async delete({ id }: SummaryDelete.Request): Promise<SummaryDelete.Response> {
-    if (!id) {
-      throw new Error('Unable to delete non-existing entry');
-    }
-    const existedSummary = await this.summaryRepository.findById(id);
-    if (!existedSummary) {
-      throw new Error('Unable to delete non-existing entry');
-    }
-    await this.summaryRepository.delete(id);
-
-    return { data: { _id: existedSummary._id } };
-  }
-
-  async deleteByDate(dto: SummaryDelete.Request): Promise<SummaryDelete.Response> {
+  async delete(dto: SummaryDeleteUserIdRequest): Promise<SummaryDeleteResponse> {
     const dayRange = Time.dayRange(dto.date);
     const existedSummary = await this.summaryRepository.findByDate(dayRange.from, dto.userId);
     if (existedSummary) {
       await this.summaryRepository.delete(existedSummary._id as string);
     }
 
-    return { data: { _id: existedSummary?._id } };
+    return { data: existedSummary };
   }
 
   private async updateSummary(summary: SummaryEntity): Promise<[UpdateWriteOpResult]> {

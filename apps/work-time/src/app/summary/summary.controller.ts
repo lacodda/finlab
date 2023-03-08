@@ -1,6 +1,9 @@
 import {
-  SummaryCreate, SummaryDelete, SummaryGetById, SummaryGetByQuery,
-  SummaryRecalculate, SummaryUpdate, TimestampChangedTotalTime
+  type SummaryCreateResponse, SummaryCreateTopic, SummaryCreateUserIdRequest, type SummaryDeleteResponse, SummaryDeleteTopic,
+  SummaryDeleteUserIdRequest, type SummaryGetByQueryResponse, SummaryGetByQueryTopic, SummaryGetByQueryUserIdRequest,
+  type SummaryGetOneResponse, SummaryGetOneTopic, SummaryGetOneUserIdRequest, type SummaryRecalculateResponse, SummaryRecalculateTopic,
+  SummaryRecalculateUserIdRequest, type SummaryUpdateResponse, SummaryUpdateTopic, SummaryUpdateUserIdRequest, TimestampChangedTotalTimeTopic,
+  TimestampChangedTotalTimeUserIdRequest
 } from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
@@ -11,44 +14,44 @@ export class SummaryController {
   constructor(private readonly summaryService: SummaryService) {}
 
   @RMQValidate()
-  @RMQRoute(SummaryCreate.topic)
-  async create(@Body() dto: SummaryCreate.Request): Promise<SummaryCreate.Response> {
+  @RMQRoute(SummaryCreateTopic)
+  async create(@Body() dto: SummaryCreateUserIdRequest): Promise<SummaryCreateResponse> {
     return await this.summaryService.create(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(SummaryUpdate.topic)
-  async update(@Body() dto: SummaryUpdate.Request): Promise<SummaryUpdate.Response> {
+  @RMQRoute(SummaryUpdateTopic)
+  async update(@Body() dto: SummaryUpdateUserIdRequest): Promise<SummaryUpdateResponse> {
     return await this.summaryService.update(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(SummaryGetByQuery.topic)
-  async getByQuery(@Body() dto: SummaryGetByQuery.Request): Promise<SummaryGetByQuery.Response> {
+  @RMQRoute(SummaryGetByQueryTopic)
+  async getByQuery(@Body() dto: SummaryGetByQueryUserIdRequest): Promise<SummaryGetByQueryResponse> {
     return await this.summaryService.getByQuery(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(SummaryGetById.topic)
-  async getById(@Body() dto: SummaryGetById.Request): Promise<SummaryGetById.Response> {
-    return await this.summaryService.getById(dto);
+  @RMQRoute(SummaryGetOneTopic)
+  async getOne(@Body() dto: SummaryGetOneUserIdRequest): Promise<SummaryGetOneResponse> {
+    return await this.summaryService.getOne(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(SummaryDelete.topic)
-  async delete(@Body() dto: SummaryDelete.Request): Promise<SummaryDelete.Response> {
+  @RMQRoute(SummaryDeleteTopic)
+  async delete(@Body() dto: SummaryDeleteUserIdRequest): Promise<SummaryDeleteResponse> {
     return await this.summaryService.delete(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(TimestampChangedTotalTime.topic)
-  async timestampChanged(@Body() dto: TimestampChangedTotalTime.Request): Promise<void> {
+  @RMQRoute(TimestampChangedTotalTimeTopic)
+  async timestampChanged(@Body() dto: TimestampChangedTotalTimeUserIdRequest): Promise<void> {
     await this.summaryService.create(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(SummaryRecalculate.topic)
-  async recalculate(@Body() dto: SummaryRecalculate.Request): Promise<SummaryRecalculate.Response> {
+  @RMQRoute(SummaryRecalculateTopic)
+  async recalculate(@Body() dto: SummaryRecalculateUserIdRequest): Promise<SummaryRecalculateResponse> {
     return await this.summaryService.recalculate(dto);
   }
 }

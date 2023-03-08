@@ -1,3 +1,4 @@
+import { Time } from '@finlab/helpers';
 import { type ISummaryFindByQuery, type ISummary, type ISummaryFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -55,25 +56,18 @@ export class SummaryRepository {
     }
   }
 
-  async findById(id: string): Promise<ISummary> {
-    try {
-      return await this.summaryModel.findById(id).exec() as ISummary;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
   async findByDate(date: Date, userId: string): Promise<ISummary> {
     try {
+      date = Time.dayRange(date).from;
       return await this.summaryModel.findOne({ date, userId }).exec() as ISummary;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
 
-  async delete(_id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     try {
-      await this.summaryModel.deleteOne({ _id }).exec();
+      await this.summaryModel.findByIdAndDelete(id).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
