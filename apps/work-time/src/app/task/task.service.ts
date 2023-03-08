@@ -1,4 +1,7 @@
-import { type TaskCreate, type TaskDelete, type TaskGetById, type TaskGetByQuery, type TaskUpdate } from '@finlab/contracts/work-time';
+import {
+  type TaskCreateRequest, type TaskCreateResponse, type TaskUpdateRequest, type TaskUpdateResponse, type TaskGetByQueryRequest, type TaskGetByQueryResponse,
+  type TaskGetOneRequest, type TaskGetOneResponse, type TaskDeleteRequest, type TaskDeleteResponse
+} from '@finlab/contracts/work-time';
 import { Time } from '@finlab/helpers';
 import { type ITask, type ITaskFindIncompleteParams, type ITaskFindByQueryParams, type ITaskUpdate, type ITaskFindForDay } from '@finlab/interfaces/work-time';
 import { Injectable } from '@nestjs/common';
@@ -10,7 +13,7 @@ import { TaskRepository } from './repositories/task.repository';
 export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) { }
 
-  async create(dto: TaskCreate.Request): Promise<TaskCreate.Response> {
+  async create(dto: TaskCreateRequest): Promise<TaskCreateResponse> {
     const existedTask = await this.getForDay(dto) as ITask;
     if (existedTask) {
       const data = await this.updateTask(existedTask, dto);
@@ -23,7 +26,7 @@ export class TaskService {
     return { data: new TaskEntity(newTask).entity };
   }
 
-  async update(dto: TaskUpdate.Request): Promise<TaskUpdate.Response> {
+  async update(dto: TaskUpdateRequest): Promise<TaskUpdateResponse> {
     const existedTask = await this.taskRepository.findById(dto.id);
     if (!existedTask) {
       throw new Error('Unable to update non-existing entry');
@@ -33,7 +36,7 @@ export class TaskService {
     return { data };
   }
 
-  async getByQuery(dto: TaskGetByQuery.Request): Promise<TaskGetByQuery.Response> {
+  async getByQuery(dto: TaskGetByQueryRequest): Promise<TaskGetByQueryResponse> {
     const params: ITaskFindIncompleteParams = {
       userId: dto.userId,
       date: {
@@ -55,7 +58,7 @@ export class TaskService {
     return { data: new TasksEntity(tasks).entities };
   }
 
-  async getById(dto: TaskGetById.Request): Promise<TaskGetById.Response> {
+  async getOne(dto: TaskGetOneRequest): Promise<TaskGetOneResponse> {
     const existedTask = await this.taskRepository.findById(dto.id);
     if (!existedTask) {
       throw new Error('Unable to delete non-existing entry');
@@ -78,7 +81,7 @@ export class TaskService {
       : await this.taskRepository.findByQuery(params);
   }
 
-  async delete(dto: TaskDelete.Request): Promise<TaskDelete.Response> {
+  async delete(dto: TaskDeleteRequest): Promise<TaskDeleteResponse> {
     const existedTask = await this.taskRepository.findById(dto.id);
     if (!existedTask) {
       throw new Error('Unable to delete non-existing entry');
