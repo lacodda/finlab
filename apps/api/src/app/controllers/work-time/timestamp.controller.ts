@@ -1,5 +1,11 @@
 import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards } from '@nestjs/common';
-import { TimestampCreate, TimestampDelete, TimestampGetById, TimestampGetByQuery, TimestampUpdate } from '@finlab/contracts/work-time';
+import {
+  TimestampCreateRequest, TimestampCreateResponse, TimestampCreateTopic, type TimestampCreateUserIdRequest, TimestampDeleteRequest,
+  type TimestampDeleteResponse, TimestampDeleteTopic, type TimestampDeleteUserIdRequest, TimestampGetByQueryRequest,
+  type TimestampGetByQueryResponse, TimestampGetByQueryTopic, type TimestampGetByQueryUserIdRequest, TimestampGetOneRequest,
+  type TimestampGetOneResponse, TimestampGetOneTopic, type TimestampGetOneUserIdRequest, TimestampUpdateRequestBody,
+  TimestampUpdateRequestParam, type TimestampUpdateResponse, TimestampUpdateTopic, type TimestampUpdateUserIdRequest
+} from '@finlab/contracts/work-time';
 import { RMQService } from 'nestjs-rmq';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { UserId } from '../../guards/user.decorator';
@@ -16,11 +22,11 @@ export class WorkTimeTimestampController {
   @ApiResponse({
     status: 201,
     description: 'The found record',
-    type: TimestampCreate.Response
+    type: TimestampCreateResponse
   })
-  async createTimestamp(@Body() dto: Omit<TimestampCreate.Request, 'userId'>, @UserId() userId: string): Promise<TimestampCreate.Response | undefined> {
+  async create(@Body() dto: TimestampCreateRequest, @UserId() userId: string): Promise<TimestampCreateResponse | undefined> {
     try {
-      return await this.rmqService.send<TimestampCreate.Request, TimestampCreate.Response>(TimestampCreate.topic, { ...dto, userId });
+      return await this.rmqService.send<TimestampCreateUserIdRequest, TimestampCreateResponse>(TimestampCreateTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -30,10 +36,10 @@ export class WorkTimeTimestampController {
 
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  async updateTimestamp(@Param('id') id: string, @Body() dto: Omit<TimestampUpdate.Request, 'id'>): Promise<TimestampUpdate.Response | undefined> {
+  @Patch(':timestamp')
+  async update(@Param() param: TimestampUpdateRequestParam, @Body() body: TimestampUpdateRequestBody, @UserId() userId: string): Promise<TimestampUpdateResponse | undefined> {
     try {
-      return await this.rmqService.send<TimestampUpdate.Request, TimestampUpdate.Response>(TimestampUpdate.topic, { ...dto, id });
+      return await this.rmqService.send<TimestampUpdateUserIdRequest, TimestampUpdateResponse>(TimestampUpdateTopic, { ...param, ...body, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -44,9 +50,9 @@ export class WorkTimeTimestampController {
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getTimestampByQuery(@Query() dto: TimestampGetByQuery.Request, @UserId() userId: string): Promise<TimestampGetByQuery.Response | undefined> {
+  async getByQuery(@Query() dto: TimestampGetByQueryRequest, @UserId() userId: string): Promise<TimestampGetByQueryResponse | undefined> {
     try {
-      return await this.rmqService.send<TimestampGetByQuery.UserIdRequest, TimestampGetByQuery.Response>(TimestampGetByQuery.topic, { ...dto, userId });
+      return await this.rmqService.send<TimestampGetByQueryUserIdRequest, TimestampGetByQueryResponse>(TimestampGetByQueryTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -56,10 +62,10 @@ export class WorkTimeTimestampController {
 
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async getTimestampById(@Param('id') id: string): Promise<TimestampGetById.Response | undefined> {
+  @Get(':timestamp')
+  async getOne(@Param() dto: TimestampGetOneRequest, @UserId() userId: string): Promise<TimestampGetOneResponse | undefined> {
     try {
-      return await this.rmqService.send<TimestampGetById.Request, TimestampGetById.Response>(TimestampGetById.topic, { id });
+      return await this.rmqService.send<TimestampGetOneUserIdRequest, TimestampGetOneResponse>(TimestampGetOneTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -69,10 +75,10 @@ export class WorkTimeTimestampController {
 
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async deleteTimestamp(@Param('id') id: string): Promise<TimestampDelete.Response | undefined> {
+  @Delete(':timestamp')
+  async delete(@Param() dto: TimestampDeleteRequest, @UserId() userId: string): Promise<TimestampDeleteResponse | undefined> {
     try {
-      return await this.rmqService.send<TimestampDelete.Request, TimestampDelete.Response>(TimestampDelete.topic, { id });
+      return await this.rmqService.send<TimestampDeleteUserIdRequest, TimestampDeleteResponse>(TimestampDeleteTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);

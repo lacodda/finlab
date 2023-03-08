@@ -1,5 +1,9 @@
 import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards } from '@nestjs/common';
-import { TaskCreate, TaskDelete, TaskGetById, TaskGetByQuery, TaskUpdate } from '@finlab/contracts/work-time';
+import {
+  type TaskCreateRequest, type TaskCreateResponse, TaskCreateTopic, type TaskGetByQueryRequest, type TaskGetByQueryResponse,
+  TaskGetByQueryTopic, type TaskGetOneRequest, type TaskGetOneResponse, TaskGetOneTopic, type TaskUpdateRequest, type TaskUpdateResponse,
+  TaskUpdateTopic, type TaskDeleteRequest, type TaskDeleteResponse, TaskDeleteTopic
+} from '@finlab/contracts/work-time';
 import { RMQService } from 'nestjs-rmq';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { UserId } from '../../guards/user.decorator';
@@ -13,9 +17,9 @@ export class WorkTimeTaskController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createTask(@Body() dto: Omit<TaskCreate.Request, 'userId'>, @UserId() userId: string): Promise<TaskCreate.Response | undefined> {
+  async create(@Body() dto: Omit<TaskCreateRequest, 'userId'>, @UserId() userId: string): Promise<TaskCreateResponse | undefined> {
     try {
-      return await this.rmqService.send<TaskCreate.Request, TaskCreate.Response>(TaskCreate.topic, { ...dto, userId });
+      return await this.rmqService.send<TaskCreateRequest, TaskCreateResponse>(TaskCreateTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -26,9 +30,9 @@ export class WorkTimeTaskController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  async updateTask(@Param('id') id: string, @Body() dto: Omit<TaskUpdate.Request, 'id'>): Promise<TaskUpdate.Response | undefined> {
+  async update(@Param('id') id: string, @Body() dto: Omit<TaskUpdateRequest, 'id'>): Promise<TaskUpdateResponse | undefined> {
     try {
-      return await this.rmqService.send<TaskUpdate.Request, TaskUpdate.Response>(TaskUpdate.topic, { ...dto, id });
+      return await this.rmqService.send<TaskUpdateRequest, TaskUpdateResponse>(TaskUpdateTopic, { ...dto, id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -39,9 +43,9 @@ export class WorkTimeTaskController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getTaskByQuery(@Query() dto: Omit<TaskGetByQuery.Request, 'userId'>, @UserId() userId: string): Promise<TaskGetByQuery.Response | undefined> {
+  async getByQuery(@Query() dto: Omit<TaskGetByQueryRequest, 'userId'>, @UserId() userId: string): Promise<TaskGetByQueryResponse | undefined> {
     try {
-      return await this.rmqService.send<TaskGetByQuery.Request, TaskGetByQuery.Response>(TaskGetByQuery.topic, { ...dto, userId });
+      return await this.rmqService.send<TaskGetByQueryRequest, TaskGetByQueryResponse>(TaskGetByQueryTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -52,9 +56,9 @@ export class WorkTimeTaskController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getTaskById(@Param('id') id: string): Promise<TaskGetById.Response | undefined> {
+  async getOne(@Param('id') id: string): Promise<TaskGetOneResponse | undefined> {
     try {
-      return await this.rmqService.send<TaskGetById.Request, TaskGetById.Response>(TaskGetById.topic, { id });
+      return await this.rmqService.send<TaskGetOneRequest, TaskGetOneResponse>(TaskGetOneTopic, { id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
@@ -65,9 +69,9 @@ export class WorkTimeTaskController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteTask(@Param('id') id: string): Promise<TaskDelete.Response | undefined> {
+  async delete(@Param('id') id: string): Promise<TaskDeleteResponse | undefined> {
     try {
-      return await this.rmqService.send<TaskDelete.Request, TaskDelete.Response>(TaskDelete.topic, { id });
+      return await this.rmqService.send<TaskDeleteRequest, TaskDeleteResponse>(TaskDeleteTopic, { id });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
