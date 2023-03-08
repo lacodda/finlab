@@ -1,7 +1,8 @@
 import {
-  SummaryGetByQuery,
-  type CalendarCreate, type CalendarDelete, type CalendarGetByDate, type CalendarGetByQuery,
-  type CalendarUpdate
+  type CalendarCreateResponse, type CalendarCreateUserIdRequest, type CalendarDeleteResponse, type CalendarDeleteUserIdRequest,
+  type CalendarGetByQueryResponse, type CalendarGetByQueryUserIdRequest, type CalendarGetOneResponse, type CalendarGetOneUserIdRequest,
+  type CalendarUpdateResponse, type CalendarUpdateUserIdRequest, type SummaryGetByQueryResponse, SummaryGetByQueryTopic,
+  type SummaryGetByQueryUserIdRequest
 } from '@finlab/contracts/work-time';
 import { type ICalendarDay, CalendarType, type ICalendarFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
@@ -18,7 +19,7 @@ export class CalendarService {
     private readonly rmqService: RMQService
   ) { }
 
-  async create({ userId, date, type }: CalendarCreate.UserIdRequest): Promise<CalendarCreate.Response> {
+  async create({ userId, date, type }: CalendarCreateUserIdRequest): Promise<CalendarCreateResponse> {
     const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
     if (existedCalendarDay) {
       const data = await this.updateType(existedCalendarDay, type);
@@ -30,7 +31,7 @@ export class CalendarService {
     return { data: new CalendarDayEntity(newCalendarDay).entity };
   }
 
-  async update({ userId, date, type }: CalendarUpdate.UserIdRequest): Promise<CalendarUpdate.Response> {
+  async update({ userId, date, type }: CalendarUpdateUserIdRequest): Promise<CalendarUpdateResponse> {
     const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
     if (!existedCalendarDay) {
       throw new Error('Unable to update non-existing entry');
@@ -47,9 +48,9 @@ export class CalendarService {
     return calendarEntity.entity;
   }
 
-  async getByQuery(dto: CalendarGetByQuery.UserIdRequest): Promise<CalendarGetByQuery.Response> {
-    let range: IDateRange, dates: Date[], summary: SummaryGetByQuery.Response;
-    const response: CalendarGetByQuery.Response = { data: [] };
+  async getByQuery(dto: CalendarGetByQueryUserIdRequest): Promise<CalendarGetByQueryResponse> {
+    let range: IDateRange, dates: Date[], summary: SummaryGetByQueryResponse;
+    const response: CalendarGetByQueryResponse = { data: [] };
     const { year, month, userId, fillUp, firstDayOfWeek, summary: isSummary } = dto;
     if (year && !month) {
       range = Time.yearRange(year);
@@ -68,9 +69,7 @@ export class CalendarService {
     };
     const calendar = await this.calendarRepository.findByQuery(params);
     if (isSummary) {
-      summary = await this.rmqService.send<SummaryGetByQuery.Request, SummaryGetByQuery.Response>(SummaryGetByQuery.topic, {
-        userId, from: from.toISOString(), to: to.toISOString()
-      });
+      summary = await this.rmqService.send<SummaryGetByQueryUserIdRequest, SummaryGetByQueryResponse>(SummaryGetByQueryTopic, { userId, from, to });
     }
     response.data = dates.map(date => {
       const type = calendar.find(day => Time.isSameDay(day.date, date))?.type ?? (Time.isWeekend(date) ? CalendarType.Weekend : CalendarType.WorkingDay);
@@ -83,7 +82,7 @@ export class CalendarService {
     return response;
   }
 
-  async getByDate({ date, userId }: CalendarGetByDate.UserIdRequest): Promise<CalendarGetByDate.Response> {
+  async getOne({ date, userId }: CalendarGetOneUserIdRequest): Promise<CalendarGetOneResponse> {
     const calendarDay = await this.calendarRepository.findByDate(date, userId);
     if (!calendarDay) {
       throw new Error('Unable to show non-existing entry');
@@ -92,7 +91,7 @@ export class CalendarService {
     return { data: new CalendarDayEntity(calendarDay).entity };
   }
 
-  async delete({ date, userId }: CalendarDelete.UserIdRequest): Promise<CalendarDelete.Response> {
+  async delete({ date, userId }: CalendarDeleteUserIdRequest): Promise<CalendarDeleteResponse> {
     const calendarDay = await this.calendarRepository.findByDate(date, userId);
     if (!calendarDay) {
       throw new Error('Unable to delete non-existing entry');

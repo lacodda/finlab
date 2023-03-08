@@ -1,4 +1,9 @@
-import { CalendarCreate, CalendarDelete, CalendarGetByDate, CalendarGetByQuery, CalendarUpdate } from '@finlab/contracts/work-time';
+import {
+  type CalendarCreateResponse, CalendarCreateTopic, CalendarCreateUserIdRequest, type CalendarDeleteResponse, CalendarDeleteTopic,
+  CalendarDeleteUserIdRequest, type CalendarGetByQueryResponse, CalendarGetByQueryTopic, CalendarGetByQueryUserIdRequest,
+  type CalendarGetOneResponse, CalendarGetOneTopic, CalendarGetOneUserIdRequest, type CalendarUpdateResponse, CalendarUpdateTopic,
+  CalendarUpdateUserIdRequest
+} from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { CalendarService } from './calendar.service';
@@ -8,32 +13,32 @@ export class CalendarController {
   constructor(private readonly calendarService: CalendarService) { }
 
   @RMQValidate()
-  @RMQRoute(CalendarCreate.topic)
-  async create(@Body() dto: CalendarCreate.UserIdRequest): Promise<CalendarCreate.Response> {
+  @RMQRoute(CalendarCreateTopic)
+  async create(@Body() dto: CalendarCreateUserIdRequest): Promise<CalendarCreateResponse> {
     return await this.calendarService.create(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(CalendarUpdate.topic)
-  async update(@Body() dto: CalendarUpdate.UserIdRequest): Promise<CalendarUpdate.Response> {
+  @RMQRoute(CalendarUpdateTopic)
+  async update(@Body() dto: CalendarUpdateUserIdRequest): Promise<CalendarUpdateResponse> {
     return await this.calendarService.update(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(CalendarGetByQuery.topic)
-  async getByQuery(@Body() dto: CalendarGetByQuery.UserIdRequest): Promise<CalendarGetByQuery.Response> {
+  @RMQRoute(CalendarGetByQueryTopic)
+  async getByQuery(@Body() dto: CalendarGetByQueryUserIdRequest): Promise<CalendarGetByQueryResponse> {
     return await this.calendarService.getByQuery(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(CalendarGetByDate.topic)
-  async getByDate(@Body() dto: CalendarGetByDate.UserIdRequest): Promise<CalendarGetByDate.Response> {
-    return await this.calendarService.getByDate(dto);
+  @RMQRoute(CalendarGetOneTopic)
+  async getOne(@Body() dto: CalendarGetOneUserIdRequest): Promise<CalendarGetOneResponse> {
+    return await this.calendarService.getOne(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(CalendarDelete.topic)
-  async delete(@Body() dto: CalendarDelete.UserIdRequest): Promise<CalendarDelete.Response> {
+  @RMQRoute(CalendarDeleteTopic)
+  async delete(@Body() dto: CalendarDeleteUserIdRequest): Promise<CalendarDeleteResponse> {
     return await this.calendarService.delete(dto);
   }
 }
