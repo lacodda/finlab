@@ -29,14 +29,6 @@ export class TimestampRepository {
     }
   }
 
-  async findById(id: string): Promise<ITimestamp> {
-    try {
-      return await this.timestampModel.findById(id).exec() as ITimestamp;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
   async findOneByQuery(params: ITimestampFindByQueryParams): Promise<ITimestamp> {
     try {
       return await this.timestampModel.findOne(params).exec() as ITimestamp;
@@ -61,9 +53,9 @@ export class TimestampRepository {
     }
   }
 
-  async delete(_id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     try {
-      await this.timestampModel.deleteOne({ _id }).exec();
+      await this.timestampModel.findByIdAndDelete(id).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

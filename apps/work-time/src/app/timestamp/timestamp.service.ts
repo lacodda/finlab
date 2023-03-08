@@ -1,6 +1,7 @@
 import {
-  type TimestampCreate, type TimestampDelete, type TimestampGetById, type TimestampGetByQuery,
-  type TimestampUpdate
+  type TimestampCreateResponse, type TimestampCreateUserIdRequest, type TimestampDeleteResponse,
+  type TimestampDeleteUserIdRequest, type TimestampGetByQueryResponse, type TimestampGetByQueryUserIdRequest,
+  type TimestampGetOneResponse, type TimestampGetOneUserIdRequest, type TimestampUpdateResponse, type TimestampUpdateUserIdRequest
 } from '@finlab/contracts/work-time';
 import { type ITimestamp, type ITimestampFindByQueryParams, type TimestampType } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
@@ -20,22 +21,21 @@ export class TimestampService {
     private readonly totalTimeEventEmitter: TotalTimeEventEmitter
   ) { }
 
-  async create(dto: TimestampCreate.Request): Promise<TimestampCreate.Response> {
-    const timestamp = new Date(dto.timestamp);
-    const existedTimestamp = await this.timestampRepository.findByDate(timestamp, dto.userId);
+  async create(dto: TimestampCreateUserIdRequest): Promise<TimestampCreateResponse> {
+    const existedTimestamp = await this.timestampRepository.findByDate(dto.timestamp, dto.userId);
     if (existedTimestamp) {
       const data = await this.updateType(existedTimestamp, dto.type);
       return { data };
     }
-    const newTimestampEntity = new TimestampEntity({ ...dto, timestamp });
+    const newTimestampEntity = new TimestampEntity({ ...dto });
     const newTimestamp = await this.timestampRepository.create(newTimestampEntity);
     void this.changeTotalTime(newTimestamp);
 
     return { data: new TimestampEntity(newTimestamp).entity };
   }
 
-  async update(dto: TimestampUpdate.Request): Promise<TimestampUpdate.Response> {
-    const existedTimestamp = await this.timestampRepository.findById(dto.id);
+  async update(dto: TimestampUpdateUserIdRequest): Promise<TimestampUpdateResponse> {
+    const existedTimestamp = await this.timestampRepository.findByDate(dto.timestamp, dto.userId);
     if (!existedTimestamp) {
       throw new Error('Unable to update non-existing entry');
     }
@@ -52,7 +52,7 @@ export class TimestampService {
     return timestampEntity.entity;
   }
 
-  async getByQuery(dto: TimestampGetByQuery.UserIdRequest): Promise<TimestampGetByQuery.Response> {
+  async getByQuery(dto: TimestampGetByQueryUserIdRequest): Promise<TimestampGetByQueryResponse> {
     const dayRange = Time.dayRangeISO(dto.date);
     const params: ITimestampFindByQueryParams = {
       userId: dto.userId,
@@ -75,8 +75,8 @@ export class TimestampService {
     return { data, workTime, breaks, totalTime };
   }
 
-  async getById(dto: TimestampGetById.Request): Promise<TimestampGetById.Response> {
-    const existedTimestamp = await this.timestampRepository.findById(dto.id);
+  async getOne(dto: TimestampGetOneUserIdRequest): Promise<TimestampGetOneResponse> {
+    const existedTimestamp = await this.timestampRepository.findByDate(dto.timestamp, dto.userId);
     if (!existedTimestamp) {
       throw new Error('Unable to delete non-existing entry');
     }
@@ -84,22 +84,19 @@ export class TimestampService {
     return { data: new TimestampEntity(existedTimestamp).entity };
   }
 
-  async delete(dto: TimestampDelete.Request): Promise<TimestampDelete.Response> {
-    const existedTimestamp = await this.timestampRepository.findById(dto.id);
+  async delete(dto: TimestampDeleteUserIdRequest): Promise<TimestampDeleteResponse> {
+    const existedTimestamp = await this.timestampRepository.findByDate(dto.timestamp, dto.userId);
     if (!existedTimestamp) {
       throw new Error('Unable to delete non-existing entry');
     }
-    await this.timestampRepository.delete(dto.id);
+    await this.timestampRepository.delete(existedTimestamp._id as string);
     void this.changeTotalTime(existedTimestamp);
 
-    return { data: { _id: existedTimestamp._id } };
+    return { data: existedTimestamp };
   }
 
   async changeTotalTime({ userId, timestamp: date }: ITimestamp): Promise<void> {
-    const { totalTime: time } = await this.getByQuery({
-      userId,
-      date: date.toISOString()
-    });
+    const { totalTime: time } = await this.getByQuery({ userId, date });
     const totalTimeEntity = new TotalTimeEntity({ userId, date, time });
     await this.totalTimeEventEmitter.handle(totalTimeEntity);
   }
