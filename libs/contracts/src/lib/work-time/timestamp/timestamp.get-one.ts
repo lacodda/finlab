@@ -5,22 +5,22 @@ import { ApiProperty } from '@nestjs/swagger';
 import { type UserId } from '../../common/user-id';
 import { Timestamp } from './timestamp.model';
 
-export const TimestampDeleteTopic = 'work-time.timestamp.delete.command';
+export const TimestampGetOneTopic = 'work-time.timestamp.get-one.query';
 
 @ArgsType()
-export class TimestampDeleteRequest {
+export class TimestampGetOneRequest {
+  @ApiProperty()
   @IsDate()
   @Field()
   @Type(() => Date)
     timestamp: Date;
 }
 
-export class TimestampDeleteUserIdRequest {}
-export interface TimestampDeleteUserIdRequest extends UserId, TimestampDeleteRequest {}
+export class TimestampGetOneUserIdRequest {}
+export interface TimestampGetOneUserIdRequest extends UserId, TimestampGetOneRequest {}
 
 @ObjectType()
-export class TimestampDeleteResponse {
-  @ApiProperty()
+export class TimestampGetOneResponse {
   @Field(() => Timestamp)
     data: Timestamp;
 }

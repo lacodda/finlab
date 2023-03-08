@@ -1,24 +1,34 @@
-import { type ITimestamp, TimestampType } from '@finlab/interfaces/work-time';
-import { IsDateString, IsOptional, IsString, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsDate } from 'class-validator';
+import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
+import { TimestampType } from '@finlab/interfaces/work-time';
+import { Timestamp } from './timestamp.model';
+import { type UserId } from '../../common/user-id';
 
-export namespace TimestampUpdate {
-  export const topic = 'work-time.timestamp.update.command';
+export const TimestampUpdateTopic = 'work-time.timestamp.update.command';
 
-  export class Request {
-    @IsString()
-      id: string;
+@ArgsType()
+export class TimestampUpdateRequestParam {
+  @IsDate()
+  @Field()
+  @Type(() => Date)
+    timestamp: Date;
+}
 
-    @IsOptional()
-    @IsDateString()
-      timestamp: string;
+@ArgsType()
+export class TimestampUpdateRequestBody {
+  @IsEnum(TimestampType)
+  @Field(() => TimestampType)
+    type: TimestampType;
+}
 
-    @IsOptional()
-    @IsString()
-    @IsEnum(TimestampType)
-      type: TimestampType;
-  }
+export class TimestampUpdateUserIdRequest { }
+export interface TimestampUpdateUserIdRequest extends UserId, TimestampUpdateRequestParam, TimestampUpdateRequestBody { }
 
-  export class Response {
-    data: Omit<ITimestamp, 'userId'>;
-  }
+@ObjectType()
+export class TimestampUpdateResponse {
+  @ApiProperty()
+  @Field(() => Timestamp)
+    data: Timestamp;
 }
