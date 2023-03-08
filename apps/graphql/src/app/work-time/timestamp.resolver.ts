@@ -1,5 +1,8 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
-import { Timestamp, TimestampGetByQuery } from '@finlab/contracts/work-time';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Timestamp, TimestampCreateRequest, TimestampCreateResponse, TimestampCreateTopic, type TimestampCreateUserIdRequest,
+  TimestampGetByQueryRequest, TimestampGetByQueryResponse, TimestampGetByQueryTopic, type TimestampGetByQueryUserIdRequest
+} from '@finlab/contracts/work-time';
 import { RMQService } from 'nestjs-rmq';
 import { BadRequestException, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt.guard';
@@ -9,13 +12,23 @@ import { UserId } from '../guards/user.decorator';
 export class TimestampResolver {
   constructor(private readonly rmqService: RMQService) { }
 
-  @Query(_returns => TimestampGetByQuery.Response)
+  @Query(_returns => TimestampGetByQueryResponse)
   @UseGuards(JwtAuthGuard)
-  async getTimestampByQuery(@Args() dto: TimestampGetByQuery.Request, @UserId() userId: string): Promise<TimestampGetByQuery.Response | undefined> {
+  async getTimestampByQuery(@Args() dto: TimestampGetByQueryRequest, @UserId() userId: string): Promise<TimestampGetByQueryResponse | undefined> {
     try {
-      console.log('dto', dto);
-      
-      return await this.rmqService.send<TimestampGetByQuery.UserIdRequest, TimestampGetByQuery.Response>(TimestampGetByQuery.topic, { ...dto, userId });
+      return await this.rmqService.send<TimestampGetByQueryUserIdRequest, TimestampGetByQueryResponse>(TimestampGetByQueryTopic, { ...dto, userId });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+    }
+  }
+
+  @Mutation(_returns => TimestampCreateResponse)
+  @UseGuards(JwtAuthGuard)
+  async createTimestamp(@Args() dto: TimestampCreateRequest, @UserId() userId: string): Promise<TimestampCreateResponse | undefined> {
+    try {
+      return await this.rmqService.send<TimestampCreateUserIdRequest, TimestampCreateResponse>(TimestampCreateTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);

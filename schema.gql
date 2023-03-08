@@ -5,6 +5,12 @@
 directive @upper on FIELD_DEFINITION
 
 """timestamp """
+type Summary {
+  date: Date
+  time: Float
+}
+
+"""timestamp """
 type Timestamp {
   timestamp: Date
   type: TimestampType
@@ -17,7 +23,11 @@ enum TimestampType {
   EndBreak
 }
 
-type Response {
+type TimestampCreateResponse {
+  data: Timestamp
+}
+
+type TimestampGetByQueryResponse {
   data: [Timestamp!]!
   workTime: [Float!]!
   breaks: [Float!]!
@@ -36,12 +46,13 @@ type Recipe {
 scalar Date
 
 type Query {
-  getTimestampByQuery(date: Date, raw: Boolean): Response!
+  getTimestampByQuery(date: Date, raw: Boolean): TimestampGetByQueryResponse!
   recipe(id: String!): Recipe!
   recipes(skip: Int! = 0, take: Int! = 25): [Recipe!]!
 }
 
 type Mutation {
+  createTimestamp(timestamp: Date!, type: TimestampType!): TimestampCreateResponse!
   addRecipe(newRecipeData: NewRecipeInput!): Recipe!
   removeRecipe(id: String!): Boolean!
 }
