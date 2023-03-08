@@ -1,29 +1,27 @@
 import { type ITask } from '@finlab/interfaces/work-time';
 import { IsString, IsOptional, IsDateString, IsBooleanString } from 'class-validator';
 
-export namespace TaskGetByQuery {
-  export const topic = 'work-time.task.get-by-query.query';
+export const TaskGetByQueryTopic = 'work-time.task.get-by-query.query';
 
-  export class Request {
-    @IsString()
-      userId: string;
+export class TaskGetByQueryRequest {
+  @IsString()
+    userId: string;
 
-    @IsDateString()
-      from: string;
+  @IsDateString()
+    from: string;
 
-    @IsDateString()
-      to: string;
+  @IsDateString()
+    to: string;
 
-    @IsOptional()
-    @IsBooleanString()
-      incomplete: boolean;
+  @IsOptional()
+  @IsBooleanString()
+    incomplete: boolean;
 
-    @IsOptional()
-    @IsBooleanString()
-      includeAll: boolean;
-  }
+  @IsOptional()
+  @IsBooleanString()
+    includeAll: boolean;
+}
 
-  export class Response {
-    data: Array<Omit<ITask, 'userId'>>;
-  }
+export class TaskGetByQueryResponse {
+  data: Array<Omit<ITask, 'userId'>>;
 }

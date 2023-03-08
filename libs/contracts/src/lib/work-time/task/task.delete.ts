@@ -1,15 +1,13 @@
 import { type ITask } from '@finlab/interfaces/work-time';
 import { IsString } from 'class-validator';
 
-export namespace TaskDelete {
-  export const topic = 'work-time.task.delete.command';
+export const TaskDeleteTopic = 'work-time.task.delete.command';
 
-  export class Request {
-    @IsString()
-      id: string;
-  }
+export class TaskDeleteRequest {
+  @IsString()
+    id: string;
+}
 
-  export class Response {
-    data: Pick<ITask, '_id'>;
-  }
+export class TaskDeleteResponse {
+  data: Pick<ITask, '_id'>;
 }
