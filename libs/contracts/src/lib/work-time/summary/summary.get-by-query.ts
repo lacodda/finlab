@@ -1,24 +1,34 @@
-import { type ISummary } from '@finlab/interfaces/work-time';
-import { IsString, IsOptional, IsDateString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, IsDate } from 'class-validator';
+import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { type UserId } from '../../common/user-id';
+import { Summary } from './summary.model';
 
-export namespace SummaryGetByQuery {
-  export const topic = 'work-time.summary.get-by-query.query';
+export const SummaryGetByQueryTopic = 'work-time.summary.get-by-query.query';
 
-  export class Request {
-    @IsString()
-      userId: string;
+@ArgsType()
+export class SummaryGetByQueryRequest {
+  @IsOptional()
+  @IsDate()
+  @Field({ nullable: true })
+  @Type(() => Date)
+    from?: Date;
 
-    @IsOptional()
-    @IsDateString()
-      from?: string;
+  @IsOptional()
+  @IsDate()
+  @Field({ nullable: true })
+  @Type(() => Date)
+    to?: Date;
+}
 
-    @IsOptional()
-    @IsDateString()
-      to?: string;
-  }
+export class SummaryGetByQueryUserIdRequest { }
+export interface SummaryGetByQueryUserIdRequest extends UserId, SummaryGetByQueryRequest { }
 
-  export class Response {
-    data: Array<Omit<ISummary, 'userId'>>;
+@ObjectType()
+export class SummaryGetByQueryResponse {
+  @Field(() => [Summary])
+    data: Summary[];
+
+  @Field()
     totalTime: number;
-  }
 }

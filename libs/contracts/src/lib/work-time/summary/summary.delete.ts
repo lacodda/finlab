@@ -1,23 +1,24 @@
-import { type ISummary } from '@finlab/interfaces/work-time';
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate } from 'class-validator';
+import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { type UserId } from '../../common/user-id';
+import { Summary } from './summary.model';
 
-export namespace SummaryDelete {
-  export const topic = 'work-time.summary.delete.command';
+export const SummaryDeleteTopic = 'work-time.summary.delete.command';
 
-  export class Request {
-    @IsString()
-      userId: string;
+@ArgsType()
+export class SummaryDeleteRequest {
+  @IsDate()
+  @Field()
+  @Type(() => Date)
+    date: Date;
+}
 
-    @IsOptional()
-    @IsString()
-      id?: string;
+export class SummaryDeleteUserIdRequest {}
+export interface SummaryDeleteUserIdRequest extends UserId, SummaryDeleteRequest {}
 
-    @IsOptional()
-    @IsDateString()
-      date?: string;
-  }
-
-  export class Response {
-    data: Pick<ISummary, '_id'>;
-  }
+@ObjectType()
+export class SummaryDeleteResponse {
+  @Field(() => Summary)
+    data: Summary;
 }

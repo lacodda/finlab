@@ -1,18 +1,32 @@
-import { type ISummary } from '@finlab/interfaces/work-time';
-import { IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate, IsInt } from 'class-validator';
+import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { type UserId } from '../../common/user-id';
+import { Summary } from './summary.model';
 
-export namespace SummaryUpdate {
-  export const topic = 'work-time.summary.update.command';
+export const SummaryUpdateTopic = 'work-time.summary.update.command';
 
-  export class Request {
-    @IsString()
-      id: string;
+@ArgsType()
+export class SummaryUpdateRequestParam {
+  @IsDate()
+  @Field()
+  @Type(() => Date)
+    date: Date;
+}
 
-    @IsNumber()
-      time: number;
-  }
+@ArgsType()
+export class SummaryUpdateRequestBody {
+  @IsInt()
+  @Field()
+  @Type(() => Number)
+    time: number;
+}
 
-  export class Response {
-    data: Omit<ISummary, 'userId'>;
-  }
+export class SummaryUpdateUserIdRequest { }
+export interface SummaryUpdateUserIdRequest extends UserId, SummaryUpdateRequestParam, SummaryUpdateRequestBody { }
+
+@ObjectType()
+export class SummaryUpdateResponse {
+  @Field(() => Summary)
+    data: Summary;
 }

@@ -1,22 +1,32 @@
-import { type ISummary } from '@finlab/interfaces/work-time';
-import { IsString, IsDateString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate } from 'class-validator';
+import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { type UserId } from '../../common/user-id';
+import { Summary } from './summary.model';
 
-export namespace SummaryRecalculate {
-  export const topic = 'work-time.summary.recalculate.command';
+export const SummaryRecalculateTopic = 'work-time.summary.recalculate.command';
 
-  export class Request {
-    @IsString()
-      userId: string;
+@ArgsType()
+export class SummaryRecalculateRequest {
+  @IsDate()
+  @Field()
+  @Type(() => Date)
+    from: Date;
 
-    @IsDateString()
-      from: string;
+  @IsDate()
+  @Field()
+  @Type(() => Date)
+    to: Date;
+}
 
-    @IsDateString()
-      to: string;
-  }
+export class SummaryRecalculateUserIdRequest { }
+export interface SummaryRecalculateUserIdRequest extends UserId, SummaryRecalculateRequest { }
 
-  export class Response {
-    data: Array<Omit<ISummary, 'userId'>>;
+@ObjectType()
+export class SummaryRecalculateResponse {
+  @Field(() => [Summary])
+    data: Summary[];
+
+  @Field()
     totalTime: number;
-  }
 }
