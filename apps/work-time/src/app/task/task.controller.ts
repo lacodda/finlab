@@ -1,6 +1,6 @@
 import {
   TaskCreateRequest, type TaskCreateResponse, TaskCreateTopic, TaskDeleteRequest, type TaskDeleteResponse, TaskDeleteTopic,
-  TaskGetByQueryRequest, type TaskGetByQueryResponse, TaskGetByQueryTopic, TaskGetOneRequest, type TaskGetOneResponse, TaskGetOneTopic,
+  TaskGetRequest, type TaskGetResponse, TaskGetTopic, TaskGetOneRequest, type TaskGetOneResponse, TaskGetOneTopic,
   TaskUpdateRequest, type TaskUpdateResponse, TaskUpdateTopic
 } from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
@@ -24,8 +24,8 @@ export class TaskController {
   }
 
   @RMQValidate()
-  @RMQRoute(TaskGetByQueryTopic)
-  async getByQuery(@Body() dto: TaskGetByQueryRequest): Promise<TaskGetByQueryResponse> {
+  @RMQRoute(TaskGetTopic)
+  async getByQuery(@Body() dto: TaskGetRequest): Promise<TaskGetResponse> {
     return await this.taskService.getByQuery(dto);
   }
 

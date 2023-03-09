@@ -1,5 +1,5 @@
 import {
-  type TaskCreateRequest, type TaskCreateResponse, type TaskUpdateRequest, type TaskUpdateResponse, type TaskGetByQueryRequest, type TaskGetByQueryResponse,
+  type TaskCreateRequest, type TaskCreateResponse, type TaskUpdateRequest, type TaskUpdateResponse, type TaskGetRequest, type TaskGetResponse,
   type TaskGetOneRequest, type TaskGetOneResponse, type TaskDeleteRequest, type TaskDeleteResponse
 } from '@finlab/contracts/work-time';
 import { Time } from '@finlab/helpers';
@@ -36,7 +36,7 @@ export class TaskService {
     return { data };
   }
 
-  async getByQuery(dto: TaskGetByQueryRequest): Promise<TaskGetByQueryResponse> {
+  async getByQuery(dto: TaskGetRequest): Promise<TaskGetResponse> {
     const params: ITaskFindIncompleteParams = {
       userId: dto.userId,
       date: {
