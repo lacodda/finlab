@@ -1,8 +1,8 @@
 import {
   type CalendarCreateResponse, type CalendarCreateUserIdRequest, type CalendarDeleteResponse, type CalendarDeleteUserIdRequest,
-  type CalendarGetByQueryResponse, type CalendarGetByQueryUserIdRequest, type CalendarGetOneResponse, type CalendarGetOneUserIdRequest,
-  type CalendarUpdateResponse, type CalendarUpdateUserIdRequest, type SummaryGetByQueryResponse, SummaryGetByQueryTopic,
-  type SummaryGetByQueryUserIdRequest
+  type CalendarGetResponse, type CalendarGetUserIdRequest, type CalendarGetOneResponse, type CalendarGetOneUserIdRequest,
+  type CalendarUpdateResponse, type CalendarUpdateUserIdRequest, type SummaryGetResponse, SummaryGetTopic,
+  type SummaryGetUserIdRequest
 } from '@finlab/contracts/work-time';
 import { type ICalendarDay, CalendarType, type ICalendarFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
@@ -48,9 +48,9 @@ export class CalendarService {
     return calendarEntity.entity;
   }
 
-  async getByQuery(dto: CalendarGetByQueryUserIdRequest): Promise<CalendarGetByQueryResponse> {
-    let range: IDateRange, dates: Date[], summary: SummaryGetByQueryResponse;
-    const response: CalendarGetByQueryResponse = { data: [] };
+  async getByQuery(dto: CalendarGetUserIdRequest): Promise<CalendarGetResponse> {
+    let range: IDateRange, dates: Date[], summary: SummaryGetResponse;
+    const response: CalendarGetResponse = { data: [] };
     const { year, month, userId, fillUp, firstDayOfWeek, summary: isSummary } = dto;
     if (year && !month) {
       range = Time.yearRange(year);
@@ -69,7 +69,7 @@ export class CalendarService {
     };
     const calendar = await this.calendarRepository.findByQuery(params);
     if (isSummary) {
-      summary = await this.rmqService.send<SummaryGetByQueryUserIdRequest, SummaryGetByQueryResponse>(SummaryGetByQueryTopic, { userId, from, to });
+      summary = await this.rmqService.send<SummaryGetUserIdRequest, SummaryGetResponse>(SummaryGetTopic, { userId, from, to });
     }
     response.data = dates.map(date => {
       const type = calendar.find(day => Time.isSameDay(day.date, date))?.type ?? (Time.isWeekend(date) ? CalendarType.Weekend : CalendarType.WorkingDay);

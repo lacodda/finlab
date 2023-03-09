@@ -1,6 +1,6 @@
 import {
   type CalendarCreateResponse, CalendarCreateTopic, CalendarCreateUserIdRequest, type CalendarDeleteResponse, CalendarDeleteTopic,
-  CalendarDeleteUserIdRequest, type CalendarGetByQueryResponse, CalendarGetByQueryTopic, CalendarGetByQueryUserIdRequest,
+  CalendarDeleteUserIdRequest, type CalendarGetResponse, CalendarGetTopic, CalendarGetUserIdRequest,
   type CalendarGetOneResponse, CalendarGetOneTopic, CalendarGetOneUserIdRequest, type CalendarUpdateResponse, CalendarUpdateTopic,
   CalendarUpdateUserIdRequest
 } from '@finlab/contracts/work-time';
@@ -25,8 +25,8 @@ export class CalendarController {
   }
 
   @RMQValidate()
-  @RMQRoute(CalendarGetByQueryTopic)
-  async getByQuery(@Body() dto: CalendarGetByQueryUserIdRequest): Promise<CalendarGetByQueryResponse> {
+  @RMQRoute(CalendarGetTopic)
+  async getByQuery(@Body() dto: CalendarGetUserIdRequest): Promise<CalendarGetResponse> {
     return await this.calendarService.getByQuery(dto);
   }
 
