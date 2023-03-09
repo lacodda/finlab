@@ -1,6 +1,6 @@
 import {
   type TimestampCreateResponse, type TimestampCreateUserIdRequest, type TimestampDeleteResponse,
-  type TimestampDeleteUserIdRequest, type TimestampGetByQueryResponse, type TimestampGetByQueryUserIdRequest,
+  type TimestampDeleteUserIdRequest, type TimestampGetResponse, type TimestampGetUserIdRequest,
   type TimestampGetOneResponse, type TimestampGetOneUserIdRequest, type TimestampUpdateResponse, type TimestampUpdateUserIdRequest
 } from '@finlab/contracts/work-time';
 import { type ITimestamp, type ITimestampFindByQueryParams, type TimestampType } from '@finlab/interfaces/work-time';
@@ -52,7 +52,7 @@ export class TimestampService {
     return timestampEntity.entity;
   }
 
-  async getByQuery(dto: TimestampGetByQueryUserIdRequest): Promise<TimestampGetByQueryResponse> {
+  async getByQuery(dto: TimestampGetUserIdRequest): Promise<TimestampGetResponse> {
     const dayRange = Time.dayRangeISO(dto.date);
     const params: ITimestampFindByQueryParams = {
       userId: dto.userId,
