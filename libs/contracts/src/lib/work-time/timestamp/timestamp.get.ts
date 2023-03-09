@@ -2,13 +2,13 @@ import { Type } from 'class-transformer';
 import { IsOptional, IsDate, IsBoolean } from 'class-validator';
 import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
 import { Timestamp } from './timestamp.model';
-import { type UserId } from '../../common/user-id';
-import ToBoolean from '../../decorators/to-boolean.decorator';
+import { type UserId } from '../../common';
+import { ToBoolean } from '../../decorators';
 
-export const TimestampGetByQueryTopic = 'work-time.timestamp.get-by-query.query';
+export const TimestampGetTopic = 'work-time.timestamp.get.query';
 
 @ArgsType()
-export class TimestampGetByQueryRequest {
+export class TimestampGetRequest {
   @IsOptional()
   @IsDate()
   @Field({ nullable: true })
@@ -22,11 +22,11 @@ export class TimestampGetByQueryRequest {
     raw?: boolean;
 }
 
-export class TimestampGetByQueryUserIdRequest {}
-export interface TimestampGetByQueryUserIdRequest extends UserId, TimestampGetByQueryRequest {}
+export class TimestampGetUserIdRequest {}
+export interface TimestampGetUserIdRequest extends UserId, TimestampGetRequest {}
 
 @ObjectType()
-export class TimestampGetByQueryResponse {
+export class TimestampGetResponse {
   @Field(() => [Timestamp])
     data: Timestamp[];
 

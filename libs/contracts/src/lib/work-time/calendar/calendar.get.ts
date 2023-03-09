@@ -2,7 +2,7 @@ import { IsOptional, IsBoolean, IsInt, Min, Max, IsEnum } from 'class-validator'
 import { Type } from 'class-transformer';
 import { type ICalendarDay } from '@finlab/interfaces/work-time';
 import { FirstDayOfWeek } from '@finlab/interfaces';
-import { type UserId } from '../../common/user-id';
+import { type UserId } from '../../common';
 
 const currentYear = new Date().getFullYear();
 const MIN_YEAR = currentYear - 1;
@@ -10,9 +10,9 @@ const MAX_YEAR = currentYear + 10;
 const MIN_MONTH = 1;
 const MAX_MONTH = 12;
 
-export const CalendarGetByQueryTopic = 'work-time.calendar.get-by-query.query';
+export const CalendarGetTopic = 'work-time.calendar.get.query';
 
-export class CalendarGetByQueryRequest {
+export class CalendarGetRequest {
   @IsOptional()
   @Max(MAX_YEAR)
   @Min(MIN_YEAR)
@@ -43,10 +43,10 @@ export class CalendarGetByQueryRequest {
     summary?: boolean;
 }
 
-export class CalendarGetByQueryUserIdRequest {}
-export interface CalendarGetByQueryUserIdRequest extends UserId, CalendarGetByQueryRequest {}
+export class CalendarGetUserIdRequest {}
+export interface CalendarGetUserIdRequest extends UserId, CalendarGetRequest {}
 
-export class CalendarGetByQueryResponse {
+export class CalendarGetResponse {
   data: Array<Omit<ICalendarDay, 'userId'>>;
   totalTime?: number;
 }

@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsDate } from 'class-validator';
 import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
-import { type UserId } from '../../common/user-id';
+import { type UserId } from '../../common';
 import { Timestamp } from './timestamp.model';
 
 export const TimestampGetOneTopic = 'work-time.timestamp.get-one.query';

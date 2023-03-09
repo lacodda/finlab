@@ -1,6 +1,5 @@
 // common
-export * from './lib/common/id';
-export * from './lib/common/user-id';
+export * from './lib/common';
 // account
 export * from './lib/account/account.login';
 export * from './lib/account/account.register';

@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsDate } from 'class-validator';
 import { type ICalendarDay } from '@finlab/interfaces/work-time';
-import { type UserId } from '../../common/user-id';
+import { type UserId } from '../../common';
 
 export const CalendarDeleteTopic = 'work-time.calendar.delete.command';
 

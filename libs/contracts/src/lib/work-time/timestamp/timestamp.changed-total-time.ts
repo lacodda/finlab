@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsDate, IsNumber } from 'class-validator';
-import { type UserId } from '../../common/user-id';
+import { type UserId } from '../../common';
 
 export const TimestampChangedTotalTimeTopic = 'work-time.timestamp.changed-total-time.event';
 

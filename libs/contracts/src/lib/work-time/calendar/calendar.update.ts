@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsDate } from 'class-validator';
 import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
-import { type UserId } from '../../common/user-id';
+import { type UserId } from '../../common';
 
 export const CalendarUpdateTopic = 'work-time.calendar.update.command';
 

@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
-import { type UserId } from '../../common/user-id';
+import { type UserId } from '../../common';
 
 export const CalendarCreateTopic = 'work-time.calendar.create.command';
 

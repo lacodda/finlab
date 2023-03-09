@@ -4,7 +4,7 @@ import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { TimestampType } from '@finlab/interfaces/work-time';
 import { Timestamp } from './timestamp.model';
-import { type UserId } from '../../common/user-id';
+import { type UserId } from '../../common';
 
 export const TimestampUpdateTopic = 'work-time.timestamp.update.command';
 
