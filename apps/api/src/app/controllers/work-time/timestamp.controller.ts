@@ -1,8 +1,8 @@
 import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards } from '@nestjs/common';
 import {
   TimestampCreateRequest, TimestampCreateResponse, TimestampCreateTopic, type TimestampCreateUserIdRequest, TimestampDeleteRequest,
-  type TimestampDeleteResponse, TimestampDeleteTopic, type TimestampDeleteUserIdRequest, TimestampGetByQueryRequest,
-  type TimestampGetByQueryResponse, TimestampGetByQueryTopic, type TimestampGetByQueryUserIdRequest, TimestampGetOneRequest,
+  type TimestampDeleteResponse, TimestampDeleteTopic, type TimestampDeleteUserIdRequest, TimestampGetRequest,
+  type TimestampGetResponse, TimestampGetTopic, type TimestampGetUserIdRequest, TimestampGetOneRequest,
   type TimestampGetOneResponse, TimestampGetOneTopic, type TimestampGetOneUserIdRequest, TimestampUpdateRequestBody,
   TimestampUpdateRequestParam, type TimestampUpdateResponse, TimestampUpdateTopic, type TimestampUpdateUserIdRequest
 } from '@finlab/contracts/work-time';
@@ -50,9 +50,9 @@ export class WorkTimeTimestampController {
   @ApiTags('timestamp')
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getByQuery(@Query() dto: TimestampGetByQueryRequest, @UserId() userId: string): Promise<TimestampGetByQueryResponse | undefined> {
+  async getByQuery(@Query() dto: TimestampGetRequest, @UserId() userId: string): Promise<TimestampGetResponse | undefined> {
     try {
-      return await this.rmqService.send<TimestampGetByQueryUserIdRequest, TimestampGetByQueryResponse>(TimestampGetByQueryTopic, { ...dto, userId });
+      return await this.rmqService.send<TimestampGetUserIdRequest, TimestampGetResponse>(TimestampGetTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);

@@ -1,7 +1,7 @@
 import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards } from '@nestjs/common';
 import {
-  type TaskCreateRequest, type TaskCreateResponse, TaskCreateTopic, type TaskGetByQueryRequest, type TaskGetByQueryResponse,
-  TaskGetByQueryTopic, type TaskGetOneRequest, type TaskGetOneResponse, TaskGetOneTopic, type TaskUpdateRequest, type TaskUpdateResponse,
+  type TaskCreateRequest, type TaskCreateResponse, TaskCreateTopic, type TaskGetRequest, type TaskGetResponse,
+  TaskGetTopic, type TaskGetOneRequest, type TaskGetOneResponse, TaskGetOneTopic, type TaskUpdateRequest, type TaskUpdateResponse,
   TaskUpdateTopic, type TaskDeleteRequest, type TaskDeleteResponse, TaskDeleteTopic
 } from '@finlab/contracts/work-time';
 import { RMQService } from 'nestjs-rmq';
@@ -43,9 +43,9 @@ export class WorkTimeTaskController {
   @ApiTags('task')
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getByQuery(@Query() dto: Omit<TaskGetByQueryRequest, 'userId'>, @UserId() userId: string): Promise<TaskGetByQueryResponse | undefined> {
+  async getByQuery(@Query() dto: Omit<TaskGetRequest, 'userId'>, @UserId() userId: string): Promise<TaskGetResponse | undefined> {
     try {
-      return await this.rmqService.send<TaskGetByQueryRequest, TaskGetByQueryResponse>(TaskGetByQueryTopic, { ...dto, userId });
+      return await this.rmqService.send<TaskGetRequest, TaskGetResponse>(TaskGetTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);

@@ -1,8 +1,8 @@
 import { Get, Param, Delete, Patch, Query, Body, Controller, Post, BadRequestException, UseGuards } from '@nestjs/common';
 import {
   CalendarCreateRequest, CalendarCreateResponse, CalendarCreateTopic, type CalendarCreateUserIdRequest, CalendarDeleteRequest,
-  type CalendarDeleteResponse, CalendarDeleteTopic, type CalendarDeleteUserIdRequest, CalendarGetByQueryRequest,
-  type CalendarGetByQueryResponse, CalendarGetByQueryTopic, type CalendarGetByQueryUserIdRequest, CalendarGetOneRequest,
+  type CalendarDeleteResponse, CalendarDeleteTopic, type CalendarDeleteUserIdRequest, CalendarGetRequest,
+  type CalendarGetResponse, CalendarGetTopic, type CalendarGetUserIdRequest, CalendarGetOneRequest,
   type CalendarGetOneResponse, CalendarGetOneTopic, type CalendarGetOneUserIdRequest, CalendarUpdateRequestBody,
   CalendarUpdateRequestParam, type CalendarUpdateResponse, CalendarUpdateTopic, type CalendarUpdateUserIdRequest
 } from '@finlab/contracts/work-time';
@@ -50,9 +50,9 @@ export class WorkTimeCalendarController {
   @ApiTags('calendar')
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getByQuery(@Query() dto: CalendarGetByQueryRequest, @UserId() userId: string): Promise<CalendarGetByQueryResponse | undefined> {
+  async getByQuery(@Query() dto: CalendarGetRequest, @UserId() userId: string): Promise<CalendarGetResponse | undefined> {
     try {
-      return await this.rmqService.send<CalendarGetByQueryUserIdRequest, CalendarGetByQueryResponse>(CalendarGetByQueryTopic, { ...dto, userId });
+      return await this.rmqService.send<CalendarGetUserIdRequest, CalendarGetResponse>(CalendarGetTopic, { ...dto, userId });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
