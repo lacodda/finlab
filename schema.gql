@@ -10,6 +10,11 @@ type Summary {
   time: Float
 }
 
+type SummaryGetResponse {
+  data: [Summary!]!
+  totalTime: Float!
+}
+
 """timestamp """
 type Timestamp {
   timestamp: Date
@@ -27,11 +32,15 @@ type TimestampCreateResponse {
   data: Timestamp
 }
 
-type TimestampGetByQueryResponse {
+type TimestampGetResponse {
   data: [Timestamp!]!
   workTime: [Float!]!
   breaks: [Float!]!
   totalTime: Float!
+}
+
+type TimestampDeleteResponse {
+  data: Timestamp!
 }
 
 """recipe """
@@ -46,13 +55,15 @@ type Recipe {
 scalar Date
 
 type Query {
-  getTimestampByQuery(date: Date, raw: Boolean): TimestampGetByQueryResponse!
+  timestamps(date: Date, raw: Boolean): TimestampGetResponse!
+  summary(from: Date, to: Date, recalculate: Boolean): SummaryGetResponse!
   recipe(id: String!): Recipe!
   recipes(skip: Int! = 0, take: Int! = 25): [Recipe!]!
 }
 
 type Mutation {
   createTimestamp(timestamp: Date!, type: TimestampType!): TimestampCreateResponse!
+  deleteTimestamp(timestamp: Date!): TimestampDeleteResponse!
   addRecipe(newRecipeData: NewRecipeInput!): Recipe!
   removeRecipe(id: String!): Boolean!
 }
