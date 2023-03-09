@@ -12,8 +12,8 @@ export interface ISummaryFindByQuery {
 
 export interface ISummaryFindByQueryParams {
   userId: string;
-  date?: {
-    $gte: Date | string;
-    $lte: Date | string;
+  date: {
+    $gte: Date;
+    $lte: Date;
   };
 }
