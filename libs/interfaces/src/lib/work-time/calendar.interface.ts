@@ -8,6 +8,7 @@ export enum CalendarType {
 }
 
 export interface ICalendarDay {
+  _id?: string;
   userId: string;
   date: Date;
   type: CalendarType;
