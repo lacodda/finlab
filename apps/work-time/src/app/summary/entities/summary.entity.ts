@@ -1,3 +1,4 @@
+import { type Summary } from '@finlab/contracts/work-time';
 import { type ISummary } from '@finlab/interfaces/work-time';
 
 export class SummaryEntity implements ISummary {
@@ -18,9 +19,8 @@ export class SummaryEntity implements ISummary {
     return this;
   }
 
-  public get entity(): Omit<ISummary, 'userId'> {
+  public get entity(): Summary {
     return {
-      _id: this._id,
       date: this.date,
       time: this.time
     };

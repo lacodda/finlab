@@ -12,18 +12,6 @@ export class SummaryService {
     private readonly summaryRepository: SummaryRepository,
     private readonly rmqService: RMQService) { }
 
-  async create(dto: SummaryUserId): Promise<void> {
-    const existedSummary = await this.summaryRepository.findByDate(dto.date, dto.userId);
-    if (existedSummary) {
-      const summaryEntity = new SummaryEntity(existedSummary).updateTime(dto.time);
-      await this.summaryRepository.update(summaryEntity);
-      return;
-    }
-
-    const summaryEntity = new SummaryEntity(dto);
-    await this.summaryRepository.create(summaryEntity);
-  }
-
   async getByQuery(dto: SummaryGetUserIdRequest): Promise<SummaryGetResponse> {
     const { from, to } = Time.monthRange();
     const params: ISummaryFindByQueryParams = {
@@ -44,6 +32,19 @@ export class SummaryService {
       data: data.map(summary => new SummaryEntity(summary).entity),
       totalTime
     };
+  }
+
+  async create(dto: SummaryUserId): Promise<void> {
+    const date = Time.dayRange(dto.date).from;
+    const existedSummary = await this.summaryRepository.findByDate(date, dto.userId);
+    if (existedSummary) {
+      const summaryEntity = new SummaryEntity(existedSummary).updateTime(dto.time);
+      await this.summaryRepository.update(summaryEntity);
+      return;
+    }
+
+    const summaryEntity = new SummaryEntity({ ...dto, date });
+    await this.summaryRepository.create(summaryEntity);
   }
 
   private async recalculate({ userId, date }: ISummaryFindByQueryParams): Promise<void> {
