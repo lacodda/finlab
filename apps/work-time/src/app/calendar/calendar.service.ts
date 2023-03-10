@@ -1,8 +1,7 @@
 import {
   type CalendarCreateResponse, type CalendarCreateUserIdRequest, type CalendarDeleteResponse, type CalendarDeleteUserIdRequest,
-  type CalendarGetResponse, type CalendarGetUserIdRequest, type CalendarGetOneResponse, type CalendarGetOneUserIdRequest,
-  type CalendarUpdateResponse, type CalendarUpdateUserIdRequest, type SummaryGetResponse, SummaryGetTopic,
-  type SummaryGetUserIdRequest
+  type CalendarGetResponse, type CalendarGetUserIdRequest, type CalendarUpdateResponse, type CalendarUpdateUserIdRequest,
+  type SummaryGetResponse, SummaryGetTopic, type SummaryGetUserIdRequest, type Calendar
 } from '@finlab/contracts/work-time';
 import { type ICalendarDay, CalendarType, type ICalendarFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
@@ -18,35 +17,6 @@ export class CalendarService {
     private readonly calendarRepository: CalendarRepository,
     private readonly rmqService: RMQService
   ) { }
-
-  async create({ userId, date, type }: CalendarCreateUserIdRequest): Promise<CalendarCreateResponse> {
-    const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
-    if (existedCalendarDay) {
-      const data = await this.updateType(existedCalendarDay, type);
-      return { data };
-    }
-    const newCalendarDayEntity = new CalendarDayEntity({ userId, date, type });
-    const newCalendarDay = await this.calendarRepository.create(newCalendarDayEntity);
-
-    return { data: new CalendarDayEntity(newCalendarDay).entity };
-  }
-
-  async update({ userId, date, type }: CalendarUpdateUserIdRequest): Promise<CalendarUpdateResponse> {
-    const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
-    if (!existedCalendarDay) {
-      throw new Error('Unable to update non-existing entry');
-    }
-    const data = await this.updateType(existedCalendarDay, type);
-
-    return { data };
-  }
-
-  async updateType(calendarDay: ICalendarDay, type: CalendarType): Promise<Omit<ICalendarDay, 'userId'>> {
-    const calendarEntity = new CalendarDayEntity(calendarDay).updateType(type);
-    await this.calendarRepository.update(calendarEntity);
-
-    return calendarEntity.entity;
-  }
 
   async getByQuery(dto: CalendarGetUserIdRequest): Promise<CalendarGetResponse> {
     let range: IDateRange, dates: Date[], summary: SummaryGetResponse;
@@ -82,13 +52,26 @@ export class CalendarService {
     return response;
   }
 
-  async getOne({ date, userId }: CalendarGetOneUserIdRequest): Promise<CalendarGetOneResponse> {
-    const calendarDay = await this.calendarRepository.findByDate(date, userId);
-    if (!calendarDay) {
-      throw new Error('Unable to show non-existing entry');
+  async create({ userId, date, type }: CalendarCreateUserIdRequest): Promise<CalendarCreateResponse> {
+    const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
+    if (existedCalendarDay) {
+      const data = await this.updateType(existedCalendarDay, type);
+      return { data };
     }
+    const newCalendarDayEntity = new CalendarDayEntity({ userId, date, type });
+    const newCalendarDay = await this.calendarRepository.create(newCalendarDayEntity);
 
-    return { data: new CalendarDayEntity(calendarDay).entity };
+    return { data: new CalendarDayEntity(newCalendarDay).entity };
+  }
+
+  async update({ userId, date, type }: CalendarUpdateUserIdRequest): Promise<CalendarUpdateResponse> {
+    const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
+    if (!existedCalendarDay) {
+      throw new Error('Unable to update non-existing entry');
+    }
+    const data = await this.updateType(existedCalendarDay, type);
+
+    return { data };
   }
 
   async delete({ date, userId }: CalendarDeleteUserIdRequest): Promise<CalendarDeleteResponse> {
@@ -96,8 +79,15 @@ export class CalendarService {
     if (!calendarDay) {
       throw new Error('Unable to delete non-existing entry');
     }
-    await this.calendarRepository.delete(date, userId);
+    await this.calendarRepository.delete(calendarDay._id as string);
 
-    return { data: { date } };
+    return { data: new CalendarDayEntity(calendarDay).entity };
+  }
+
+  private async updateType(calendarDay: ICalendarDay, type: CalendarType): Promise<Calendar> {
+    const calendarEntity = new CalendarDayEntity(calendarDay).updateType(type);
+    await this.calendarRepository.update(calendarEntity);
+
+    return calendarEntity.entity;
   }
 }

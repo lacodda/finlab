@@ -1,3 +1,4 @@
+import { type Calendar } from '@finlab/contracts/work-time';
 import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
 
 const PRESET_TIME = new Map(); // FIXME move to settings
@@ -28,7 +29,7 @@ export class CalendarDayEntity implements ICalendarDay {
     return this;
   }
 
-  public get entity(): Omit<ICalendarDay, 'userId'> {
+  public get entity(): Calendar {
     return {
       date: this.date,
       type: this.type,

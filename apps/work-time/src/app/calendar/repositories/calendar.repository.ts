@@ -30,14 +30,6 @@ export class CalendarRepository {
     }
   }
 
-  async findOneByQuery(params: ICalendarFindByQueryParams): Promise<ICalendarDay> {
-    try {
-      return await this.calendarModel.findOne(params).exec() as ICalendarDay;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
   async findByQuery(params: ICalendarFindByQueryParams): Promise<ICalendarDay[]> {
     try {
       return await this.calendarModel.find(params).sort({ date: 1 }).exec();
@@ -55,9 +47,9 @@ export class CalendarRepository {
     }
   }
 
-  async delete(date: Date, userId: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     try {
-      await this.calendarModel.deleteOne({ date, userId }).exec();
+      await this.calendarModel.findByIdAndDelete(id).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

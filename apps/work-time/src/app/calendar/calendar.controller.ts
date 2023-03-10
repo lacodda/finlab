@@ -1,8 +1,7 @@
 import {
   type CalendarCreateResponse, CalendarCreateTopic, CalendarCreateUserIdRequest, type CalendarDeleteResponse, CalendarDeleteTopic,
-  CalendarDeleteUserIdRequest, type CalendarGetResponse, CalendarGetTopic, CalendarGetUserIdRequest,
-  type CalendarGetOneResponse, CalendarGetOneTopic, CalendarGetOneUserIdRequest, type CalendarUpdateResponse, CalendarUpdateTopic,
-  CalendarUpdateUserIdRequest
+  CalendarDeleteUserIdRequest, type CalendarGetResponse, CalendarGetTopic, CalendarGetUserIdRequest, type CalendarUpdateResponse,
+  CalendarUpdateTopic, CalendarUpdateUserIdRequest
 } from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
@@ -11,6 +10,12 @@ import { CalendarService } from './calendar.service';
 @Controller('calendar')
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) { }
+
+  @RMQValidate()
+  @RMQRoute(CalendarGetTopic)
+  async getByQuery(@Body() dto: CalendarGetUserIdRequest): Promise<CalendarGetResponse> {
+    return await this.calendarService.getByQuery(dto);
+  }
 
   @RMQValidate()
   @RMQRoute(CalendarCreateTopic)
@@ -22,18 +27,6 @@ export class CalendarController {
   @RMQRoute(CalendarUpdateTopic)
   async update(@Body() dto: CalendarUpdateUserIdRequest): Promise<CalendarUpdateResponse> {
     return await this.calendarService.update(dto);
-  }
-
-  @RMQValidate()
-  @RMQRoute(CalendarGetTopic)
-  async getByQuery(@Body() dto: CalendarGetUserIdRequest): Promise<CalendarGetResponse> {
-    return await this.calendarService.getByQuery(dto);
-  }
-
-  @RMQValidate()
-  @RMQRoute(CalendarGetOneTopic)
-  async getOne(@Body() dto: CalendarGetOneUserIdRequest): Promise<CalendarGetOneResponse> {
-    return await this.calendarService.getOne(dto);
   }
 
   @RMQValidate()
