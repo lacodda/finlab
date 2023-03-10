@@ -29,14 +29,6 @@ export class TimestampRepository {
     }
   }
 
-  async findOneByQuery(params: ITimestampFindByQueryParams): Promise<ITimestamp> {
-    try {
-      return await this.timestampModel.findOne(params).exec() as ITimestamp;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
   async findByQuery(params: ITimestampFindByQueryParams): Promise<ITimestamp[]> {
     try {
       return await this.timestampModel.find(params).sort({ timestamp: 1 }).exec();

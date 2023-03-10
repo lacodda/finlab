@@ -1,3 +1,4 @@
+import { type Timestamp } from '@finlab/contracts/work-time';
 import { type ITimestamp, type TimestampType } from '@finlab/interfaces/work-time';
 
 export class TimestampEntity implements ITimestamp {
@@ -18,9 +19,8 @@ export class TimestampEntity implements ITimestamp {
     return this;
   }
 
-  public get entity(): Omit<ITimestamp, 'userId'> {
+  public get entity(): Timestamp {
     return {
-      _id: this._id,
       timestamp: this.timestamp,
       type: this.type
     };

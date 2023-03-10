@@ -1,8 +1,7 @@
 import {
   type TimestampCreateResponse, TimestampCreateTopic, TimestampCreateUserIdRequest, type TimestampDeleteResponse,
   TimestampDeleteTopic, TimestampDeleteUserIdRequest, type TimestampGetResponse, TimestampGetTopic,
-  TimestampGetUserIdRequest, type TimestampGetOneResponse, TimestampGetOneTopic, TimestampGetOneUserIdRequest,
-  type TimestampUpdateResponse, TimestampUpdateTopic, TimestampUpdateUserIdRequest
+  TimestampGetUserIdRequest, type TimestampUpdateResponse, TimestampUpdateTopic, TimestampUpdateUserIdRequest
 } from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
@@ -11,6 +10,12 @@ import { TimestampService } from './timestamp.service';
 @Controller('timestamp')
 export class TimestampController {
   constructor(private readonly timestampService: TimestampService) { }
+
+  @RMQValidate()
+  @RMQRoute(TimestampGetTopic)
+  async getByQuery(@Body() dto: TimestampGetUserIdRequest): Promise<TimestampGetResponse> {
+    return await this.timestampService.getByQuery(dto);
+  }
 
   @RMQValidate()
   @RMQRoute(TimestampCreateTopic)
@@ -22,18 +27,6 @@ export class TimestampController {
   @RMQRoute(TimestampUpdateTopic)
   async update(@Body() dto: TimestampUpdateUserIdRequest): Promise<TimestampUpdateResponse> {
     return await this.timestampService.update(dto);
-  }
-
-  @RMQValidate()
-  @RMQRoute(TimestampGetTopic)
-  async getByQuery(@Body() dto: TimestampGetUserIdRequest): Promise<TimestampGetResponse> {
-    return await this.timestampService.getByQuery(dto);
-  }
-
-  @RMQValidate()
-  @RMQRoute(TimestampGetOneTopic)
-  async getOne(@Body() dto: TimestampGetOneUserIdRequest): Promise<TimestampGetOneResponse> {
-    return await this.timestampService.getOne(dto);
   }
 
   @RMQValidate()

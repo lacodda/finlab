@@ -1,7 +1,7 @@
 import {
-  type TimestampCreateResponse, type TimestampCreateUserIdRequest, type TimestampDeleteResponse,
-  type TimestampDeleteUserIdRequest, type TimestampGetResponse, type TimestampGetUserIdRequest,
-  type TimestampGetOneResponse, type TimestampGetOneUserIdRequest, type TimestampUpdateResponse, type TimestampUpdateUserIdRequest
+  type Timestamp,
+  type TimestampCreateResponse, type TimestampCreateUserIdRequest, type TimestampDeleteResponse, type TimestampDeleteUserIdRequest,
+  type TimestampGetResponse, type TimestampGetUserIdRequest, type TimestampUpdateResponse, type TimestampUpdateUserIdRequest
 } from '@finlab/contracts/work-time';
 import { type ITimestamp, type ITimestampFindByQueryParams, type TimestampType } from '@finlab/interfaces/work-time';
 import { Time } from '@finlab/helpers';
@@ -20,37 +20,6 @@ export class TimestampService {
     private readonly timestampRepository: TimestampRepository,
     private readonly totalTimeEventEmitter: TotalTimeEventEmitter
   ) { }
-
-  async create(dto: TimestampCreateUserIdRequest): Promise<TimestampCreateResponse> {
-    const existedTimestamp = await this.timestampRepository.findByDate(dto.timestamp, dto.userId);
-    if (existedTimestamp) {
-      const data = await this.updateType(existedTimestamp, dto.type);
-      return { data };
-    }
-    const newTimestampEntity = new TimestampEntity({ ...dto });
-    const newTimestamp = await this.timestampRepository.create(newTimestampEntity);
-    void this.changeTotalTime(newTimestamp);
-
-    return { data: new TimestampEntity(newTimestamp).entity };
-  }
-
-  async update(dto: TimestampUpdateUserIdRequest): Promise<TimestampUpdateResponse> {
-    const existedTimestamp = await this.timestampRepository.findByDate(dto.timestamp, dto.userId);
-    if (!existedTimestamp) {
-      throw new Error('Unable to update non-existing entry');
-    }
-    const data = await this.updateType(existedTimestamp, dto.type);
-
-    return { data };
-  }
-
-  async updateType(timestamp: ITimestamp, type: TimestampType): Promise<Omit<ITimestamp, 'userId'>> {
-    const timestampEntity = new TimestampEntity(timestamp).updateType(type);
-    await this.timestampRepository.update(timestampEntity);
-    void this.changeTotalTime(timestamp);
-
-    return timestampEntity.entity;
-  }
 
   async getByQuery(dto: TimestampGetUserIdRequest): Promise<TimestampGetResponse> {
     const dayRange = Time.dayRangeISO(dto.date);
@@ -75,13 +44,27 @@ export class TimestampService {
     return { data, workTime, breaks, totalTime };
   }
 
-  async getOne(dto: TimestampGetOneUserIdRequest): Promise<TimestampGetOneResponse> {
+  async create(dto: TimestampCreateUserIdRequest): Promise<TimestampCreateResponse> {
+    const existedTimestamp = await this.timestampRepository.findByDate(dto.timestamp, dto.userId);
+    if (existedTimestamp) {
+      const data = await this.updateType(existedTimestamp, dto.type);
+      return { data };
+    }
+    const newTimestampEntity = new TimestampEntity({ ...dto });
+    const newTimestamp = await this.timestampRepository.create(newTimestampEntity);
+    void this.changeTotalTime(newTimestamp);
+
+    return { data: new TimestampEntity(newTimestamp).entity };
+  }
+
+  async update(dto: TimestampUpdateUserIdRequest): Promise<TimestampUpdateResponse> {
     const existedTimestamp = await this.timestampRepository.findByDate(dto.timestamp, dto.userId);
     if (!existedTimestamp) {
-      throw new Error('Unable to delete non-existing entry');
+      throw new Error('Unable to update non-existing entry');
     }
+    const data = await this.updateType(existedTimestamp, dto.type);
 
-    return { data: new TimestampEntity(existedTimestamp).entity };
+    return { data };
   }
 
   async delete(dto: TimestampDeleteUserIdRequest): Promise<TimestampDeleteResponse> {
@@ -95,7 +78,15 @@ export class TimestampService {
     return { data: existedTimestamp };
   }
 
-  async changeTotalTime({ userId, timestamp: date }: ITimestamp): Promise<void> {
+  private async updateType(timestamp: ITimestamp, type: TimestampType): Promise<Timestamp> {
+    const timestampEntity = new TimestampEntity(timestamp).updateType(type);
+    await this.timestampRepository.update(timestampEntity);
+    void this.changeTotalTime(timestamp);
+
+    return timestampEntity.entity;
+  }
+
+  private async changeTotalTime({ userId, timestamp: date }: ITimestamp): Promise<void> {
     const { totalTime: time } = await this.getByQuery({ userId, date });
     const totalTimeEntity = new TotalTimeEntity({ userId, date, time });
     await this.totalTimeEventEmitter.handle(totalTimeEntity);
