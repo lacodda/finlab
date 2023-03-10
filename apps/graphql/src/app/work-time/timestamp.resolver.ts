@@ -1,8 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
   Timestamp, TimestampCreateRequest, TimestampCreateResponse, TimestampCreateTopic, type TimestampCreateUserIdRequest,
-  TimestampGetRequest, TimestampGetResponse, TimestampGetTopic, type TimestampGetUserIdRequest,
-  TimestampGetOneRequest, TimestampGetOneResponse, TimestampGetOneTopic, type TimestampGetOneUserIdRequest, TimestampDeleteRequest,
+  TimestampGetRequest, TimestampGetResponse, TimestampGetTopic, type TimestampGetUserIdRequest, TimestampDeleteRequest,
   TimestampDeleteResponse, TimestampDeleteTopic, type TimestampDeleteUserIdRequest
 } from '@finlab/contracts/work-time';
 import { RMQService } from 'nestjs-rmq';
