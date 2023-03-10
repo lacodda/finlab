@@ -37,9 +37,17 @@ export class TaskRepository {
     }
   }
 
-  async findOneByQuery(params: ITaskFindByQueryParams): Promise<ITask> {
+  async findOne(userId: string, date: Date, name: string): Promise<ITask> {
     try {
-      return await this.taskModel.findOne(params).exec() as ITask;
+      return await this.taskModel.findOne({ userId, date, name }).exec() as ITask;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async findByDate(userId: string, date: Date): Promise<ITask[]> {
+    try {
+      return await this.taskModel.find({ userId, date }).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -88,9 +96,9 @@ export class TaskRepository {
     }
   }
 
-  async delete(_id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     try {
-      await this.taskModel.deleteOne({ _id }).exec();
+      await this.taskModel.findByIdAndDelete(id).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

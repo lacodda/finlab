@@ -1,3 +1,4 @@
+import { type Task } from '@finlab/contracts/work-time';
 import { Utils } from '@finlab/helpers';
 import { type ITask } from '@finlab/interfaces/work-time';
 
@@ -14,7 +15,7 @@ export class TaskEntity implements ITask {
   constructor(task: ITask) {
     this._id = task._id;
     this.userId = task.userId;
-    this.taskId = task.taskId || Utils.uuid();
+    this.taskId = task.taskId ?? Utils.uuid();
     this.date = task.date;
     this.name = task.name;
     this.comment = task.comment;
@@ -50,9 +51,9 @@ export class TaskEntity implements ITask {
     return this;
   }
 
-  public get entity(): Omit<ITask, 'userId'> {
+  public get entity(): Task {
     return {
-      _id: this._id,
+      _id: this._id as string,
       taskId: this.taskId,
       date: this.date,
       name: this.name,

@@ -1,3 +1,4 @@
+import { type Task } from '@finlab/contracts/work-time';
 import { type ITask, type ITaskFindIncompleteResult } from '@finlab/interfaces/work-time';
 import { TaskEntity } from './task.entity';
 
@@ -17,7 +18,7 @@ export class TasksEntity {
     return 'tasks' in task;
   }
 
-  public get entities(): Array<Omit<ITask, 'userId'>> {
+  public get entities(): Task[] {
     return this.tasks.map(({ entity }) => entity);
   }
 }
