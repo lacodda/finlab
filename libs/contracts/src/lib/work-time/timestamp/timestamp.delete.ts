@@ -9,6 +9,7 @@ export const TimestampDeleteTopic = 'work-time.timestamp.delete.command';
 
 @ArgsType()
 export class TimestampDeleteRequest {
+  @ApiProperty()
   @IsDate()
   @Field()
   @Type(() => Date)
@@ -20,7 +21,7 @@ export interface TimestampDeleteUserIdRequest extends UserId, TimestampDeleteReq
 
 @ObjectType()
 export class TimestampDeleteResponse {
-  @ApiProperty()
+  @ApiProperty({ type: Timestamp })
   @Field(() => Timestamp)
     data: Timestamp;
 }

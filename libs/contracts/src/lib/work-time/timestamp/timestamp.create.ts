@@ -15,7 +15,7 @@ export class TimestampCreateRequest {
   @Type(() => Date)
     timestamp: Date;
 
-  @ApiProperty()
+  @ApiProperty({ enum: TimestampType, enumName: 'TimestampType' })
   @IsEnum(TimestampType)
   @Field(() => TimestampType)
     type: TimestampType;
@@ -26,7 +26,7 @@ export interface TimestampCreateUserIdRequest extends UserId, TimestampCreateReq
 
 @ObjectType()
 export class TimestampCreateResponse {
-  @ApiProperty()
-  @Field(() => Timestamp, { nullable: true })
+  @ApiProperty({ type: Timestamp })
+  @Field(() => Timestamp)
     data: Timestamp;
 }
