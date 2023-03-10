@@ -1,35 +1,59 @@
-import { type ITask } from '@finlab/interfaces/work-time';
-import { IsNumber, IsString, IsDateString, IsOptional, IsBoolean } from 'class-validator';
+import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsString, IsOptional, IsBoolean, IsDate, IsInt } from 'class-validator';
+import { type UserId } from '../../common';
+import { ToBoolean } from '../../decorators';
+import { Task } from './task.model';
 
 export const TaskCreateTopic = 'work-time.task.create.command';
 
+@ArgsType()
 export class TaskCreateRequest {
-  @IsString()
-    userId: string;
-
+  @ApiProperty()
   @IsOptional()
   @IsString()
-    taskId: string;
+  @Field({ nullable: true })
+    taskId?: string;
 
-  @IsDateString()
-    date: string;
+  @ApiProperty()
+  @IsDate()
+  @Field()
+  @Type(() => Date)
+    date: Date;
 
+  @ApiProperty()
   @IsString()
+  @Field()
     name: string;
 
+  @ApiProperty()
   @IsOptional()
   @IsString()
-    comment: string;
+  @Field({ nullable: true })
+    comment?: string;
 
+  @ApiProperty()
   @IsOptional()
-  @IsNumber()
-    completeness: number;
+  @IsInt()
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+    completeness?: number;
 
+  @ApiProperty()
   @IsOptional()
   @IsBoolean()
-    excludedFromSearch: boolean;
+  @Field(() => Boolean, { nullable: true })
+  @ToBoolean()
+    excludedFromSearch?: boolean;
 }
 
+export class TaskCreateUserIdRequest {}
+export interface TaskCreateUserIdRequest extends UserId, TaskCreateRequest {}
+
+@ObjectType()
 export class TaskCreateResponse {
-  data: Omit<ITask, 'userId'>;
+  @ApiProperty({ type: Task })
+  @Field(() => Task)
+    data: Task;
 }

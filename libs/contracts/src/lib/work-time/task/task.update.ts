@@ -1,33 +1,62 @@
-import { type ITask } from '@finlab/interfaces/work-time';
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
+import { type UserId } from '../../common';
+import { ToBoolean } from '../../decorators';
+import { Task } from './task.model';
 
 export const TaskUpdateTopic = 'work-time.task.update.command';
 
-export class TaskUpdateRequest {
+@ArgsType()
+export class TaskUpdateRequestParam {
+  @ApiProperty()
   @IsString()
+  @Field()
     id: string;
-
-  @IsOptional()
-  @IsString()
-    taskId: string;
-
-  @IsOptional()
-  @IsString()
-    name: string;
-
-  @IsOptional()
-  @IsString()
-    comment: string;
-
-  @IsOptional()
-  @IsNumber()
-    completeness: number;
-
-  @IsOptional()
-  @IsBoolean()
-    excludedFromSearch: boolean;
 }
 
+@ArgsType()
+export class TaskUpdateRequestBody {
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field({ nullable: true })
+    taskId?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field({ nullable: true })
+    name: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field({ nullable: true })
+    comment?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsInt()
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+    completeness?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  @Field(() => Boolean, { nullable: true })
+  @ToBoolean()
+    excludedFromSearch?: boolean;
+}
+
+export class TaskUpdateUserIdRequest {}
+export interface TaskUpdateUserIdRequest extends UserId, TaskUpdateRequestParam, TaskUpdateRequestBody {}
+
+@ObjectType()
 export class TaskUpdateResponse {
-  data: Omit<ITask, 'userId'>;
+  @ApiProperty({ type: Task })
+  @Field(() => Task)
+    data: Task;
 }
