@@ -4,7 +4,7 @@
 
 directive @upper on FIELD_DEFINITION
 
-"""timestamp """
+"""Summary"""
 type Summary {
   date: Date
   time: Float
@@ -15,7 +15,34 @@ type SummaryGetResponse {
   totalTime: Float!
 }
 
-"""timestamp """
+"""Task"""
+type Task {
+  _id: String
+  taskId: String
+  date: Date
+  name: String
+  comment: String
+  completeness: Float
+  excludedFromSearch: Boolean
+}
+
+type TaskCreateResponse {
+  data: Task!
+}
+
+type TaskUpdateResponse {
+  data: Task!
+}
+
+type TaskGetResponse {
+  data: [Task!]!
+}
+
+type TaskDeleteResponse {
+  data: Task!
+}
+
+"""Timestamp"""
 type Timestamp {
   timestamp: Date
   type: TimestampType
@@ -29,7 +56,7 @@ enum TimestampType {
 }
 
 type TimestampCreateResponse {
-  data: Timestamp
+  data: Timestamp!
 }
 
 type TimestampGetResponse {
@@ -41,6 +68,35 @@ type TimestampGetResponse {
 
 type TimestampDeleteResponse {
   data: Timestamp!
+}
+
+"""Calendar"""
+type Calendar {
+  date: Date
+  type: CalendarType
+  time: Float
+}
+
+enum CalendarType {
+  WorkingDay
+  Weekend
+  PaidWeekend
+  SickLeave
+  PaidSickLeave
+  BusinessTrip
+}
+
+type CalendarCreateResponse {
+  data: Calendar!
+}
+
+type CalendarGetResponse {
+  data: [Calendar!]!
+  totalTime: Float
+}
+
+type CalendarDeleteResponse {
+  data: Calendar!
 }
 
 """recipe """
@@ -57,13 +113,25 @@ scalar Date
 type Query {
   timestamps(date: Date, raw: Boolean): TimestampGetResponse!
   summary(from: Date, to: Date, recalculate: Boolean): SummaryGetResponse!
+  tasks(from: Date, to: Date, incomplete: Boolean, includeAll: Boolean): TaskGetResponse!
+  calendar(year: Float, month: Float, fillUp: Boolean, firstDayOfWeek: FirstDayOfWeek, summary: Boolean): CalendarGetResponse!
   recipe(id: String!): Recipe!
   recipes(skip: Int! = 0, take: Int! = 25): [Recipe!]!
+}
+
+enum FirstDayOfWeek {
+  Sunday
+  Monday
 }
 
 type Mutation {
   createTimestamp(timestamp: Date!, type: TimestampType!): TimestampCreateResponse!
   deleteTimestamp(timestamp: Date!): TimestampDeleteResponse!
+  createTask(taskId: String, date: Date!, name: String!, comment: String, completeness: Float, excludedFromSearch: Boolean): TaskCreateResponse!
+  updateTask(id: String!, taskId: String, name: String, comment: String, completeness: Float, excludedFromSearch: Boolean): TaskUpdateResponse!
+  deleteTask(id: String!): TaskDeleteResponse!
+  createCalendarDay(date: Date!, type: CalendarType!): CalendarCreateResponse!
+  deleteCalendarDay(date: Date!): CalendarDeleteResponse!
   addRecipe(newRecipeData: NewRecipeInput!): Recipe!
   removeRecipe(id: String!): Boolean!
 }
