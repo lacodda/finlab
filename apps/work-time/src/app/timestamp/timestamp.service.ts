@@ -75,7 +75,7 @@ export class TimestampService {
     await this.timestampRepository.delete(existedTimestamp._id as string);
     void this.changeTotalTime(existedTimestamp);
 
-    return { data: existedTimestamp };
+    return { data: new TimestampEntity(existedTimestamp).entity };
   }
 
   private async updateType(timestamp: ITimestamp, type: TimestampType): Promise<Timestamp> {

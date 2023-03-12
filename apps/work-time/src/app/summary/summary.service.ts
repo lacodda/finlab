@@ -34,17 +34,18 @@ export class SummaryService {
     };
   }
 
-  async create(dto: SummaryUserId): Promise<void> {
+  async createOrDelete(dto: SummaryUserId): Promise<void> {
     const date = Time.dayRange(dto.date).from;
     const existedSummary = await this.summaryRepository.findByDate(date, dto.userId);
-    if (existedSummary) {
+    if (!existedSummary && dto.time) {
+      const summaryEntity = new SummaryEntity({ ...dto, date });
+      await this.summaryRepository.create(summaryEntity);
+    } else if (existedSummary && dto.time) {
       const summaryEntity = new SummaryEntity(existedSummary).updateTime(dto.time);
       await this.summaryRepository.update(summaryEntity);
-      return;
+    } else if (existedSummary && !dto.time) {
+      await this.summaryRepository.delete(existedSummary._id as string);
     }
-
-    const summaryEntity = new SummaryEntity({ ...dto, date });
-    await this.summaryRepository.create(summaryEntity);
   }
 
   private async recalculate({ userId, date }: ISummaryFindByQueryParams): Promise<void> {
@@ -53,16 +54,7 @@ export class SummaryService {
       const { totalTime: time } = await this.rmqService.send<TimestampGetUserIdRequest, TimestampGetResponse>(
         TimestampGetTopic, { userId, date }
       );
-
-      if (!time) {
-        const existedSummary = await this.summaryRepository.findByDate(date, userId);
-        if (existedSummary) {
-          await this.summaryRepository.delete(existedSummary._id as string);
-        }
-        return;
-      }
-
-      await this.create({ userId, date, time });
+      await this.createOrDelete({ userId, date, time });
     }
   }
 }

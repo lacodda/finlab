@@ -1,4 +1,3 @@
-import { Time } from '@finlab/helpers';
 import { type ICalendarDay, type ICalendarFindByQueryParams } from '@finlab/interfaces/work-time';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -40,7 +39,6 @@ export class CalendarRepository {
 
   async findByDate(date: Date, userId: string): Promise<ICalendarDay> {
     try {
-      date = Time.dayRange(date).from;
       return await this.calendarModel.findOne({ date, userId }).exec() as ICalendarDay;
     } catch (error) {
       throw new InternalServerErrorException(error);

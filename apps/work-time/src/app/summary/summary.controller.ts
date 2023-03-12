@@ -16,6 +16,6 @@ export class SummaryController {
   @RMQValidate()
   @RMQRoute(TimestampChangedTotalTimeTopic)
   async timestampChanged(@Body() dto: TimestampChangedTotalTimeUserIdRequest): Promise<void> {
-    await this.summaryService.create(dto);
+    await this.summaryService.createOrDelete(dto);
   }
 }

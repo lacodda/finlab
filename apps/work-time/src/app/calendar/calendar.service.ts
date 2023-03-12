@@ -22,6 +22,7 @@ export class CalendarService {
     let range: IDateRange, dates: Date[], summary: SummaryGetResponse;
     const response: CalendarGetResponse = { data: [] };
     const { year, month, userId, fillUp, firstDayOfWeek, summary: isSummary } = dto;
+
     if (year && !month) {
       range = Time.yearRange(year);
       dates = Time.datesInYearRange(year);
@@ -53,9 +54,10 @@ export class CalendarService {
   }
 
   async create({ userId, date, type }: CalendarCreateUserIdRequest): Promise<CalendarCreateResponse> {
-    const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
-    if (existedCalendarDay) {
-      const data = await this.updateType(existedCalendarDay, type);
+    date = Time.dayRange(date).from;
+    const calendarDay = await this.calendarRepository.findByDate(date, userId);
+    if (calendarDay) {
+      const data = await this.updateType(calendarDay, type);
       return { data };
     }
     const newCalendarDayEntity = new CalendarDayEntity({ userId, date, type });
@@ -65,16 +67,18 @@ export class CalendarService {
   }
 
   async update({ userId, date, type }: CalendarUpdateUserIdRequest): Promise<CalendarUpdateResponse> {
-    const existedCalendarDay = await this.calendarRepository.findByDate(date, userId);
-    if (!existedCalendarDay) {
+    date = Time.dayRange(date).from;
+    const calendarDay = await this.calendarRepository.findByDate(date, userId);
+    if (!calendarDay) {
       throw new Error('Unable to update non-existing entry');
     }
-    const data = await this.updateType(existedCalendarDay, type);
+    const data = await this.updateType(calendarDay, type);
 
     return { data };
   }
 
   async delete({ date, userId }: CalendarDeleteUserIdRequest): Promise<CalendarDeleteResponse> {
+    date = Time.dayRange(date).from;
     const calendarDay = await this.calendarRepository.findByDate(date, userId);
     if (!calendarDay) {
       throw new Error('Unable to delete non-existing entry');
