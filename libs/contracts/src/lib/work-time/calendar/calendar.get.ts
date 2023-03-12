@@ -1,9 +1,9 @@
-import { IsOptional, IsBoolean, IsInt, Min, Max, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsOptional, IsBoolean, IsInt, Min, Max, IsEnum } from 'class-validator';
+import { ArgsType, Field, ObjectType, registerEnumType, Int } from '@nestjs/graphql';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FirstDayOfWeek } from '@finlab/interfaces';
 import { type UserId } from '../../common';
-import { ArgsType, Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { ApiProperty } from '@nestjs/swagger';
 import { ToBoolean } from '../../decorators';
 import { Calendar } from './calendar.model';
 
@@ -21,38 +21,39 @@ export const CalendarGetTopic = 'work-time.calendar.get.query';
 
 @ArgsType()
 export class CalendarGetRequest {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @Max(MAX_YEAR)
   @Min(MIN_YEAR)
   @IsInt()
-  @Field(() => Number, { nullable: true })
+  @Field(() => Int, { nullable: true })
   @Type(() => Number)
     year?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @Max(MAX_MONTH)
   @Min(MIN_MONTH)
   @IsInt()
-  @Field(() => Number, { nullable: true })
+  @Field(() => Int, { nullable: true })
   @Type(() => Number)
     month?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
   @Field(() => Boolean, { nullable: true })
   @ToBoolean()
     fillUp?: boolean;
 
-  @ApiProperty({ enum: FirstDayOfWeek, enumName: 'FirstDayOfWeek' })
+  @ApiPropertyOptional({ enum: FirstDayOfWeek, enumName: 'FirstDayOfWeek' })
   @IsOptional()
   @IsEnum(FirstDayOfWeek)
   @Field(() => FirstDayOfWeek, { nullable: true })
+  @Type(() => Number)
     firstDayOfWeek?: FirstDayOfWeek;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
   @Field(() => Boolean, { nullable: true })
@@ -70,6 +71,6 @@ export class CalendarGetResponse {
     data: Calendar[];
 
   @ApiProperty()
-  @Field({ nullable: true })
+  @Field(() => Int, { nullable: true })
     totalTime?: number;
 }

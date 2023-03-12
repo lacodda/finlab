@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsDate, IsBoolean } from 'class-validator';
-import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { ArgsType, Field, ObjectType, Int } from '@nestjs/graphql';
 import { Timestamp } from './timestamp.model';
 import { type UserId } from '../../common';
 import { ToBoolean } from '../../decorators';
@@ -35,14 +35,14 @@ export class TimestampGetResponse {
     data: Timestamp[];
 
   @ApiProperty({ type: [Number] })
-  @Field(() => [Number])
+  @Field(() => [Int])
     workTime: number[];
 
   @ApiProperty({ type: [Number] })
-  @Field(() => [Number])
+  @Field(() => [Int])
     breaks: number[];
 
   @ApiProperty()
-  @Field()
+  @Field(() => Int)
     totalTime: number;
 }

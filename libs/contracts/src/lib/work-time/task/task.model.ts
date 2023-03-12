@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, Int } from '@nestjs/graphql';
 import { type ITask } from '@finlab/interfaces/work-time';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -25,7 +25,7 @@ export class Task implements Omit<ITask, 'userId'> {
     comment?: string;
 
   @ApiProperty()
-  @Field({ nullable: true })
+  @Field(() => Int, { nullable: true })
     completeness?: number;
 
   @ApiProperty()

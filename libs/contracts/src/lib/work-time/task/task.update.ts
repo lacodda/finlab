@@ -1,4 +1,4 @@
-import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { ArgsType, Field, ObjectType, Int } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
@@ -39,7 +39,7 @@ export class TaskUpdateRequestBody {
   @ApiProperty()
   @IsOptional()
   @IsInt()
-  @Field(() => Number, { nullable: true })
+  @Field(() => Int, { nullable: true })
   @Type(() => Number)
     completeness?: number;
 

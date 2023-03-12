@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, Int } from '@nestjs/graphql';
 import { type ISummary } from '@finlab/interfaces/work-time';
 import { type UserId } from '../../common';
 import { ApiProperty } from '@nestjs/swagger';
@@ -10,7 +10,7 @@ export class Summary implements Omit<ISummary, 'userId'> {
     date: Date;
 
   @ApiProperty()
-  @Field(() => Number, { nullable: true })
+  @Field(() => Int, { nullable: true })
     time: number;
 }
 

@@ -1,4 +1,4 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType, Int } from '@nestjs/graphql';
 import { type ICalendarDay, CalendarType } from '@finlab/interfaces/work-time';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -17,6 +17,6 @@ export class Calendar implements Omit<ICalendarDay, 'userId'> {
     type: CalendarType;
 
   @ApiProperty()
-  @Field({ nullable: true })
+  @Field(() => Int, { nullable: true })
     time: number;
 }
