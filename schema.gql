@@ -7,12 +7,12 @@ directive @upper on FIELD_DEFINITION
 """Summary"""
 type Summary {
   date: Date
-  time: Float
+  time: Int
 }
 
 type SummaryGetResponse {
   data: [Summary!]!
-  totalTime: Float!
+  totalTime: Int!
 }
 
 """Task"""
@@ -22,7 +22,7 @@ type Task {
   date: Date
   name: String
   comment: String
-  completeness: Float
+  completeness: Int
   excludedFromSearch: Boolean
 }
 
@@ -61,9 +61,9 @@ type TimestampCreateResponse {
 
 type TimestampGetResponse {
   data: [Timestamp!]!
-  workTime: [Float!]!
-  breaks: [Float!]!
-  totalTime: Float!
+  workTime: [Int!]!
+  breaks: [Int!]!
+  totalTime: Int!
 }
 
 type TimestampDeleteResponse {
@@ -74,7 +74,7 @@ type TimestampDeleteResponse {
 type Calendar {
   date: Date
   type: CalendarType
-  time: Float
+  time: Int
 }
 
 enum CalendarType {
@@ -92,7 +92,7 @@ type CalendarCreateResponse {
 
 type CalendarGetResponse {
   data: [Calendar!]!
-  totalTime: Float
+  totalTime: Int
 }
 
 type CalendarDeleteResponse {
@@ -114,7 +114,7 @@ type Query {
   timestamps(date: Date, raw: Boolean): TimestampGetResponse!
   summary(from: Date, to: Date, recalculate: Boolean): SummaryGetResponse!
   tasks(from: Date, to: Date, incomplete: Boolean, includeAll: Boolean): TaskGetResponse!
-  calendar(year: Float, month: Float, fillUp: Boolean, firstDayOfWeek: FirstDayOfWeek, summary: Boolean): CalendarGetResponse!
+  calendar(year: Int, month: Int, fillUp: Boolean, firstDayOfWeek: FirstDayOfWeek, summary: Boolean): CalendarGetResponse!
   recipe(id: String!): Recipe!
   recipes(skip: Int! = 0, take: Int! = 25): [Recipe!]!
 }
@@ -127,8 +127,8 @@ enum FirstDayOfWeek {
 type Mutation {
   createTimestamp(timestamp: Date!, type: TimestampType!): TimestampCreateResponse!
   deleteTimestamp(timestamp: Date!): TimestampDeleteResponse!
-  createTask(taskId: String, date: Date!, name: String!, comment: String, completeness: Float, excludedFromSearch: Boolean): TaskCreateResponse!
-  updateTask(id: String!, taskId: String, name: String, comment: String, completeness: Float, excludedFromSearch: Boolean): TaskUpdateResponse!
+  createTask(taskId: String, date: Date!, name: String!, comment: String, completeness: Int, excludedFromSearch: Boolean): TaskCreateResponse!
+  updateTask(id: String!, taskId: String, name: String, comment: String, completeness: Int, excludedFromSearch: Boolean): TaskUpdateResponse!
   deleteTask(id: String!): TaskDeleteResponse!
   createCalendarDay(date: Date!, type: CalendarType!): CalendarCreateResponse!
   deleteCalendarDay(date: Date!): CalendarDeleteResponse!
