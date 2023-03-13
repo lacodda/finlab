@@ -1,31 +1,31 @@
 import { IsEmail, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { InputType, Field, ObjectType } from '@nestjs/graphql';
 
-export namespace AccountRegister {
-  export const topic = 'account.register.command';
+export const AccountRegisterTopic = 'account.register.command';
 
-  export class Request {
-    @ApiProperty()
-    @IsEmail()
-      email: string;
+@InputType()
+export class AccountRegisterRequest {
+  @ApiProperty()
+  @IsEmail()
+  @Field(() => String, { description: 'email of the user' })
+    email: string;
 
-    @ApiProperty()
-    @IsString()
-      password: string;
+  @ApiProperty()
+  @IsString()
+  @Field(() => String, { description: 'password of the user' })
+    password: string;
 
-    @ApiProperty()
-    @IsOptional()
-    @IsString()
-      displayName?: string;
-  }
-
-  export class Response {
-    @ApiProperty()
-      email: string;
-  }
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @Field(() => String, { description: 'name of the user', nullable: true })
+    displayName?: string;
 }
 
+@ObjectType()
 export class AccountRegisterResponse {
   @ApiProperty()
+  @Field(() => String, { description: 'email of the user' })
     email: string;
 }

@@ -4,20 +4,20 @@ import { ArgsType, Field, ObjectType, Int } from '@nestjs/graphql';
 import { Timestamp } from './timestamp.model';
 import { type UserId } from '../../common';
 import { ToBoolean } from '../../decorators';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export const TimestampGetTopic = 'work-time.timestamp.get.query';
 
 @ArgsType()
 export class TimestampGetRequest {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsDate()
   @Field({ nullable: true })
   @Type(() => Date)
     date?: Date;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
   @Field(() => Boolean, { nullable: true })

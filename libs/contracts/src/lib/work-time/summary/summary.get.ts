@@ -4,27 +4,27 @@ import { ArgsType, Field, ObjectType, Int } from '@nestjs/graphql';
 import { type UserId } from '../../common';
 import { Summary } from './summary.model';
 import { ToBoolean } from '../../decorators';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export const SummaryGetTopic = 'work-time.summary.get.query';
 
 @ArgsType()
 export class SummaryGetRequest {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsDate()
   @Field({ nullable: true })
   @Type(() => Date)
     from?: Date;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsDate()
   @Field({ nullable: true })
   @Type(() => Date)
     to?: Date;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
   @Field(() => Boolean, { nullable: true })

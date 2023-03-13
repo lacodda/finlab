@@ -1,5 +1,5 @@
 import { ArgsType, Field, ObjectType, Int } from '@nestjs/graphql';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
 import { type UserId } from '../../common';
@@ -18,32 +18,32 @@ export class TaskUpdateRequestParam {
 
 @ArgsType()
 export class TaskUpdateRequestBody {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @Field({ nullable: true })
     taskId?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @Field({ nullable: true })
     name: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @Field({ nullable: true })
     comment?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
   @Field(() => Int, { nullable: true })
   @Type(() => Number)
     completeness?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
   @Field(() => Boolean, { nullable: true })

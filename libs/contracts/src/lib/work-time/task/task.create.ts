@@ -1,5 +1,5 @@
 import { ArgsType, Field, ObjectType, Int } from '@nestjs/graphql';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsString, IsOptional, IsBoolean, IsDate, IsInt } from 'class-validator';
 import { type UserId } from '../../common';
@@ -10,7 +10,7 @@ export const TaskCreateTopic = 'work-time.task.create.command';
 
 @ArgsType()
 export class TaskCreateRequest {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @Field({ nullable: true })
@@ -27,20 +27,20 @@ export class TaskCreateRequest {
   @Field()
     name: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @Field({ nullable: true })
     comment?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
   @Field(() => Int, { nullable: true })
   @Type(() => Number)
     completeness?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
   @Field(() => Boolean, { nullable: true })
