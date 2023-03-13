@@ -7,13 +7,13 @@ import { RMQModule, RMQService, type RMQTestService } from 'nestjs-rmq';
 import { getMongoConfig } from '../configs/mongo.config';
 import { type INestApplication } from '@nestjs/common';
 import { UserRepository } from '../user/repositories/user.repository';
-import { AccountLogin, AccountRegister } from '@finlab/contracts';
+import { type AccountLoginRequest, type AccountLoginResponse, AccountLoginTopic, type AccountRegisterRequest, type AccountRegisterResponse, AccountRegisterTopic } from '@finlab/contracts';
 
-const authLogin: AccountLogin.Request = {
+const authLogin: AccountLoginRequest = {
   email: 'admin2@mail.com',
   password: '1'
 };
-const authRegister: AccountRegister.Request = {
+const authRegister: AccountRegisterRequest = {
   ...authLogin,
   displayName: 'Admin2'
 };
@@ -41,12 +41,12 @@ describe('AuthController', () => {
   });
 
   it('Register', async () => {
-    const res = await rmqService.triggerRoute<AccountRegister.Request, AccountRegister.Response>(AccountRegister.topic, authRegister);
+    const res = await rmqService.triggerRoute<AccountRegisterRequest, AccountRegisterResponse>(AccountRegisterTopic, authRegister);
     expect(res.email).toEqual(authRegister.email);
   });
 
   it('Login', async () => {
-    const res = await rmqService.triggerRoute<AccountLogin.Request, AccountLogin.Response>(AccountLogin.topic, authLogin);
+    const res = await rmqService.triggerRoute<AccountLoginRequest, AccountLoginResponse>(AccountLoginTopic, authLogin);
     expect(res.access_token).toBeDefined();
   });
 

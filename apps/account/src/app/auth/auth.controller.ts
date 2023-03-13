@@ -1,4 +1,4 @@
-import { AccountLogin, AccountRegister } from '@finlab/contracts';
+import { AccountLoginRequest, type AccountLoginResponse, AccountLoginTopic, AccountRegisterRequest, type AccountRegisterResponse, AccountRegisterTopic } from '@finlab/contracts';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { AuthService } from './auth.service';
@@ -10,14 +10,14 @@ export class AuthController {
   ) {}
 
   @RMQValidate()
-  @RMQRoute(AccountRegister.topic)
-  async register(@Body() dto: AccountRegister.Request): Promise<AccountRegister.Response> {
+  @RMQRoute(AccountRegisterTopic)
+  async register(@Body() dto: AccountRegisterRequest): Promise<AccountRegisterResponse> {
     return await this.authService.register(dto);
   }
 
   @RMQValidate()
-  @RMQRoute(AccountLogin.topic)
-  async login(@Body() dto: AccountLogin.Request): Promise<AccountLogin.Response> {
+  @RMQRoute(AccountLoginTopic)
+  async login(@Body() dto: AccountLoginRequest): Promise<AccountLoginResponse> {
     const jwtPayload = await this.authService.validateUser(dto);
     // eslint-disable-next-line @typescript-eslint/return-await
     return this.authService.login(jwtPayload);
