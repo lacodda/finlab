@@ -11,7 +11,8 @@ import { getRmqConfig } from './configs/rmq.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { upperDirectiveTransformer } from './common/directives/upper-case.directive';
 import { WorkTimeModule } from './work-time/work-time.module';
-import { RecipesModule } from './recipes/recipes.module';
+import { AccountModule } from './account/account.module';
+import { DateScalar } from './common/scalars/date.scalar';
 
 @Module({
   imports: [
@@ -33,9 +34,9 @@ import { RecipesModule } from './recipes/recipes.module';
         ]
       }
     }),
-    WorkTimeModule,
-    RecipesModule
+    AccountModule,
+    WorkTimeModule
   ],
-  providers: [JwtStrategy]
+  providers: [JwtStrategy, DateScalar]
 })
 export class AppModule { }
