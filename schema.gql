@@ -99,24 +99,47 @@ type CalendarDeleteResponse {
   data: Calendar!
 }
 
-"""recipe """
-type Recipe {
-  id: ID!
-  description: String
-  creationDate: Date!
-  ingredients: [String!]!
+type AccountLoginResponse {
+  """Generated access_token of the user"""
+  access_token: String!
+}
+
+type AccountRegisterResponse {
+  """email of the user"""
+  email: String!
+}
+
+"""UserApps"""
+type UserApps {
+  """App ID"""
+  appId: String!
+
+  """App status"""
+  appStatus: AppStatus!
+}
+
+enum AppStatus {
+  Inactive
+  Active
+  Deleted
+}
+
+"""UserJwtPayload"""
+type UserJwtPayload {
+  id: String
+  email: String
+  displayName: String
 }
 
 """Date custom scalar type"""
 scalar Date
 
 type Query {
+  userInfo: UserJwtPayload!
   timestamps(date: Date, raw: Boolean): TimestampGetResponse!
   summary(from: Date, to: Date, recalculate: Boolean): SummaryGetResponse!
   tasks(from: Date, to: Date, incomplete: Boolean, includeAll: Boolean): TaskGetResponse!
   calendar(year: Int, month: Int, fillUp: Boolean, firstDayOfWeek: FirstDayOfWeek, summary: Boolean): CalendarGetResponse!
-  recipe(id: String!): Recipe!
-  recipes(skip: Int! = 0, take: Int! = 25): [Recipe!]!
 }
 
 enum FirstDayOfWeek {
@@ -125,6 +148,8 @@ enum FirstDayOfWeek {
 }
 
 type Mutation {
+  register(request: AccountRegisterRequest!): AccountRegisterResponse!
+  login(request: AccountLoginRequest!): AccountLoginResponse!
   createTimestamp(timestamp: Date!, type: TimestampType!): TimestampCreateResponse!
   deleteTimestamp(timestamp: Date!): TimestampDeleteResponse!
   createTask(taskId: String, date: Date!, name: String!, comment: String, completeness: Int, excludedFromSearch: Boolean): TaskCreateResponse!
@@ -132,16 +157,23 @@ type Mutation {
   deleteTask(id: String!): TaskDeleteResponse!
   createCalendarDay(date: Date!, type: CalendarType!): CalendarCreateResponse!
   deleteCalendarDay(date: Date!): CalendarDeleteResponse!
-  addRecipe(newRecipeData: NewRecipeInput!): Recipe!
-  removeRecipe(id: String!): Boolean!
 }
 
-input NewRecipeInput {
-  title: String!
-  description: String
-  ingredients: [String!]!
+input AccountRegisterRequest {
+  """email of the user"""
+  email: String!
+
+  """password of the user"""
+  password: String!
+
+  """name of the user"""
+  displayName: String
 }
 
-type Subscription {
-  recipeAdded: Recipe!
+input AccountLoginRequest {
+  """email of the user"""
+  email: String!
+
+  """password of the user"""
+  password: String!
 }
