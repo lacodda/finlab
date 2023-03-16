@@ -4,6 +4,9 @@
 
 FROM node:18-alpine As development
 
+# Install Python 3
+RUN apk add --no-cache python3 py3-pip make g++
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -29,6 +32,9 @@ USER node
 ###################
 
 FROM node:18-alpine As build
+
+# Install Python 3
+RUN apk add --no-cache python3 py3-pip make g++
 
 WORKDIR /usr/src/app
 
