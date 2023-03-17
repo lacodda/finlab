@@ -16,7 +16,7 @@ import { DateScalar } from './common/scalars/date.scalar';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: 'envs/.api.env', isGlobal: true }),
+    ConfigModule.forRoot({ envFilePath: 'envs/.graphql.env', isGlobal: true }),
     RMQModule.forRootAsync(getRmqConfig()),
     JwtModule.registerAsync(getJwtConfig()),
     PassportModule,
