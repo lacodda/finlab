@@ -15,7 +15,7 @@ export class TaskEntity implements ITask {
   constructor(task: ITask) {
     this._id = task._id;
     this.userId = task.userId;
-    this.taskId = task.taskId ?? Utils.uuid();
+    this.taskId = task.taskId || Utils.uuid();
     this.date = task.date;
     this.name = task.name;
     this.comment = task.comment;
