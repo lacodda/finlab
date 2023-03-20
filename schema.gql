@@ -177,3 +177,7 @@ input AccountLoginRequest {
   """password of the user"""
   password: String!
 }
+
+type Subscription {
+  taskAdded: TaskCreateResponse!
+}

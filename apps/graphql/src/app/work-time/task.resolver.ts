@@ -1,6 +1,7 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { RMQService } from 'nestjs-rmq';
-import { BadRequestException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Inject, UseGuards } from '@nestjs/common';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { UserId } from '../guards/user.decorator';
 import {
@@ -8,10 +9,21 @@ import {
   type TaskCreateUserIdRequest, TaskCreateTopic, TaskUpdateResponse, TaskUpdateRequestParam, TaskUpdateRequestBody,
   type TaskUpdateUserIdRequest, TaskUpdateTopic, TaskDeleteResponse, TaskDeleteRequest, type TaskDeleteUserIdRequest, TaskDeleteTopic
 } from '@finlab/contracts/work-time';
+import { PUB_SUB } from '../configs/pub-sub.config';
+
+const TASK_ADDED_EVENT = 'taskAdded';
 
 @Resolver((_of: unknown) => Task)
 export class TaskResolver {
-  constructor(private readonly rmqService: RMQService) { }
+  constructor(
+    private readonly rmqService: RMQService,
+    @Inject(PUB_SUB) private readonly pubSub: RedisPubSub
+  ) { }
+
+  @Subscription(_returns => TaskCreateResponse)
+  taskAdded(): unknown {
+    return this.pubSub.asyncIterator(TASK_ADDED_EVENT);
+  }
 
   @Query(_returns => TaskGetResponse)
   @UseGuards(JwtAuthGuard)
@@ -29,7 +41,9 @@ export class TaskResolver {
   @UseGuards(JwtAuthGuard)
   async createTask(@Args() dto: TaskCreateRequest, @UserId() userId: string): Promise<TaskCreateResponse | undefined> {
     try {
-      return await this.rmqService.send<TaskCreateUserIdRequest, TaskCreateResponse>(TaskCreateTopic, { ...dto, userId });
+      const task = await this.rmqService.send<TaskCreateUserIdRequest, TaskCreateResponse>(TaskCreateTopic, { ...dto, userId });
+      void this.pubSub.publish(TASK_ADDED_EVENT, { taskAdded: task });
+      return task;
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
