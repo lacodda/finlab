@@ -2,6 +2,7 @@
 export * from './lib/work-time/summary/summary.model';
 export * from './lib/work-time/summary/summary.get';
 // task
+export * from './lib/work-time/task/task.changed';
 export * from './lib/work-time/task/task.model';
 export * from './lib/work-time/task/task.create';
 export * from './lib/work-time/task/task.update';
