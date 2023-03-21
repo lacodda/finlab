@@ -26,16 +26,20 @@ type Task {
   excludedFromSearch: Boolean
 }
 
+type TaskGetResponse {
+  data: [Task!]!
+}
+
+type TaskChangedResponse {
+  data: [Task!]!
+}
+
 type TaskCreateResponse {
   data: Task!
 }
 
 type TaskUpdateResponse {
   data: Task!
-}
-
-type TaskGetResponse {
-  data: [Task!]!
 }
 
 type TaskDeleteResponse {
@@ -179,5 +183,5 @@ input AccountLoginRequest {
 }
 
 type Subscription {
-  taskAdded: TaskCreateResponse!
+  taskChanged(from: Date, to: Date, incomplete: Boolean, includeAll: Boolean): TaskChangedResponse!
 }
