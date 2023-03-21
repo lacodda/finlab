@@ -1,7 +1,8 @@
 
 import {
   TaskGetTopic, TaskGetUserIdRequest, type TaskGetResponse, TaskCreateTopic, TaskCreateUserIdRequest, type TaskCreateResponse,
-  TaskUpdateTopic, TaskUpdateUserIdRequest, type TaskUpdateResponse, TaskDeleteTopic, TaskDeleteUserIdRequest, type TaskDeleteResponse
+  TaskUpdateTopic, TaskUpdateUserIdRequest, type TaskUpdateResponse, TaskDeleteTopic, TaskDeleteUserIdRequest, type TaskDeleteResponse,
+  TaskChangedTopic, TaskChangedUserIdRequest
 } from '@finlab/contracts/work-time';
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
@@ -33,5 +34,11 @@ export class TaskController {
   @RMQRoute(TaskDeleteTopic)
   async delete(@Body() dto: TaskDeleteUserIdRequest): Promise<TaskDeleteResponse> {
     return await this.taskService.delete(dto);
+  }
+
+  @RMQValidate()
+  @RMQRoute(TaskChangedTopic)
+  async check(@Body() dto: TaskChangedUserIdRequest): Promise<boolean> {
+    return this.taskService.check(dto);
   }
 }

@@ -1,6 +1,6 @@
 import {
-  type TaskGetUserIdRequest, type TaskGetResponse, type TaskCreateUserIdRequest, type TaskCreateResponse,
-  type TaskUpdateUserIdRequest, type TaskUpdateResponse, type TaskDeleteUserIdRequest, type TaskDeleteResponse, type Task
+  type TaskGetUserIdRequest, type TaskGetResponse, type TaskCreateUserIdRequest, type TaskCreateResponse, type TaskUpdateUserIdRequest,
+  type TaskUpdateResponse, type TaskDeleteUserIdRequest, type TaskDeleteResponse, type Task, type TaskChangedUserIdRequest
 } from '@finlab/contracts/work-time';
 import { Time } from '@finlab/helpers';
 import { type ITask, type ITaskFindIncompleteParams, type ITaskUpdate, type ITaskFindIncompleteResult } from '@finlab/interfaces/work-time';
@@ -14,16 +14,7 @@ export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) { }
 
   async getByQuery(dto: TaskGetUserIdRequest): Promise<TaskGetResponse> {
-    const { from, to } = Time.dayRange();
-    const params: ITaskFindIncompleteParams = {
-      userId: dto.userId,
-      date: {
-        $gte: dto.from ? Time.dayRange(dto.from).from : from,
-        $lte: dto.to ? Time.dayRange(dto.to).to : to
-      },
-      incomplete: dto.incomplete ?? false,
-      includeAll: dto.includeAll ?? false
-    };
+    const params = this.getParams(dto);
     let tasks: Array<ITask | ITaskFindIncompleteResult>;
     if (params.incomplete) {
       params.excludeTaskIds = (await this.taskRepository.findByDate(dto.userId, Time.dayRange().from))
@@ -69,6 +60,19 @@ export class TaskService {
     return { data: new TaskEntity(existedTask).entity };
   }
 
+  check({ payload, ...dto }: TaskChangedUserIdRequest): boolean {
+    if (!dto.userId || dto.userId !== payload.userId) {
+      return false;
+    }
+    const date = Time.dayRange(payload.data.date).from;
+    const params = this.getParams(dto);
+    console.log('from', params.date.$gte);
+    console.log('to', params.date.$lte);
+    console.log('date', date);
+
+    return date >= params.date.$gte && date <= params.date.$lte;
+  }
+
   private async updateTask(task: ITask, { name, comment, completeness, excludedFromSearch }: ITaskUpdate): Promise<Task> {
     const taskEntity = new TaskEntity(task)
       .updateName(name)
@@ -78,5 +82,18 @@ export class TaskService {
     await this.taskRepository.update(taskEntity);
 
     return taskEntity.entity;
+  }
+
+  private getParams(dto: TaskGetUserIdRequest): ITaskFindIncompleteParams {
+    const { from, to } = Time.dayRange();
+    return {
+      userId: dto.userId,
+      date: {
+        $gte: dto.from ? Time.dayRange(dto.from).from : from,
+        $lte: dto.to ? Time.dayRange(dto.to).to : to
+      },
+      incomplete: dto.incomplete ?? false,
+      includeAll: dto.includeAll ?? false
+    };
   }
 }
