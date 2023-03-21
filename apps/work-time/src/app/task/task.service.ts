@@ -66,9 +66,6 @@ export class TaskService {
     }
     const date = Time.dayRange(payload.data.date).from;
     const params = this.getParams(dto);
-    console.log('from', params.date.$gte);
-    console.log('to', params.date.$lte);
-    console.log('date', date);
 
     return date >= params.date.$gte && date <= params.date.$lte;
   }
