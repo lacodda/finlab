@@ -1,11 +1,13 @@
-import { type MutationFunctionOptions, type DefaultContext, type ApolloCache } from '@apollo/client';
+import { type LazyQueryResult, type OperationVariables } from '@apollo/client';
 import { type SetValue } from '../hooks';
 
-export interface State<R, T> {
-  data?: T;
-  error?: Error;
-  loading?: boolean;
-  runFetch: (options?: MutationFunctionOptions<any, R, DefaultContext, ApolloCache<any>> | undefined) => Promise<any>;
+export interface Result<T> extends Partial<LazyQueryResult<T, OperationVariables>> {
+  runFetch: () => Promise<unknown>;
+}
+
+export interface IOptionsParams<T> {
+  variables?: T;
+  auth?: boolean;
 }
 
 export interface ILoginRequest {
@@ -17,7 +19,6 @@ export interface ILoginResponse {
   login: {
     access_token: string;
   };
-
 }
 
 export interface ISignUpRequest {
@@ -44,7 +45,12 @@ export interface ITimestamp {
   type: TimestampType;
 }
 
-export interface ITimestampData {
+export interface ITimestampRequest {
+  date?: Date;
+  raw?: boolean;
+}
+
+export interface ITimestampResponse {
   timestamps: {
     data: ITimestamp[];
     totalTime: number;

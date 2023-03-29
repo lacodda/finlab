@@ -1,6 +1,6 @@
-import { gql, useLazyQuery, ApolloClient, InMemoryCache, HttpLink, useMutation } from '@apollo/client';
+import { gql, useLazyQuery, ApolloClient, InMemoryCache, HttpLink, useMutation, type CommonOptions, type QueryLazyOptions } from '@apollo/client';
 import { useLocalStorage } from '../hooks';
-import { type ILoginResponse, type State, type IAccessToken, type ILoginRequest, type ISignUpRequest, type ISignUpResponse, type ITimestampData } from './interfaces';
+import { type ILoginResponse, type Result, type IAccessToken, type ILoginRequest, type ISignUpRequest, type ISignUpResponse, type ITimestampResponse, type ITimestampRequest, type IOptionsParams } from './interfaces';
 
 export class FinlabApi {
   private readonly host: string = process.env.NEXT_PUBLIC_DOMAIN ?? '';
@@ -25,46 +25,58 @@ export class FinlabApi {
     return { token, setToken };
   }
 
+  private getOptions<T>(params: IOptionsParams<T> = {}): CommonOptions<QueryLazyOptions<T>> {
+    const options: CommonOptions<QueryLazyOptions<T>> = {
+      client: this.client
+    };
+    if (params?.auth !== false) {
+      options.context = {
+        ...options.context,
+        headers: {
+          ...options.context?.headers,
+          Authorization: `Bearer ${this.accessToken().token}`
+        }
+      };
+    }
+    if (params?.variables) {
+      options.variables = { ...params.variables };
+    }
+    return options;
+  }
+
   public fetch = {
     auth: {
-      Login: (variables: ILoginRequest): State<ILoginRequest, ILoginResponse> => {
+      Login: (variables: ILoginRequest): Result<ILoginResponse> => {
         const LOGIN_MUTATION = gql`
           mutation login ($email: String!, $password: String!) {
             login(request: { email: $email, password: $password }) {
               access_token
             }
           }`;
-        const [runFetch, { data, loading, error }] = useMutation(LOGIN_MUTATION, { client: this.client, variables });
+        const [runFetch, { data, loading, error }] = useMutation(LOGIN_MUTATION, this.getOptions({ variables, auth: false }));
         return { runFetch, data, loading, error };
       },
-      SignUp: (variables: ISignUpRequest): State<ISignUpRequest, ISignUpResponse> => {
+      SignUp: (variables: ISignUpRequest): Result<ISignUpResponse> => {
         const REGISTER_MUTATION = gql`
           mutation register ($email: String!, $password: String!, $displayName: String) {
             register(request: { email: $email, password: $password, displayName: $displayName}) {
               email
             }
           }`;
-        const [runFetch, { data, loading, error }] = useMutation(REGISTER_MUTATION, { client: this.client, variables });
+        const [runFetch, { data, loading, error }] = useMutation(REGISTER_MUTATION, this.getOptions({ variables, auth: false }));
         return { runFetch, data, loading, error };
       }
     },
     workTime: {
       timestamp: {
-        GetAll: (): State<undefined, ITimestampData> => {
+        Get: (variables?: ITimestampRequest): Result<ITimestampResponse> => {
           const TIMESTAMPS_QUERY = gql`
-          query timestamps {
-            timestamps {
-              totalTime, workTime, breaks, data { type, timestamp }
-            }
-          }`;
-          const [runFetch, { data, loading, error }] = useLazyQuery(TIMESTAMPS_QUERY, {
-            client: this.client,
-            context: {
-              headers: {
-                Authorization: `Bearer ${this.accessToken().token}`
+            query timestamps ($date: Date, $raw: Boolean) {
+              timestamps (date: $date, raw: $raw) {
+                totalTime, workTime, breaks, data { type, timestamp }
               }
-            }
-          });
+          }`;
+          const [runFetch, { data, loading, error }] = useLazyQuery(TIMESTAMPS_QUERY, this.getOptions({ variables }));
           return { runFetch, data, loading, error };
         }
       }

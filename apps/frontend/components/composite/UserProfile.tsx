@@ -6,7 +6,7 @@ import { FinlabApi } from '../../graphql';
 export interface UserProfileProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> { }
 
 export const UserProfile = ({ className, ...props }: UserProfileProps): JSX.Element => {
-  const { data, runFetch, error, loading } = FinlabApi.workTime.timestamp.GetAll();
+  const { data, runFetch, error, loading } = FinlabApi.workTime.timestamp.Get();
   useEffect(() => {
     void runFetch();
   }, [runFetch]);
