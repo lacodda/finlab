@@ -17,31 +17,10 @@ export class TimestampsEntity {
     this.timestamps = timestamps.map(timestamp => new TimestampEntity(timestamp));
   }
 
-  public getStart(): TimestampEntity | undefined {
-    return this.timestamps.find(({ type }) => type === 'Start');
-  }
-
-  public getEnd(): TimestampEntity | undefined {
-    return this.timestamps.findLast(({ type }) => type === 'End');
-  }
-
-  public getBreaks(): BreaksType {
-    return this.timestamps.reduce((acc: BreaksType, timestamp) => {
-      if (timestamp.type === 'StartBreak') {
-        acc.push([timestamp, timestamp]);
-      }
-      const prev = acc[acc.length - 1];
-      if (timestamp.type === 'EndBreak' && prev && prev[1].type === 'StartBreak') {
-        prev[1] = timestamp;
-      }
-      return acc;
-    }, []).filter(([{ timestamp: from }, { timestamp: to, type }]) => type === 'EndBreak' && Time.diffInMinutes(from, to) >= this.minBreakTime);
-  }
-
   public process(): this {
     const start = this.getStart();
     const end = this.getEnd();
-    const breaks = this.getBreaks();
+    const breaks = this.getBreaks(start, end);
 
     this.processedTimestamps = breaks.flat();
     if (start) {
@@ -66,6 +45,30 @@ export class TimestampsEntity {
       breaks: this.breaks,
       totalTime: this.totalTime
     };
+  }
+
+  private getStart(): TimestampEntity | undefined {
+    return this.timestamps.find(({ type }) => type === 'Start');
+  }
+
+  private getEnd(): TimestampEntity | undefined {
+    return this.timestamps.findLast(({ type }) => type === 'End');
+  }
+
+  private getBreaks(start?: TimestampEntity, end?: TimestampEntity): BreaksType {
+    if (!start) {
+      return [];
+    }
+    return this.timestamps.reduce((acc: BreaksType, timestamp) => {
+      if (timestamp.type === 'StartBreak' && start.timestamp < timestamp.timestamp) {
+        acc.push([timestamp, timestamp]);
+      }
+      const prev = acc[acc.length - 1];
+      if (timestamp.type === 'EndBreak' && prev && prev[1].type === 'StartBreak' && (!end || (end && end.timestamp > timestamp.timestamp))) {
+        prev[1] = timestamp;
+      }
+      return acc;
+    }, []).filter(([{ timestamp: from }, { timestamp: to, type }]) => type === 'EndBreak' && Time.diffInMinutes(from, to) >= this.minBreakTime);
   }
 
   private getArrayOfDiff (timestamps: TimestampEntity[]): number[] {
