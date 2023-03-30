@@ -1,8 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect, type Dispatch, createContext, useContext, type PropsWithChildren } from 'react';
 import jwtDecode, { type JwtPayload } from 'jwt-decode';
-import { FinlabApi } from '../api';
-import { type ILoginRequest, type ISignUpRequest } from '../api/finlab.api';
+import { FinlabApi, type ILoginRequest, type ISignUpRequest } from '../graphql';
 import { useLocalStorage } from '.';
 
 interface IUser {
@@ -68,7 +67,7 @@ export function useProvideAuth(): IAuthContext {
   useEffect(() => {
     if (!signInRequest.email || !signInRequest.password) return;
 
-    runSignIn(true);
+    void runSignIn();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signInRequest]);
@@ -76,15 +75,15 @@ export function useProvideAuth(): IAuthContext {
   useEffect(() => {
     if (!signUpRequest.email || !signUpRequest.password) return;
 
-    runSignUp(true);
+    void runSignUp();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signUpRequest]);
 
   useEffect(() => {
-    if (!signInData?.access_token) return;
+    if (!signInData?.login.access_token) return;
 
-    setToken(signInData.access_token);
+    setToken(signInData.login.access_token);
     void router.push({
       pathname: '/'
     });
@@ -92,7 +91,7 @@ export function useProvideAuth(): IAuthContext {
   }, [signInData]);
 
   useEffect(() => {
-    if (!signUpData?.email) return;
+    if (!signUpData?.register.email) return;
 
     void router.push({
       pathname: '/auth/login'
