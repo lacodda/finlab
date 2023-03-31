@@ -45,18 +45,35 @@ export interface ITimestamp {
   type: TimestampType;
 }
 
-export interface ITimestampRequest {
+export interface ITimestampsRequest {
   date?: Date;
   raw?: boolean;
 }
 
-export interface ITimestampResponse {
+export interface ITimestampsResponse {
   timestamps: {
     data: ITimestamp[];
     totalTime: number;
     workTime: number[];
     breaks: number[];
   };
+}
+
+export interface ITimestampCreateRequest {
+  timestamp: Date;
+  type: TimestampType;
+}
+
+export interface ITimestampCreateResponse {
+  create: ITimestamp;
+}
+
+export interface ITimestampDeleteRequest {
+  timestamp: Date;
+}
+
+export interface ITimestampDeleteResponse {
+  delete: ITimestamp;
 }
 
 export interface IAccessToken {

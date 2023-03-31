@@ -1,6 +1,10 @@
 import { gql, useLazyQuery, ApolloClient, InMemoryCache, HttpLink, useMutation, type CommonOptions, type QueryLazyOptions } from '@apollo/client';
 import { useLocalStorage } from '../hooks';
-import { type ILoginResponse, type Result, type IAccessToken, type ILoginRequest, type ISignUpRequest, type ISignUpResponse, type ITimestampResponse, type ITimestampRequest, type IOptionsParams } from './interfaces';
+import {
+  type ILoginResponse, type Result, type IAccessToken, type ILoginRequest, type ISignUpRequest, type ISignUpResponse, type ITimestampsResponse,
+  type ITimestampsRequest, type IOptionsParams, type ITimestampCreateRequest, type ITimestampCreateResponse, type ITimestampDeleteRequest,
+  type ITimestampDeleteResponse
+} from './interfaces';
 
 export class FinlabApi {
   private readonly host: string = process.env.NEXT_PUBLIC_DOMAIN ?? '';
@@ -49,9 +53,7 @@ export class FinlabApi {
       Login: (variables: ILoginRequest): Result<ILoginResponse> => {
         const LOGIN_MUTATION = gql`
           mutation login ($email: String!, $password: String!) {
-            login(request: { email: $email, password: $password }) {
-              access_token
-            }
+            login (request: { email: $email, password: $password }) { access_token }
           }`;
         const [runFetch, { data, loading, error }] = useMutation(LOGIN_MUTATION, this.getOptions({ variables, auth: false }));
         return { runFetch, data, loading, error };
@@ -59,9 +61,7 @@ export class FinlabApi {
       SignUp: (variables: ISignUpRequest): Result<ISignUpResponse> => {
         const REGISTER_MUTATION = gql`
           mutation register ($email: String!, $password: String!, $displayName: String) {
-            register(request: { email: $email, password: $password, displayName: $displayName}) {
-              email
-            }
+            register (request: { email: $email, password: $password, displayName: $displayName}) { email }
           }`;
         const [runFetch, { data, loading, error }] = useMutation(REGISTER_MUTATION, this.getOptions({ variables, auth: false }));
         return { runFetch, data, loading, error };
@@ -69,14 +69,28 @@ export class FinlabApi {
     },
     workTime: {
       timestamp: {
-        Get: (variables?: ITimestampRequest): Result<ITimestampResponse> => {
+        Get: (variables?: ITimestampsRequest): Result<ITimestampsResponse> => {
           const TIMESTAMPS_QUERY = gql`
             query timestamps ($date: Date, $raw: Boolean) {
-              timestamps (date: $date, raw: $raw) {
-                totalTime, workTime, breaks, data { type, timestamp }
-              }
+              timestamps (date: $date, raw: $raw) { totalTime, workTime, breaks, data { type, timestamp } }
           }`;
           const [runFetch, { data, loading, error }] = useLazyQuery(TIMESTAMPS_QUERY, this.getOptions({ variables }));
+          return { runFetch, data, loading, error };
+        },
+        Create: (variables: ITimestampCreateRequest): Result<ITimestampCreateResponse> => {
+          const MUTATION = gql`
+            mutation createTimestamp ($timestamp: Date!, $type: TimestampType!) {
+              createTimestamp (timestamp: $timestamp, type: $type) { data { type, timestamp } }
+          }`;
+          const [runFetch, { data, loading, error }] = useMutation(MUTATION, this.getOptions({ variables }));
+          return { runFetch, data, loading, error };
+        },
+        Delete: (variables: ITimestampDeleteRequest): Result<ITimestampDeleteResponse> => {
+          const MUTATION = gql`
+            mutation deleteTimestamp ($timestamp: Date!) {
+              deleteTimestamp (timestamp: $timestamp) { data { type, timestamp } }
+          }`;
+          const [runFetch, { data, loading, error }] = useMutation(MUTATION, this.getOptions({ variables }));
           return { runFetch, data, loading, error };
         }
       }
