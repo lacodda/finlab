@@ -9,7 +9,7 @@ export interface NavbarProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivEle
 
 export const Navbar = ({ color = 'default', children, className, ...props }: NavbarProps): JSX.Element => {
   return (
-    <nav className={cn('top-0 fixed z-50 w-full flex items-center px-5 py-3 navbar-expand-lg', {
+    <nav className={cn('top-0 sticky z-50 w-full flex items-center px-5 py-3 navbar-expand-lg', {
       'bg-white shadow': color === 'default'
     })}>
       <div className="px-2 flex flex-wrap w-full items-center justify-between">
