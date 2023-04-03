@@ -22,7 +22,9 @@ const AdminLayout = ({ children }: AdminLayoutProps): JSX.Element => {
         }
       </Navbar>
       <section className='grid grid-rows-Admin-layout min-h-screen gap-4'>
-        {children}
+        <div className='p-4'>
+          {children}
+        </div>
         <Footer />
       </section>
     </>

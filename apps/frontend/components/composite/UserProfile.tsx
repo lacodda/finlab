@@ -1,38 +1,39 @@
 
 import React, { type DetailedHTMLProps, type HTMLAttributes, useEffect, useState } from 'react';
 import cn from 'classnames';
-import { FinlabApi } from '../../graphql';
+import { FinlabApi, type ITimestamp } from '../../graphql';
 import { CreateTimestamp } from './CreateTimestamp';
 import { Button } from '../elementary/Button';
 
 export interface UserProfileProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> { }
 
 export const UserProfile = ({ className, ...props }: UserProfileProps): JSX.Element => {
-  const { data, runFetch, error, loading } = FinlabApi.workTime.timestamp.Get({ raw: true });
+  const timestamps = FinlabApi.workTime.timestamp.Get();
   useEffect(() => {
-    void runFetch();
-  }, [runFetch]);
+    void timestamps.exec({ raw: true });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const [timestamp, setTimestamp] = useState<string>('');
-  const timestampDelete = FinlabApi.workTime.timestamp.Delete({ timestamp: new Date(timestamp) });
-  // useEffect(() => {}, [timestamp]);
-  const Delete = (t: string): void => {
-    setTimestamp(t);
-    void timestampDelete.runFetch();
+  const [timestamp, setTimestamp] = useState<ITimestamp>();
+
+  const timestampDelete = FinlabApi.workTime.timestamp.Delete();
+  const Delete = (e: React.MouseEvent, timestamp: string): void => {
+    e.stopPropagation();
+    void timestampDelete.exec({ timestamp: new Date(timestamp) });
   };
 
   return (
     <div className={cn(className)}>
-      {error && <p>There is an error!</p>}
-      {loading && <p>Loading...</p>}
+      {timestamps.error && <p>There is an error!</p>}
+      {timestamps.loading && <p>Loading...</p>}
       <div className='grid grid-cols-3 justify-center items-center gap-4'>
-        {data?.timestamps.data.map((i, k) => <>
-          <div key={k}>{i.timestamp}</div>
+        {timestamps.data?.timestamps.data.map((i, k) => <div key={k} className='contents cursor-pointer' onClick={() => { setTimestamp(i); }}>
+          <div>{i.timestamp}</div>
           <div>{i.type}</div>
-          <Button className='w-full justify-center font-bold uppercase' onClick={() => { Delete(i.timestamp); }}>Delete</Button>
-        </>)}
+          <Button className='w-full justify-center font-bold uppercase' onClick={(e) => { Delete(e, i.timestamp); }}>Delete</Button>
+        </div>)}
       </div>
-      <CreateTimestamp />
+      <CreateTimestamp value={timestamp} />
     </div>
   );
 };

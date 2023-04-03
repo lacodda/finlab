@@ -1,20 +1,30 @@
 
-import React, { type DetailedHTMLProps, type HTMLAttributes, useState, useCallback } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, useState, useCallback, useEffect } from 'react';
 import cn from 'classnames';
-import { FinlabApi, TimestampType } from '../../graphql';
+import { FinlabApi, type ITimestamp, TimestampType } from '../../graphql';
 import { Button } from '../elementary/Button';
 import { Input } from '../elementary/Input';
 
-export interface CreateTimestampProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> { }
+export interface CreateTimestampProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+  value?: ITimestamp;
+}
 
-export const CreateTimestamp = ({ className, ...props }: CreateTimestampProps): JSX.Element => {
+export const CreateTimestamp = ({ className, value, ...props }: CreateTimestampProps): JSX.Element => {
   const [timestamp, setTimestamp] = useState<string>('');
   const [type, setType] = useState<TimestampType>(TimestampType.Start);
 
-  const timestampCreate = FinlabApi.workTime.timestamp.Create({ timestamp: new Date(timestamp), type });
+  useEffect(() => {
+    if (!value) {
+      return;
+    }
+    setTimestamp(value.timestamp);
+    setType(value.type);
+  }, [value]);
+
+  const timestampCreate = FinlabApi.workTime.timestamp.Create();
   const Save = useCallback(() => {
-    void timestampCreate.runFetch();
-  }, [timestampCreate]);
+    void timestampCreate.exec({ timestamp: new Date(timestamp), type });
+  }, [timestamp, timestampCreate, type]);
 
   return (
     <div className={cn(className)}>
