@@ -1,8 +1,15 @@
-import { type LazyQueryResult, type OperationVariables } from '@apollo/client';
+import { type OperationVariables, type ApolloError } from '@apollo/client';
 import { type SetValue } from '../hooks';
 
-export interface Result<T> extends Partial<LazyQueryResult<T, OperationVariables>> {
-  runFetch: () => Promise<unknown>;
+export interface Result<T, R extends OperationVariables> {
+  exec: (variables?: R) => Promise<unknown>;
+  data: T | undefined | null;
+  loading: boolean;
+  error?: ApolloError;
+}
+
+export interface IOptionsParams2<T> {
+  variables?: T;
 }
 
 export interface IOptionsParams<T> {

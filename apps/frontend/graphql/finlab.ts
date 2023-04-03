@@ -50,48 +50,48 @@ export class FinlabApi {
 
   public fetch = {
     auth: {
-      Login: (variables: ILoginRequest): Result<ILoginResponse> => {
+      Login: (): Result<ILoginResponse, ILoginRequest> => {
         const LOGIN_MUTATION = gql`
           mutation login ($email: String!, $password: String!) {
             login (request: { email: $email, password: $password }) { access_token }
           }`;
-        const [runFetch, { data, loading, error }] = useMutation(LOGIN_MUTATION, this.getOptions({ variables, auth: false }));
-        return { runFetch, data, loading, error };
+        const [run, { data, loading, error }] = useMutation<ILoginResponse, ILoginRequest>(LOGIN_MUTATION, this.getOptions({ auth: false }));
+        return { exec: async (variables) => await run({ variables }), data, loading, error };
       },
-      SignUp: (variables: ISignUpRequest): Result<ISignUpResponse> => {
+      SignUp: (): Result<ISignUpResponse, ISignUpRequest> => {
         const REGISTER_MUTATION = gql`
           mutation register ($email: String!, $password: String!, $displayName: String) {
             register (request: { email: $email, password: $password, displayName: $displayName}) { email }
           }`;
-        const [runFetch, { data, loading, error }] = useMutation(REGISTER_MUTATION, this.getOptions({ variables, auth: false }));
-        return { runFetch, data, loading, error };
+        const [run, { data, loading, error }] = useMutation<ISignUpResponse, ISignUpRequest>(REGISTER_MUTATION, this.getOptions({ auth: false }));
+        return { exec: async (variables) => await run({ variables }), data, loading, error };
       }
     },
     workTime: {
       timestamp: {
-        Get: (variables?: ITimestampsRequest): Result<ITimestampsResponse> => {
+        Get: (): Result<ITimestampsResponse, ITimestampsRequest> => {
           const TIMESTAMPS_QUERY = gql`
             query timestamps ($date: Date, $raw: Boolean) {
               timestamps (date: $date, raw: $raw) { totalTime, workTime, breaks, data { type, timestamp } }
           }`;
-          const [runFetch, { data, loading, error }] = useLazyQuery(TIMESTAMPS_QUERY, this.getOptions({ variables }));
-          return { runFetch, data, loading, error };
+          const [run, { data, loading, error }] = useLazyQuery<ITimestampsResponse, ITimestampsRequest>(TIMESTAMPS_QUERY, this.getOptions());
+          return { exec: async (variables) => await run({ variables }), data, loading, error };
         },
-        Create: (variables: ITimestampCreateRequest): Result<ITimestampCreateResponse> => {
+        Create: (): Result<ITimestampCreateResponse, ITimestampCreateRequest> => {
           const MUTATION = gql`
             mutation createTimestamp ($timestamp: Date!, $type: TimestampType!) {
               createTimestamp (timestamp: $timestamp, type: $type) { data { type, timestamp } }
           }`;
-          const [runFetch, { data, loading, error }] = useMutation(MUTATION, this.getOptions({ variables }));
-          return { runFetch, data, loading, error };
+          const [run, { data, loading, error }] = useMutation<ITimestampCreateResponse, ITimestampCreateRequest>(MUTATION, this.getOptions());
+          return { exec: async (variables) => await run({ variables }), data, loading, error };
         },
-        Delete: (variables: ITimestampDeleteRequest): Result<ITimestampDeleteResponse> => {
+        Delete: (): Result<ITimestampDeleteResponse, ITimestampDeleteRequest> => {
           const MUTATION = gql`
             mutation deleteTimestamp ($timestamp: Date!) {
               deleteTimestamp (timestamp: $timestamp) { data { type, timestamp } }
           }`;
-          const [runFetch, { data, loading, error }] = useMutation(MUTATION, this.getOptions({ variables }));
-          return { runFetch, data, loading, error };
+          const [run, { data, loading, error }] = useMutation<ITimestampDeleteResponse, ITimestampDeleteRequest>(MUTATION, this.getOptions());
+          return { exec: async (variables) => await run({ variables }), data, loading, error };
         }
       }
     }

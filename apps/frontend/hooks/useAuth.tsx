@@ -45,8 +45,8 @@ export function useProvideAuth(): IAuthContext {
   const [signInRequest, signIn]: [ILoginRequest, Dispatch<ILoginRequest>] = useState({ email: '', password: '' });
   const [signUpRequest, signUp]: [ISignUpRequest, Dispatch<ISignUpRequest>] = useState({ email: '', password: '' });
   const [token, setToken] = useLocalStorage('access_token', '');
-  const { runFetch: runSignIn, data: signInData, error: signInError } = FinlabApi.auth.Login(signInRequest);
-  const { runFetch: runSignUp, data: signUpData, error: signUpError } = FinlabApi.auth.SignUp(signUpRequest);
+  const { exec: runSignIn, data: signInData, error: signInError } = FinlabApi.auth.Login();
+  const { exec: runSignUp, data: signUpData, error: signUpError } = FinlabApi.auth.SignUp();
   const router = useRouter();
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export function useProvideAuth(): IAuthContext {
   useEffect(() => {
     if (!signInRequest.email || !signInRequest.password) return;
 
-    void runSignIn();
+    void runSignIn(signInRequest);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signInRequest]);
@@ -75,7 +75,7 @@ export function useProvideAuth(): IAuthContext {
   useEffect(() => {
     if (!signUpRequest.email || !signUpRequest.password) return;
 
-    void runSignUp();
+    void runSignUp(signUpRequest);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signUpRequest]);
