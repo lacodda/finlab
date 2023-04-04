@@ -1,4 +1,4 @@
 import * as finlab from './finlab';
 export * from './interfaces';
 
-export const FinlabApi = new finlab.FinlabApi().fetch;
+export const FinlabApi = new finlab.FinlabApi().methods;

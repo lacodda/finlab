@@ -1,9 +1,9 @@
 import { gql, useLazyQuery, ApolloClient, InMemoryCache, HttpLink, useMutation, type CommonOptions, type QueryLazyOptions } from '@apollo/client';
 import { useLocalStorage } from '../hooks';
 import {
-  type ILoginResponse, type Result, type IAccessToken, type ILoginRequest, type ISignUpRequest, type ISignUpResponse, type ITimestampsResponse,
-  type ITimestampsRequest, type IOptionsParams, type ITimestampCreateRequest, type ITimestampCreateResponse, type ITimestampDeleteRequest,
-  type ITimestampDeleteResponse
+  type ILoginResponse, type IResult, type IAccessToken, type ILoginRequest, type ISignUpRequest, type ISignUpResponse, type ITimestampsResponse,
+  type ITimestampsRequest, type ITimestampCreateRequest, type ITimestampCreateResponse, type ITimestampDeleteRequest, type ITimestampDeleteResponse,
+  type IResultTuple
 } from './interfaces';
 
 export class FinlabApi {
@@ -29,11 +29,11 @@ export class FinlabApi {
     return { token, setToken };
   }
 
-  private getOptions<T>(params: IOptionsParams<T> = {}): CommonOptions<QueryLazyOptions<T>> {
+  private getOptions<T>(isAuth = true): CommonOptions<QueryLazyOptions<T>> {
     const options: CommonOptions<QueryLazyOptions<T>> = {
       client: this.client
     };
-    if (params?.auth !== false) {
+    if (isAuth) {
       options.context = {
         ...options.context,
         headers: {
@@ -42,56 +42,52 @@ export class FinlabApi {
         }
       };
     }
-    if (params?.variables) {
-      options.variables = { ...params.variables };
-    }
     return options;
   }
 
-  public fetch = {
+  private getResult<T, R>([run, { data, loading, error }]: IResultTuple<T, R>): IResult<T, R> {
+    return { exec: async (variables) => await run({ variables }), data, loading, error };
+  }
+
+  public methods = {
     auth: {
-      Login: (): Result<ILoginResponse, ILoginRequest> => {
-        const LOGIN_MUTATION = gql`
+      Login: (): IResult<ILoginResponse, ILoginRequest> => {
+        const mutation = gql`
           mutation login ($email: String!, $password: String!) {
             login (request: { email: $email, password: $password }) { access_token }
           }`;
-        const [run, { data, loading, error }] = useMutation<ILoginResponse, ILoginRequest>(LOGIN_MUTATION, this.getOptions({ auth: false }));
-        return { exec: async (variables) => await run({ variables }), data, loading, error };
+        return this.getResult(useMutation(mutation, this.getOptions(false)));
       },
-      SignUp: (): Result<ISignUpResponse, ISignUpRequest> => {
-        const REGISTER_MUTATION = gql`
+      SignUp: (): IResult<ISignUpResponse, ISignUpRequest> => {
+        const mutation = gql`
           mutation register ($email: String!, $password: String!, $displayName: String) {
             register (request: { email: $email, password: $password, displayName: $displayName}) { email }
           }`;
-        const [run, { data, loading, error }] = useMutation<ISignUpResponse, ISignUpRequest>(REGISTER_MUTATION, this.getOptions({ auth: false }));
-        return { exec: async (variables) => await run({ variables }), data, loading, error };
+        return this.getResult(useMutation<ISignUpResponse, ISignUpRequest>(mutation, this.getOptions(false)));
       }
     },
     workTime: {
       timestamp: {
-        Get: (): Result<ITimestampsResponse, ITimestampsRequest> => {
-          const TIMESTAMPS_QUERY = gql`
+        Get: (): IResult<ITimestampsResponse, ITimestampsRequest> => {
+          const query = gql`
             query timestamps ($date: Date, $raw: Boolean) {
               timestamps (date: $date, raw: $raw) { totalTime, workTime, breaks, data { type, timestamp } }
           }`;
-          const [run, { data, loading, error }] = useLazyQuery<ITimestampsResponse, ITimestampsRequest>(TIMESTAMPS_QUERY, this.getOptions());
-          return { exec: async (variables) => await run({ variables }), data, loading, error };
+          return this.getResult(useLazyQuery(query, this.getOptions()));
         },
-        Create: (): Result<ITimestampCreateResponse, ITimestampCreateRequest> => {
-          const MUTATION = gql`
+        Create: (): IResult<ITimestampCreateResponse, ITimestampCreateRequest> => {
+          const mutation = gql`
             mutation createTimestamp ($timestamp: Date!, $type: TimestampType!) {
               createTimestamp (timestamp: $timestamp, type: $type) { data { type, timestamp } }
           }`;
-          const [run, { data, loading, error }] = useMutation<ITimestampCreateResponse, ITimestampCreateRequest>(MUTATION, this.getOptions());
-          return { exec: async (variables) => await run({ variables }), data, loading, error };
+          return this.getResult(useMutation<ITimestampCreateResponse, ITimestampCreateRequest>(mutation, this.getOptions()));
         },
-        Delete: (): Result<ITimestampDeleteResponse, ITimestampDeleteRequest> => {
-          const MUTATION = gql`
+        Delete: (): IResult<ITimestampDeleteResponse, ITimestampDeleteRequest> => {
+          const mutation = gql`
             mutation deleteTimestamp ($timestamp: Date!) {
               deleteTimestamp (timestamp: $timestamp) { data { type, timestamp } }
           }`;
-          const [run, { data, loading, error }] = useMutation<ITimestampDeleteResponse, ITimestampDeleteRequest>(MUTATION, this.getOptions());
-          return { exec: async (variables) => await run({ variables }), data, loading, error };
+          return this.getResult(useMutation<ITimestampDeleteResponse, ITimestampDeleteRequest>(mutation, this.getOptions()));
         }
       }
     }

@@ -1,12 +1,21 @@
-import { type OperationVariables, type ApolloError } from '@apollo/client';
+import { type ApolloError } from '@apollo/client';
 import { type SetValue } from '../hooks';
 
-export interface Result<T, R extends OperationVariables> {
+export interface IResult<T, R> {
   exec: (variables?: R) => Promise<unknown>;
   data: T | undefined | null;
   loading: boolean;
   error?: ApolloError;
 }
+
+export type IResultTuple<T, R> = [
+  ({ variables }: { variables?: R }) => Promise<unknown>,
+  {
+    data?: T | undefined | null;
+    loading: boolean;
+    error?: ApolloError;
+  }
+];
 
 export interface IOptionsParams2<T> {
   variables?: T;
