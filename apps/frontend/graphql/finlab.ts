@@ -1,93 +1,72 @@
-import { gql, useLazyQuery, ApolloClient, InMemoryCache, HttpLink, useMutation, type CommonOptions, type QueryLazyOptions } from '@apollo/client';
-import { useLocalStorage } from '../hooks';
+import { Client, cacheExchange, fetchExchange, gql } from 'urql';
 import {
-  type ILoginResponse, type IResult, type IAccessToken, type ILoginRequest, type ISignUpRequest, type ISignUpResponse, type ITimestampsResponse,
-  type ITimestampsRequest, type ITimestampCreateRequest, type ITimestampCreateResponse, type ITimestampDeleteRequest, type ITimestampDeleteResponse,
-  type IResultTuple
+  type ILoginResponse, type IResult, type ILoginRequest, type ISignUpRequest, type ISignUpResponse, type ITimestampsResponse, type ITimestampsRequest,
+  type ITimestampCreateRequest, type ITimestampCreateResponse, type ITimestampDeleteRequest, type ITimestampDeleteResponse
 } from './interfaces';
 
 export class FinlabApi {
   private readonly host: string = process.env.NEXT_PUBLIC_DOMAIN ?? '';
-  private readonly client: ApolloClient<object>;
+  private readonly client: Client;
 
   constructor() {
     if (!this.client || typeof window === 'undefined') {
-      this.client = new ApolloClient({
-        link: new HttpLink({
-          uri: this.host
-        }),
-        cache: new InMemoryCache(),
-        headers: {
-          'Content-Type': 'application/json'
+      this.client = new Client({
+        url: this.host,
+        exchanges: [cacheExchange, fetchExchange],
+        requestPolicy: 'cache-and-network',
+        fetchOptions: () => {
+          return {
+            headers: { Authorization: `Bearer ${this.getToken()}` }
+          };
         }
       });
     }
   }
 
-  private accessToken(): IAccessToken {
-    const [token, setToken] = (() => useLocalStorage('access_token', ''))();
-    return { token, setToken };
-  }
-
-  private getOptions<T>(isAuth = true): CommonOptions<QueryLazyOptions<T>> {
-    const options: CommonOptions<QueryLazyOptions<T>> = {
-      client: this.client
-    };
-    if (isAuth) {
-      options.context = {
-        ...options.context,
-        headers: {
-          ...options.context?.headers,
-          Authorization: `Bearer ${this.accessToken().token}`
-        }
-      };
-    }
-    return options;
-  }
-
-  private getResult<T, R>([run, { data, loading, error }]: IResultTuple<T, R>): IResult<T, R> {
-    return { exec: async (variables) => await run({ variables }), data, loading, error };
+  private getToken(): string {
+    const tokenString = localStorage.getItem('access_token') ?? '';
+    return JSON.parse(tokenString);
   }
 
   public methods = {
     auth: {
-      Login: (): IResult<ILoginResponse, ILoginRequest> => {
+      login: async (params: ILoginRequest): Promise<IResult<ILoginResponse>> => {
         const mutation = gql`
           mutation login ($email: String!, $password: String!) {
             login (request: { email: $email, password: $password }) { access_token }
           }`;
-        return this.getResult(useMutation(mutation, this.getOptions(false)));
+        return await this.client.mutation(mutation, params);
       },
-      SignUp: (): IResult<ISignUpResponse, ISignUpRequest> => {
+      signUp: async (params: ISignUpRequest): Promise<IResult<ISignUpResponse>> => {
         const mutation = gql`
           mutation register ($email: String!, $password: String!, $displayName: String) {
             register (request: { email: $email, password: $password, displayName: $displayName}) { email }
           }`;
-        return this.getResult(useMutation<ISignUpResponse, ISignUpRequest>(mutation, this.getOptions(false)));
+        return await this.client.mutation(mutation, params);
       }
     },
     workTime: {
       timestamp: {
-        Get: (): IResult<ITimestampsResponse, ITimestampsRequest> => {
+        list: async (params?: ITimestampsRequest): Promise<IResult<ITimestampsResponse>> => {
           const query = gql`
             query timestamps ($date: Date, $raw: Boolean) {
               timestamps (date: $date, raw: $raw) { totalTime, workTime, breaks, data { type, timestamp } }
           }`;
-          return this.getResult(useLazyQuery(query, this.getOptions()));
+          return await this.client.query(query, params);
         },
-        Create: (): IResult<ITimestampCreateResponse, ITimestampCreateRequest> => {
+        create: async (params: ITimestampCreateRequest): Promise<IResult<ITimestampCreateResponse>> => {
           const mutation = gql`
             mutation createTimestamp ($timestamp: Date!, $type: TimestampType!) {
               createTimestamp (timestamp: $timestamp, type: $type) { data { type, timestamp } }
           }`;
-          return this.getResult(useMutation<ITimestampCreateResponse, ITimestampCreateRequest>(mutation, this.getOptions()));
+          return await this.client.mutation(mutation, params);
         },
-        Delete: (): IResult<ITimestampDeleteResponse, ITimestampDeleteRequest> => {
+        delete: async (params: ITimestampDeleteRequest): Promise<IResult<ITimestampDeleteResponse>> => {
           const mutation = gql`
             mutation deleteTimestamp ($timestamp: Date!) {
               deleteTimestamp (timestamp: $timestamp) { data { type, timestamp } }
           }`;
-          return this.getResult(useMutation<ITimestampDeleteResponse, ITimestampDeleteRequest>(mutation, this.getOptions()));
+          return await this.client.mutation(mutation, params);
         }
       }
     }

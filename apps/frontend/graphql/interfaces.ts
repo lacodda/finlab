@@ -1,29 +1,9 @@
-import { type ApolloError } from '@apollo/client';
+import { type CombinedError } from 'urql';
 import { type SetValue } from '../hooks';
 
-export interface IResult<T, R> {
-  exec: (variables?: R) => Promise<unknown>;
-  data: T | undefined | null;
-  loading: boolean;
-  error?: ApolloError;
-}
-
-export type IResultTuple<T, R> = [
-  ({ variables }: { variables?: R }) => Promise<unknown>,
-  {
-    data?: T | undefined | null;
-    loading: boolean;
-    error?: ApolloError;
-  }
-];
-
-export interface IOptionsParams2<T> {
-  variables?: T;
-}
-
-export interface IOptionsParams<T> {
-  variables?: T;
-  auth?: boolean;
+export interface IResult<T> {
+  data?: T;
+  error?: CombinedError;
 }
 
 export interface ILoginRequest {

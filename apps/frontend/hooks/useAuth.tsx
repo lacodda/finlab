@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useEffect, type Dispatch, createContext, useContext, type PropsWithChildren } from 'react';
 import jwtDecode, { type JwtPayload } from 'jwt-decode';
-import { FinlabApi, type ILoginRequest, type ISignUpRequest } from '../graphql';
+import { FinlabApi, type ILoginResponse, type ISignUpResponse, type ILoginRequest, type ISignUpRequest } from '../graphql';
 import { useLocalStorage } from '.';
 
 interface IUser {
@@ -44,10 +44,24 @@ export function useProvideAuth(): IAuthContext {
   const [user, setUser]: [IUser | undefined | null, Dispatch<IUser | undefined | null>] = useState();
   const [signInRequest, signIn]: [ILoginRequest, Dispatch<ILoginRequest>] = useState({ email: '', password: '' });
   const [signUpRequest, signUp]: [ISignUpRequest, Dispatch<ISignUpRequest>] = useState({ email: '', password: '' });
+  const [signInData, setSignInData]: [ILoginResponse | undefined, Dispatch<ILoginResponse | undefined>] = useState();
+  const [signInError, setSignInError]: [Error | undefined, Dispatch<Error | undefined>] = useState();
+  const [signUpData, setSignUpData]: [ISignUpResponse | undefined, Dispatch<ISignUpResponse | undefined>] = useState();
+  const [signUpError, setSignUpError]: [Error | undefined, Dispatch<Error | undefined>] = useState();
   const [token, setToken] = useLocalStorage('access_token', '');
-  const { exec: runSignIn, data: signInData, error: signInError } = FinlabApi.auth.Login();
-  const { exec: runSignUp, data: signUpData, error: signUpError } = FinlabApi.auth.SignUp();
   const router = useRouter();
+
+  async function runSignIn(): Promise<void> {
+    const { data, error } = await FinlabApi.auth.login(signInRequest);
+    setSignInData(data);
+    setSignInError(error);
+  }
+
+  async function runSignUp(): Promise<void> {
+    const { data, error } = await FinlabApi.auth.signUp(signUpRequest);
+    setSignUpData(data);
+    setSignUpError(error);
+  }
 
   useEffect(() => {
     if (!token) {
@@ -66,17 +80,13 @@ export function useProvideAuth(): IAuthContext {
 
   useEffect(() => {
     if (!signInRequest.email || !signInRequest.password) return;
-
-    void runSignIn(signInRequest);
-
+    void runSignIn();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signInRequest]);
 
   useEffect(() => {
     if (!signUpRequest.email || !signUpRequest.password) return;
-
-    void runSignUp(signUpRequest);
-
+    void runSignUp();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signUpRequest]);
 
